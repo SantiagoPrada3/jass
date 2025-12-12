@@ -1,0 +1,169 @@
+/* Estilos 
+para las nuevas características */
+.feature-card {
+  transition: all 0.3s ease-in-out;
+  cursor: pointer;
+}
+
+.feature-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+}
+
+.feature-card svg {
+  transition: transform 0.3s ease-in-out;
+}
+
+.feature-card:hover svg {
+  transform: scale(1.1) rotate(5deg);
+}
+
+/* Mejoras en los modales sin fondo negro */
+.modal-overlay {
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+/* Animaciones para botones */
+.btn-hover {
+  transition: all 0.2s ease-in-out;
+}
+
+.btn-hover:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Estilos para notificaciones toast */
+.toast-notification {
+  animation: slideInRight 0.3s ease-out;
+}
+
+@keyframes slideInRight {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+/* Mejoras responsivas */
+@media (max-width: 768px) {
+  .feature-card {
+    margin-bottom: 1rem;
+  }
+}
+
+/* Focus states para accesibilidad */
+.feature-card:focus {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .feature-card {
+    background: linear-gradient(135deg, #1f2937 0%, #374151 100%);
+    border-color: #4b5563;
+  }
+  
+  .feature-card h3 {
+    color: #f9fafb;
+  }
+  
+  .feature-card p {
+    color: #d1d5db;
+  }
+}
+/* Moda
+les sin fondo - solo el modal flotante */
+.fixed.inset-0.z-\[8000\] {
+  pointer-events: none;
+}
+
+.fixed.inset-0.z-\[8000\] > div {
+  pointer-events: auto;
+}
+
+/* Animación de escala para modales */
+.scale-95 {
+  transform: scale(0.95);
+  opacity: 0;
+}
+
+.scale-100 {
+  transform: scale(1);
+  opacity: 1;
+}
+
+/* Sombra mejorada para modales flotantes */
+.shadow-2xl {
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25), 
+              0 0 0 1px rgba(0, 0, 0, 0.05);
+}
+
+/* Bordes redondeados para modales */
+.rounded-2xl {
+  border-radius: 1rem;
+}
+
+/* Mejora visual del header del modal */
+.bg-slate-900 {
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+}
+
+/* Scroll suave en el contenido del modal */
+.overflow-y-auto {
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e1 #f1f5f9;
+}
+
+.overflow-y-auto::-webkit-scrollbar {
+  width: 6px;
+}
+
+.overflow-y-auto::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 3px;
+}
+
+.overflow-y-auto::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 3px;
+}
+
+.overflow-y-auto::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Animación de entrada para modales */
+@keyframes modalFadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.fixed.inset-0.z-\[8000\] > div {
+  animation: modalFadeIn 0.3s ease-out;
+}
+
+/* Mejora de accesibilidad para modales */
+.fixed.inset-0.z-\[8000\]:focus {
+  outline: none;
+}
+
+/* Responsive para modales */
+@media (max-width: 768px) {
+  .fixed.inset-0.z-\[8000\] > div {
+    max-width: calc(100vw - 2rem);
+    max-height: calc(100vh - 2rem);
+  }
+}

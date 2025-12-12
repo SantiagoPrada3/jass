@@ -1,0 +1,1254 @@
+<!-- Breadcrumb -->
+<app-breadcrumb [items]="breadcrumbItems"></app-breadcrumb>
+
+<div class="w-full px-8 py-6 scroll-smooth bg-gray-50 min-h-screen">
+     <!-- Header de la página -->
+     <div class="mb-6">
+          <h1 class="text-3xl font-bold text-gray-900 mb-2">Configuración del Sistema</h1>
+          <p class="text-lg text-gray-600">Administración de zonas, calles , parametros y Tarifas con mejoras
+               implementadas</p>
+     </div>
+
+
+
+     <!-- Tabs Navigation -->
+     <div class="bg-white rounded-xl shadow-lg border border-gray-100 mb-6">
+          <div class="border-b border-gray-200">
+               <nav class="-mb-px flex space-x-8 px-6" aria-label="Tabs">
+                    <button (click)="setActiveTab('zones')"
+                         [class]="activeTab === 'zones' ? 'border-blue-500 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'"
+                         class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors duration-200">
+                         <div class="flex items-center">
+                              <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z M15 11a3 3 0 11-6 0 3 3 0 016 0z">
+                                   </path>
+                              </svg>
+                              Gestión de Zonas
+                         </div>
+                    </button>
+                    <button (click)="setActiveTab('streets')"
+                         [class]="activeTab === 'streets' ? 'border-blue-500 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'"
+                         class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors duration-200">
+                         <div class="flex items-center">
+                              <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-1.447-.894L15 9m0 8V9m0 0L9 7">
+                                   </path>
+                              </svg>
+                              Gestión de Calles
+                         </div>
+                    </button>
+                    <button (click)="setActiveTab('parameters')"
+                         [class]="activeTab === 'parameters' ? 'border-blue-500 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'"
+                         class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors duration-200">
+                         <div class="flex items-center">
+                              <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z M15 12a3 3 0 11-6 0 3 3 0 016 0z">
+                                   </path>
+                              </svg>
+                              Parámetros del Sistema
+                         </div>
+                    </button>
+                    <button (click)="setActiveTab('tarifas')"
+                         [class]="activeTab === 'tarifas' ? 'border-blue-500 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'"
+                         class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors duration-200">
+                         <div class="flex items-center">
+                              <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z">
+                                   </path>
+                              </svg>
+                              Gestión de Tarifas
+                         </div>
+                    </button>
+               </nav>
+          </div>
+     </div>
+
+     <!-- Filters and Controls -->
+     <div class="bg-white rounded-xl shadow-lg border border-gray-100 p-4 sm:p-6 mb-6">
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 sm:gap-6 mb-4">
+               <!-- Search -->
+               <div class="relative">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                         <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                   d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                         </svg>
+                    </div>
+                    <input type="text" placeholder="Buscar..." [(ngModel)]="searchTerm" (input)="onSearch()"
+                         class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 hover:border-gray-400 text-sm sm:text-base">
+               </div>
+
+               <!-- Status Filter -->
+               <div class="relative">
+                    <select [(ngModel)]="statusFilter" (change)="onStatusFilterChange()"
+                         class="w-full px-4 py-3 pr-10 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 hover:border-gray-400 bg-white text-sm font-medium text-gray-700 cursor-pointer hover:bg-gray-50 appearance-none">
+                         <option value="all">Todos los estados</option>
+                         <option value="active">Activos</option>
+                         <option value="inactive">Inactivos</option>
+                    </select>
+               </div>
+
+               <!-- Zone Filter (only for streets) -->
+               <div class="relative" *ngIf="activeTab === 'streets'">
+                    <select [(ngModel)]="zoneFilter" (change)="onZoneFilterChange()"
+                         class="w-full px-4 py-3 pr-10 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 hover:border-gray-400 bg-white text-sm font-medium text-gray-700 cursor-pointer hover:bg-gray-50 appearance-none">
+                         <option value="all">Todas las zonas</option>
+                         <option *ngFor="let zone of zones" [value]="zone.zoneId">{{ zone.zoneName }}</option>
+                    </select>
+               </div>
+
+               <!-- Category Filter (only for parameters) -->
+               <div class="relative" *ngIf="activeTab === 'parameters'">
+                    <select [(ngModel)]="categoryFilter" (change)="onCategoryFilterChange()"
+                         class="w-full px-4 py-3 pr-10 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 hover:border-gray-400 bg-white text-sm font-medium text-gray-700 cursor-pointer hover:bg-gray-50 appearance-none">
+                         <option value="all">Todas las categorías</option>
+                         <option *ngFor="let category of parameterCategories" [value]="category">{{ category }}</option>
+                    </select>
+               </div>
+
+               <!-- Zone Filter (only for tarifas) -->
+               <div class="relative" *ngIf="activeTab === 'tarifas'">
+                    <select [(ngModel)]="tarifaZoneFilter" (change)="onTarifaZoneFilterChange()"
+                         class="w-full px-4 py-3 pr-10 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 hover:border-gray-400 bg-white text-sm font-medium text-gray-700 cursor-pointer hover:bg-gray-50 appearance-none">
+                         <option value="all">Todas las zonas</option>
+                         <option *ngFor="let zone of zones" [value]="zone.zoneId">{{ zone.zoneName }}</option>
+                    </select>
+               </div>
+
+               <!-- Generate Report Button -->
+               <div class="col-span-1">
+                    <button (click)="generateReport()"
+                         class="w-full bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-medium py-3 px-4 rounded-xl transition-all duration-200 shadow-md hover:shadow-lg transform hover:-translate-y-0.5 text-sm">
+                         <div class="flex items-center justify-center">
+                              <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
+                                   </path>
+                              </svg>
+                              <span class="hidden sm:inline">Reporte PDF</span>
+                              <span class="sm:hidden">PDF</span>
+                         </div>
+                    </button>
+               </div>
+
+               <!-- Add New Button -->
+               <div class="col-span-1">
+                    <button
+                         (click)="activeTab === 'zones' ? addNewZone() : activeTab === 'streets' ? addNewStreet() : activeTab === 'parameters' ? addNewParameter() : addNewTarifa()"
+                         class="w-full bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-medium py-3 px-4 rounded-xl transition-all duration-200 shadow-md hover:shadow-lg transform hover:-translate-y-0.5 text-sm">
+                         <div class="flex items-center justify-center">
+                              <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                              </svg>
+                              <span class="hidden sm:inline">
+                                   {{ activeTab === 'zones' ? 'Nueva Zona' : activeTab === 'streets' ? 'Nueva Calle' :
+                                   activeTab === 'parameters' ? 'Nuevo Parámetro' : 'Nueva Tarifa' }}
+                              </span>
+                              <span class="sm:hidden">+</span>
+                         </div>
+                    </button>
+               </div>
+          </div>
+     </div>
+
+     <!-- Content based on active tab -->
+     <div class="bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden">
+
+          <!-- Zones Tab -->
+          <div *ngIf="activeTab === 'zones'">
+               <div class="overflow-x-auto">
+                    <table class="min-w-full table-auto">
+                         <thead class="bg-gradient-to-r from-gray-50 to-gray-100">
+                              <tr>
+                                   <th
+                                        class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                        Code
+                                   <th
+                                        class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                        Nombre</th>
+                                   <th
+                                        class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                        Descripción</th>
+                                   <th
+                                        class="px-6 py-4 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                        Estado</th>
+                                   <th
+                                        class="px-6 py-4 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                        Acciones</th>
+                              </tr>
+                         </thead>
+                         <tbody class="bg-white divide-y divide-gray-100">
+                              <tr *ngFor="let zone of paginatedZones; trackBy: trackById" class="hover:bg-gray-50">
+                                   <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="text-sm font-medium text-gray-900">{{ zone.zoneCode }}</div>
+                                   </td>
+                                   <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="text-sm font-medium text-gray-900">{{ zone.zoneName }}</div>
+                                   </td>
+                                   <td class="px-6 py-4">
+                                        <div class="text-sm text-gray-700">{{ zone.description || 'Sin descripción' }}
+                                        </div>
+                                   </td>
+                                   <td class="px-6 py-4 whitespace-nowrap text-center">
+                                        <span [class]="getStatusBadgeClass(zone.status)">
+                                             {{ getStatusLabel(zone.status) }}
+                                        </span>
+                                   </td>
+                                   <td class="px-6 py-4 whitespace-nowrap text-center">
+                                        <div class="flex items-center justify-center space-x-3">
+                                             <button (click)="editZone(zone)"
+                                                  class="inline-flex items-center px-4 py-2 text-sm font-medium text-blue-600 bg-blue-50 border border-blue-200 rounded-lg hover:bg-blue-100 hover:border-blue-300 transition-all duration-150">
+                                                  <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor"
+                                                       viewBox="0 0 24 24">
+                                                       <path stroke-linecap="round" stroke-linejoin="round"
+                                                            stroke-width="2"
+                                                            d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z">
+                                                       </path>
+                                                  </svg>
+                                                  Editar
+                                             </button>
+                                             <!-- Botón Eliminar o Restaurar según el estado -->
+                                             <button *ngIf="zone.status === 'ACTIVE'" (click)="deleteZone(zone)"
+                                                  class="inline-flex items-center px-4 py-2 text-sm font-medium text-red-600 bg-red-50 border border-red-200 rounded-lg hover:bg-red-100 hover:border-red-300 transition-all duration-150">
+                                                  <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor"
+                                                       viewBox="0 0 24 24">
+                                                       <path stroke-linecap="round" stroke-linejoin="round"
+                                                            stroke-width="2"
+                                                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16">
+                                                       </path>
+                                                  </svg>
+                                                  Eliminar
+                                             </button>
+                                             <button *ngIf="zone.status === 'INACTIVE'" (click)="restoreZone(zone)"
+                                                  class="inline-flex items-center px-4 py-2 text-sm font-medium text-green-600 bg-green-50 border border-green-200 rounded-lg hover:bg-green-100 hover:border-green-300 transition-all duration-150">
+                                                  <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor"
+                                                       viewBox="0 0 24 24">
+                                                       <path stroke-linecap="round" stroke-linejoin="round"
+                                                            stroke-width="2"
+                                                            d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15">
+                                                       </path>
+                                                  </svg>
+                                                  Restaurar
+                                             </button>
+                                        </div>
+                                   </td>
+                              </tr>
+
+                              <!-- Loading State -->
+                              <tr *ngIf="isLoading">
+                                   <td colspan="4" class="px-6 py-8 text-center text-gray-500">
+                                        <div class="flex flex-col items-center justify-center">
+                                             <div
+                                                  class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mb-3">
+                                             </div>
+                                             <p class="text-lg font-medium">Cargando zonas...</p>
+                                        </div>
+                                   </td>
+                              </tr>
+
+                              <!-- Empty State -->
+                              <tr *ngIf="!isLoading && paginatedZones.length === 0">
+                                   <td colspan="4" class="px-6 py-8 text-center text-gray-500">
+                                        <div class="flex flex-col items-center justify-center">
+                                             <svg class="w-12 h-12 text-gray-300 mb-3" fill="none" stroke="currentColor"
+                                                  viewBox="0 0 24 24">
+                                                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                       d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z M15 11a3 3 0 11-6 0 3 3 0 016 0z">
+                                                  </path>
+                                             </svg>
+                                             <p class="text-lg font-medium">No se encontraron zonas</p>
+                                             <p class="text-sm mt-1">Cree una nueva zona para comenzar</p>
+                                        </div>
+                                   </td>
+                              </tr>
+                         </tbody>
+                    </table>
+               </div>
+          </div>
+
+          <!-- Streets Tab -->
+          <div *ngIf="activeTab === 'streets'">
+               <div class="overflow-x-auto">
+                    <table class="min-w-full table-auto">
+                         <thead class="bg-gradient-to-r from-gray-50 to-gray-100">
+                              <tr>
+                                   <th
+                                        class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                        Code</th>
+                                   <th
+                                        class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                        Nombre</th>
+                                   <th
+                                        class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                        Tipo</th>
+                                   <th
+                                        class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                        Zona</th>
+                                   <th
+                                        class="px-6 py-4 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                        Estado</th>
+                                   <th
+                                        class="px-6 py-4 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                        Acciones</th>
+                              </tr>
+                         </thead>
+                         <tbody class="bg-white divide-y divide-gray-100">
+                              <tr *ngFor="let street of paginatedStreets; trackBy: trackById" class="hover:bg-gray-50">
+
+                                   <td class="px-6 py-4 whitespace-nowrap">
+
+                                        <div class="flex items-center">
+                                             <span class="text-lg mr-2">{{ getStreetTypeIcon(street.streetType)
+                                                  }}</span>
+                                             <span class="text-sm font-medium text-gray-900">{{ street.streetName
+                                                  }}</span>
+                                        </div>
+                                   </td>
+                                   <td class="px-6 py-4 whitespace-nowrap">
+                                        <span
+                                             class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                             {{ street.streetType }}
+                                        </span>
+                                   </td>
+                                   <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="text-sm text-gray-700">{{ getZoneName(street.zoneId) }}</div>
+                                   </td>
+                                   <td class="px-6 py-4 whitespace-nowrap text-center">
+                                        <span [class]="getStatusBadgeClass(street.status)">
+                                             {{ getStatusLabel(street.status) }}
+                                        </span>
+                                   </td>
+                                   <td class="px-6 py-4 whitespace-nowrap text-center">
+                                        <div class="flex items-center justify-center space-x-3">
+                                             <button (click)="editStreet(street)"
+                                                  class="inline-flex items-center px-4 py-2 text-sm font-medium text-blue-600 bg-blue-50 border border-blue-200 rounded-lg hover:bg-blue-100 hover:border-blue-300 transition-all duration-150">
+                                                  <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor"
+                                                       viewBox="0 0 24 24">
+                                                       <path stroke-linecap="round" stroke-linejoin="round"
+                                                            stroke-width="2"
+                                                            d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z">
+                                                       </path>
+                                                  </svg>
+                                                  Editar
+                                             </button>
+                                             <!-- Botón Eliminar o Restaurar según el estado -->
+                                             <button *ngIf="street.status === 'ACTIVE'" (click)="deleteStreet(street)"
+                                                  class="inline-flex items-center px-4 py-2 text-sm font-medium text-red-600 bg-red-50 border border-red-200 rounded-lg hover:bg-red-100 hover:border-red-300 transition-all duration-150">
+                                                  <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor"
+                                                       viewBox="0 0 24 24">
+                                                       <path stroke-linecap="round" stroke-linejoin="round"
+                                                            stroke-width="2"
+                                                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16">
+                                                       </path>
+                                                  </svg>
+                                                  Eliminar
+                                             </button>
+                                             <button *ngIf="street.status === 'INACTIVE'"
+                                                  (click)="restoreStreet(street)"
+                                                  class="inline-flex items-center px-4 py-2 text-sm font-medium text-green-600 bg-green-50 border border-green-200 rounded-lg hover:bg-green-100 hover:border-green-300 transition-all duration-150">
+                                                  <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor"
+                                                       viewBox="0 0 24 24">
+                                                       <path stroke-linecap="round" stroke-linejoin="round"
+                                                            stroke-width="2"
+                                                            d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15">
+                                                       </path>
+                                                  </svg>
+                                                  Restaurar
+                                             </button>
+                                        </div>
+                                   </td>
+                              </tr>
+
+                              <!-- Loading State -->
+                              <tr *ngIf="isLoading">
+                                   <td colspan="5" class="px-6 py-8 text-center text-gray-500">
+                                        <div class="flex flex-col items-center justify-center">
+                                             <div
+                                                  class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mb-3">
+                                             </div>
+                                             <p class="text-lg font-medium">Cargando calles...</p>
+                                        </div>
+                                   </td>
+                              </tr>
+
+                              <!-- Empty State -->
+                              <tr *ngIf="!isLoading && paginatedStreets.length === 0">
+                                   <td colspan="5" class="px-6 py-8 text-center text-gray-500">
+                                        <div class="flex flex-col items-center justify-center">
+                                             <svg class="w-12 h-12 text-gray-300 mb-3" fill="none" stroke="currentColor"
+                                                  viewBox="0 0 24 24">
+                                                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                       d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-1.447-.894L15 9m0 8V9m0 0L9 7">
+                                                  </path>
+                                             </svg>
+                                             <p class="text-lg font-medium">No se encontraron calles</p>
+                                             <p class="text-sm mt-1">Cree una nueva calle para comenzar</p>
+                                        </div>
+                                   </td>
+                              </tr>
+                         </tbody>
+                    </table>
+               </div>
+          </div>
+
+          <!-- Parameters Tab -->
+          <div *ngIf="activeTab === 'parameters'">
+               <div class="overflow-x-auto">
+                    <table class="min-w-full table-auto">
+                         <thead class="bg-gradient-to-r from-gray-50 to-gray-100">
+                              <tr>
+                                   <th
+                                        class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                        Nombre</th>
+                                   <th
+                                        class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                        Valor</th>
+                                   <th
+                                        class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                        Código</th>
+                                   <th
+                                        class="px-6 py-4 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                        Estado</th>
+                                   <th
+                                        class="px-6 py-4 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                        Acciones</th>
+                              </tr>
+                         </thead>
+                         <tbody class="bg-white divide-y divide-gray-100">
+                              <tr *ngFor="let parameter of paginatedParameters; trackBy: trackById"
+                                   class="hover:bg-gray-50">
+                                   <td class="px-6 py-4">
+                                        <div class="text-sm font-medium text-gray-900">{{ parameter.parameterName }}
+                                        </div>
+                                        <div class="text-xs text-gray-500">{{ parameter.parameterDescription }}</div>
+                                   </td>
+                                   <td class="px-6 py-4">
+                                        <div class="text-sm text-gray-900 font-mono">{{ parameter.parameterValue }}
+                                        </div>
+                                   </td>
+                                   <td class="px-6 py-4 whitespace-nowrap">
+                                        <span
+                                             class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                                             {{ parameter.parameterCode || 'N/A' }}
+                                        </span>
+                                   </td>
+                                   <td class="px-6 py-4 whitespace-nowrap text-center">
+                                        <span [class]="getStatusBadgeClass(parameter.status)">
+                                             {{ getStatusLabel(parameter.status) }}
+                                        </span>
+                                   </td>
+                                   <td class="px-6 py-4 whitespace-nowrap text-center">
+                                        <div class="flex items-center justify-center space-x-3">
+                                             <button (click)="editParameter(parameter)"
+                                                  class="inline-flex items-center px-4 py-2 text-sm font-medium text-blue-600 bg-blue-50 border border-blue-200 rounded-lg hover:bg-blue-100 hover:border-blue-300 transition-all duration-150">
+                                                  <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor"
+                                                       viewBox="0 0 24 24">
+                                                       <path stroke-linecap="round" stroke-linejoin="round"
+                                                            stroke-width="2"
+                                                            d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z">
+                                                       </path>
+                                                  </svg>
+                                                  Editar
+                                             </button>
+                                             <!-- Botón Eliminar o Restaurar según el estado -->
+                                             <button *ngIf="parameter.status === 'ACTIVE'"
+                                                  (click)="deleteParameter(parameter)"
+                                                  class="inline-flex items-center px-4 py-2 text-sm font-medium text-red-600 bg-red-50 border border-red-200 rounded-lg hover:bg-red-100 hover:border-red-300 transition-all duration-150">
+                                                  <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor"
+                                                       viewBox="0 0 24 24">
+                                                       <path stroke-linecap="round" stroke-linejoin="round"
+                                                            stroke-width="2"
+                                                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16">
+                                                       </path>
+                                                  </svg>
+                                                  Eliminar
+                                             </button>
+                                             <button *ngIf="parameter.status === 'INACTIVE'"
+                                                  (click)="restoreParameter(parameter)"
+                                                  class="inline-flex items-center px-4 py-2 text-sm font-medium text-green-600 bg-green-50 border border-green-200 rounded-lg hover:bg-green-100 hover:border-green-300 transition-all duration-150">
+                                                  <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor"
+                                                       viewBox="0 0 24 24">
+                                                       <path stroke-linecap="round" stroke-linejoin="round"
+                                                            stroke-width="2"
+                                                            d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15">
+                                                       </path>
+                                                  </svg>
+                                                  Restaurar
+                                             </button>
+                                        </div>
+                                   </td>
+                              </tr>
+
+                              <!-- Loading State -->
+                              <tr *ngIf="isLoading">
+                                   <td colspan="6" class="px-6 py-8 text-center text-gray-500">
+                                        <div class="flex flex-col items-center justify-center">
+                                             <div
+                                                  class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mb-3">
+                                             </div>
+                                             <p class="text-lg font-medium">Cargando parámetros...</p>
+                                        </div>
+                                   </td>
+                              </tr>
+
+                              <!-- Empty State -->
+                              <tr *ngIf="!isLoading && paginatedParameters.length === 0">
+                                   <td colspan="6" class="px-6 py-8 text-center text-gray-500">
+                                        <div class="flex flex-col items-center justify-center">
+                                             <svg class="w-12 h-12 text-gray-300 mb-3" fill="none" stroke="currentColor"
+                                                  viewBox="0 0 24 24">
+                                                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                       d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z M15 12a3 3 0 11-6 0 3 3 0 016 0z">
+                                                  </path>
+                                             </svg>
+                                             <p class="text-lg font-medium">No se encontraron parámetros</p>
+                                             <p class="text-sm mt-1">Cree un nuevo parámetro para comenzar</p>
+                                        </div>
+                                   </td>
+                              </tr>
+                         </tbody>
+                    </table>
+               </div>
+          </div>
+
+          <!-- Tarifas Tab -->
+          <div *ngIf="activeTab==='tarifas' ">
+               <div class="overflow-x-auto">
+                    <table class="min-w-full table-auto">
+                         <thead class="bg-gradient-to-r from-gray-50 to-gray-100">
+                              <tr>
+                                   <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase
+                                        tracking-wider">Código</th>
+                                   <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase
+                                        tracking-wider">Nombre</th>
+                                   <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase
+                                        tracking-wider">Valor</th>
+                                   <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase
+                                        tracking-wider">Zona</th>
+                                   <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase
+                                        tracking-wider">Vigencia</th>
+                                   <th class="px-6 py-4 text-center text-xs font-semibold text-gray-600 uppercase
+                                        tracking-wider">Estado</th>
+                                   <th class="px-6 py-4 text-center text-xs font-semibold text-gray-600 uppercase
+                                        tracking-wider">Acciones</th>
+                              </tr>
+                         </thead>
+                         <tbody class="bg-white divide-y divide-gray-100">
+                              <tr *ngFor="let tarifa of paginatedTarifas; trackBy: trackById" class="hover:bg-gray-50">
+                                   <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs
+                                             font-medium bg-gray-100 text-gray-800">{{ tarifa.fareCode || 'N/A'
+                                             }}</span>
+                                   </td>
+                                   <td class="px-6 py-4">
+                                        <div class="text-sm font-medium text-gray-900">{{ tarifa.fareName }}</div>
+                                        <div class="text-xs text-gray-500">{{ tarifa.fareDescription }}</div>
+                                   </td>
+                                   <td class="px-6 py-4">
+                                        <div class="text-sm text-gray-900 font-mono">S/ {{ tarifa.fareAmount }}</div>
+                                   </td>
+                                   <td class="px-6 py-4">
+                                        <div class="text-sm text-gray-700">{{ getZoneName(tarifa.zoneId) }}</div>
+                                   </td>
+                                   <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+                                        {{ tarifa.createdAt | date:'d MMM y' }}
+                                   </td>
+                                   <td class="px-6 py-4 whitespace-nowrap text-center">
+                                        <span [class]="getStatusBadgeClass(tarifa.status)">{{
+                                             getStatusLabel(tarifa.status) }}</span>
+                                   </td>
+                                   <td class="px-6 py-4 whitespace-nowrap text-center">
+                                        <div class="flex items-center justify-center space-x-3">
+                                             <button (click)="editTarifa(tarifa)" class="inline-flex items-center
+                                                  px-4 py-2 text-sm font-medium text-blue-600 bg-blue-50 border
+                                                  border-blue-200 rounded-lg hover:bg-blue-100 hover:border-blue-300
+                                                  transition-all duration-150">
+                                                  <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor"
+                                                       viewBox="0 0 24 24">
+                                                       <path stroke-linecap="round" stroke-linejoin="round"
+                                                            stroke-width="2" d="M15.232 5.232l3.536
+                                                            3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5
+                                                            21.036H3v-3.572L16.732 3.732z"></path>
+                                                  </svg>
+                                                  Editar
+                                             </button>
+                                             <button (click)="viewFareHistory(tarifa)"
+                                                  class="inline-flex items-center px-4 py-2 text-sm font-medium text-purple-600 bg-purple-50 border border-purple-200 rounded-lg hover:bg-purple-100 hover:border-purple-300 transition-all duration-150">
+                                                  <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor"
+                                                       viewBox="0 0 24 24">
+                                                       <path stroke-linecap="round" stroke-linejoin="round"
+                                                            stroke-width="2"
+                                                            d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                                  </svg>
+                                                  Historial
+                                             </button>
+                                             <button *ngIf="tarifa.status==='ACTIVE' " (click)="deleteTarifa(tarifa)"
+                                                  class="inline-flex items-center px-4
+                                                  py-2 text-sm font-medium text-red-600 bg-red-50 border border-red-200
+                                                  rounded-lg hover:bg-red-100 hover:border-red-300 transition-all
+                                                  duration-150">
+                                                  <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor"
+                                                       viewBox="0 0 24 24">
+                                                       <path stroke-linecap="round" stroke-linejoin="round"
+                                                            stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138
+                                                            21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0
+                                                            00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                                  </svg>
+                                                  Eliminar
+                                             </button>
+                                             <button *ngIf="tarifa.status==='INACTIVE' " (click)="restoreTarifa(tarifa)"
+                                                  class="inline-flex items-center
+                                                  px-4 py-2 text-sm font-medium text-green-600 bg-green-50 border
+                                                  border-green-200 rounded-lg hover:bg-green-100 hover:border-green-300
+                                                  transition-all duration-150">
+                                                  <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor"
+                                                       viewBox="0 0 24 24">
+                                                       <path stroke-linecap="round" stroke-linejoin="round"
+                                                            stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0
+                                                            004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0
+                                                            01-15.357-2m15.357 2H15"></path>
+                                                  </svg>
+                                                  Restaurar
+                                             </button>
+                                        </div>
+                                   </td>
+                              </tr>
+                              <tr *ngIf="isLoading">
+                                   <td colspan="7" class="px-6 py-8 text-center text-gray-500">
+                                        <div class="flex flex-col items-center justify-center">
+                                             <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600
+                                                  mb-3"></div>
+                                             <p class="text-lg font-medium">Cargando tarifas...</p>
+                                        </div>
+                                   </td>
+                              </tr>
+                              <tr *ngIf="!isLoading && paginatedTarifas.length===0">
+                                   <td colspan="7" class="px-6 py-8 text-center text-gray-500">
+                                        <div class="flex flex-col items-center justify-center">
+                                             <svg class="w-12 h-12 text-gray-300 mb-3" fill="none" stroke="currentColor"
+                                                  viewBox="0 0 24 24">
+                                                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                       d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3
+                                                       .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0
+                                                       0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118
+                                                       0z"></path>
+                                             </svg>
+                                             <p class="text-lg font-medium">No se encontraron tarifas</p>
+                                             <p class="text-sm mt-1">Cree una nueva tarifa para comenzar</p>
+                                        </div>
+                                   </td>
+                              </tr>
+                         </tbody>
+                    </table>
+               </div>
+          </div>
+     </div>
+
+     <!-- Pagination -->
+     <div class="flex flex-col sm:flex-row justify-between items-center mt-6 space-y-4 sm:space-y-0">
+          <div class="text-sm text-gray-600">
+               Mostrando
+               <span class="font-medium">{{ ((currentPage - 1) * pageSize) + 1 }}</span> a
+               <span class="font-medium">{{ Math.min(currentPage * pageSize,
+                    activeTab === 'zones' ? filteredZones.length :
+                    activeTab === 'streets' ? filteredStreets.length :
+                    filteredParameters.length) }}</span> de
+               <span class="font-medium">{{
+                    activeTab === 'zones' ? filteredZones.length :
+                    activeTab === 'streets' ? filteredStreets.length :
+                    filteredParameters.length
+                    }}</span> registros
+          </div>
+
+          <div class="flex items-center space-x-2">
+               <button (click)="previousPage()" [disabled]="currentPage === 1"
+                    class="px-3 py-2 rounded-lg border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors">
+                    Anterior
+               </button>
+
+               <div class="flex space-x-1">
+                    <button *ngFor="let page of getPages()" (click)="goToPage(page)"
+                         [ngClass]="{'bg-blue-600 text-white': currentPage === page, 'bg-white text-gray-700 hover:bg-gray-50': currentPage !== page}"
+                         class="px-3 py-2 rounded-lg border border-gray-300 text-sm font-medium transition-colors">
+                         {{ page }}
+                    </button>
+               </div>
+
+               <button (click)="nextPage()" [disabled]="currentPage === totalPages"
+                    class="px-3 py-2 rounded-lg border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors">
+                    Siguiente
+               </button>
+          </div>
+     </div>
+</div>
+
+<!-- Zone Modal -->
+<div *ngIf="showZoneModal" class="fixed inset-0 z-[8000] flex items-center justify-end"
+     (keydown.escape)="closeZoneModal()" tabindex="0">
+
+     <!-- Modal Panel -->
+     <div class="w-full max-w-2xl h-full bg-white shadow-2xl transform transition-all duration-300 ease-out flex flex-col"
+          [class.translate-x-full]="!showZoneModal" [class.translate-x-0]="showZoneModal"
+          (click)="$event.stopPropagation()">
+
+          <!-- Header -->
+          <div class="flex items-center justify-between px-6 py-4 bg-slate-900 text-white flex-shrink-0">
+               <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 rounded-lg flex items-center justify-center bg-slate-700 text-white">
+                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                   d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z M15 11a3 3 0 11-6 0 3 3 0 016 0z">
+                              </path>
+                         </svg>
+                    </div>
+                    <div>
+                         <h2 class="text-lg font-semibold">{{ isEditMode ? 'Editar Zona' : 'Nueva Zona' }}</h2>
+                         <p class="text-sm text-slate-400">{{ isEditMode ? 'Modifique los datos de la zona' : 'Complete
+                              la información de la nueva zona' }}</p>
+                    </div>
+               </div>
+               <button (click)="closeZoneModal()"
+                    class="p-2 hover:bg-slate-800 rounded-lg transition-colors text-slate-400 hover:text-white">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
+                         </path>
+                    </svg>
+               </button>
+          </div>
+
+          <!-- Content -->
+          <div class="flex-1 overflow-y-auto min-h-0 p-6">
+               <div *ngIf="editingZone" class="space-y-6">
+                    <!-- Zone Name -->
+                    <div>
+                         <label class="block text-sm font-medium text-gray-700 mb-2">Nombre de la Zona *</label>
+                         <input type="text" [(ngModel)]="editingZone.zoneName"
+                              (input)="validateZoneField('zoneName', editingZone.zoneName)"
+                              placeholder="Ej: Zona Centro, Sector Norte"
+                              class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                              [class.border-red-300]="editingZone.validationErrors?.zoneName"
+                              [class.border-green-300]="editingZone.zoneName && editingZone.zoneName.trim().length >= 2 && !editingZone.validationErrors?.zoneName">
+                         <div class="text-xs text-gray-500 mt-1">
+                              2-50 caracteres. Solo letras, números, espacios, guiones y puntos.
+                         </div>
+                         <div *ngIf="editingZone.validationErrors?.zoneName" class="text-red-500 text-sm mt-1">
+                              {{ editingZone.validationErrors.zoneName }}
+                         </div>
+                    </div>
+
+                    <!-- Description -->
+                    <div>
+                         <label class="block text-sm font-medium text-gray-700 mb-2">Descripción</label>
+                         <textarea [(ngModel)]="editingZone.description"
+                              (input)="validateZoneField('description', editingZone.description)"
+                              placeholder="Descripción opcional de la zona (máximo 200 caracteres)" rows="4"
+                              class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 resize-none"
+                              [class.border-red-300]="editingZone.validationErrors?.description"></textarea>
+                         <div class="flex justify-between text-xs text-gray-500 mt-1">
+                              <span>Opcional. Describe las características de la zona.</span>
+                              <span>{{ (editingZone.description || '').length }}/200</span>
+                         </div>
+                         <div *ngIf="editingZone.validationErrors?.description" class="text-red-500 text-sm mt-1">
+                              {{ editingZone.validationErrors.description }}
+                         </div>
+                    </div>
+
+                    <!-- Status -->
+                    <div>
+                         <label class="block text-sm font-medium text-gray-700 mb-2">Estado</label>
+                         <select [(ngModel)]="editingZone.status"
+                              class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200">
+                              <option value="ACTIVE">Activo</option>
+                              <option value="INACTIVE">Inactivo</option>
+                         </select>
+                    </div>
+               </div>
+          </div>
+
+          <!-- Footer -->
+          <div
+               class="flex items-center justify-end space-x-3 px-6 py-4 bg-gray-50 border-t border-gray-200 flex-shrink-0">
+               <button (click)="closeZoneModal()"
+                    class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+                    Cancelar
+               </button>
+               <button (click)="saveZone()" [disabled]="savingZone"
+                    class="px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors">
+                    <span *ngIf="!savingZone">{{ isEditMode ? 'Actualizar' : 'Crear' }} Zona</span>
+                    <span *ngIf="savingZone" class="flex items-center">
+                         <svg class="w-4 h-4 mr-2 animate-spin" fill="none" viewBox="0 0 24 24">
+                              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4">
+                              </circle>
+                              <path class="opacity-75" fill="currentColor"
+                                   d="m4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                              </path>
+                         </svg>
+                         Guardando...
+                    </span>
+               </button>
+          </div>
+     </div>
+</div>
+
+<!-- Street Modal -->
+<div *ngIf="showStreetModal" class="fixed inset-0 z-[8000] flex items-center justify-end"
+     (keydown.escape)="closeStreetModal()" tabindex="0">
+
+     <!-- Modal Panel -->
+     <div class="w-full max-w-2xl h-full bg-white shadow-2xl transform transition-all duration-300 ease-out flex flex-col"
+          [class.translate-x-full]="!showStreetModal" [class.translate-x-0]="showStreetModal"
+          (click)="$event.stopPropagation()">
+
+          <!-- Header -->
+          <div class="flex items-center justify-between px-6 py-4 bg-slate-900 text-white flex-shrink-0">
+               <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 rounded-lg flex items-center justify-center bg-slate-700 text-white">
+                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                   d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-1.447-.894L15 9m0 8V9m0 0L9 7">
+                              </path>
+                         </svg>
+                    </div>
+                    <div>
+                         <h2 class="text-lg font-semibold">{{ isEditMode ? 'Editar Calle' : 'Nueva Calle' }}</h2>
+                         <p class="text-sm text-slate-400">{{ isEditMode ? 'Modifique los datos de la calle' : 'Complete
+                              la información de la nueva calle' }}</p>
+                    </div>
+               </div>
+               <button (click)="closeStreetModal()"
+                    class="p-2 hover:bg-slate-800 rounded-lg transition-colors text-slate-400 hover:text-white">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
+                         </path>
+                    </svg>
+               </button>
+          </div>
+
+          <!-- Content -->
+          <div class="flex-1 overflow-y-auto min-h-0 p-6">
+               <div *ngIf="editingStreet" class="space-y-6">
+                    <!-- Street Name -->
+                    <div>
+                         <label class="block text-sm font-medium text-gray-700 mb-2">Nombre de la Calle *</label>
+                         <input type="text" [(ngModel)]="editingStreet.streetName"
+                              (input)="validateStreetField('streetName', editingStreet.streetName)"
+                              placeholder="Ej: Los Rosales, Principal, 28 de Julio"
+                              class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                              [class.border-red-300]="editingStreet.validationErrors?.streetName"
+                              [class.border-green-300]="editingStreet.streetName && editingStreet.streetName.trim().length >= 2 && !editingStreet.validationErrors?.streetName">
+                         <div class="text-xs text-gray-500 mt-1">
+                              2-100 caracteres. Solo letras, números, espacios, guiones y puntos.
+                         </div>
+                         <div *ngIf="editingStreet.validationErrors?.streetName" class="text-red-500 text-sm mt-1">
+                              {{ editingStreet.validationErrors.streetName }}
+                         </div>
+                    </div>
+
+                    <!-- Street Type -->
+                    <div>
+                         <label class="block text-sm font-medium text-gray-700 mb-2">Tipo de Calle *</label>
+                         <select [(ngModel)]="editingStreet.streetType"
+                              class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200">
+                              <option *ngFor="let type of streetTypes" [value]="type">{{ type }}</option>
+                         </select>
+                         <div class="text-xs text-gray-500 mt-1">
+                              Seleccione el tipo que mejor describe la vía.
+                         </div>
+                    </div>
+
+                    <!-- Zone -->
+                    <div>
+                         <label class="block text-sm font-medium text-gray-700 mb-2">Zona *</label>
+                         <select [(ngModel)]="editingStreet.zoneId"
+                              (change)="validateStreetField('zoneId', editingStreet.zoneId)"
+                              class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                              [class.border-red-300]="editingStreet.validationErrors?.zoneId"
+                              [class.border-green-300]="editingStreet.zoneId && !editingStreet.validationErrors?.zoneId">
+                              <option value="">Seleccionar zona</option>
+                              <option *ngFor="let zone of editingStreet.availableZones" [value]="zone.zoneId">{{
+                                   zone.zoneName }}</option>
+                         </select>
+                         <div class="text-xs text-gray-500 mt-1">
+                              La calle debe pertenecer a una zona existente.
+                         </div>
+                         <div *ngIf="editingStreet.validationErrors?.zoneId" class="text-red-500 text-sm mt-1">
+                              {{ editingStreet.validationErrors.zoneId }}
+                         </div>
+                    </div>
+
+                    <!-- Status -->
+                    <div>
+                         <label class="block text-sm font-medium text-gray-700 mb-2">Estado</label>
+                         <select [(ngModel)]="editingStreet.status"
+                              class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200">
+                              <option value="ACTIVE">Activo</option>
+                              <option value="INACTIVE">Inactivo</option>
+                         </select>
+                    </div>
+               </div>
+          </div>
+
+          <!-- Footer -->
+          <div
+               class="flex items-center justify-end space-x-3 px-6 py-4 bg-gray-50 border-t border-gray-200 flex-shrink-0">
+               <button (click)="closeStreetModal()"
+                    class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+                    Cancelar
+               </button>
+               <button (click)="saveStreet()" [disabled]="savingStreet"
+                    class="px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors">
+                    <span *ngIf="!savingStreet">{{ isEditMode ? 'Actualizar' : 'Crear' }} Calle</span>
+                    <span *ngIf="savingStreet" class="flex items-center">
+                         <svg class="w-4 h-4 mr-2 animate-spin" fill="none" viewBox="0 0 24 24">
+                              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4">
+                              </circle>
+                              <path class="opacity-75" fill="currentColor"
+                                   d="m4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                              </path>
+                         </svg>
+                         Guardando...
+                    </span>
+               </button>
+          </div>
+     </div>
+</div>""
+<!-- Parameter Modal -->
+<div *ngIf="showParameterModal" class="fixed inset-0 z-[8000] flex items-center justify-end"
+     (keydown.escape)="closeParameterModal()" tabindex="0">
+
+     <!-- Modal Panel -->
+     <div class="w-full max-w-2xl h-full bg-white shadow-2xl transform transition-all duration-300 ease-out flex flex-col"
+          [class.translate-x-full]="!showParameterModal" [class.translate-x-0]="showParameterModal"
+          (click)="$event.stopPropagation()">
+
+          <!-- Header -->
+          <div class="flex items-center justify-between px-6 py-4 bg-slate-900 text-white flex-shrink-0">
+               <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 rounded-lg flex items-center justify-center bg-slate-700 text-white">
+                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                   d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z M15 12a3 3 0 11-6 0 3 3 0 016 0z">
+                              </path>
+                         </svg>
+                    </div>
+                    <div>
+                         <h2 class="text-lg font-semibold">{{ isEditMode ? 'Editar Parámetro' : 'Nuevo Parámetro' }}
+                         </h2>
+                         <p class="text-sm text-slate-400">{{ isEditMode ? 'Modifique los datos del parámetro' :
+                              'Complete la información del nuevo parámetro' }}</p>
+                    </div>
+               </div>
+               <button (click)="closeParameterModal()"
+                    class="p-2 hover:bg-slate-800 rounded-lg transition-colors text-slate-400 hover:text-white">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
+                         </path>
+                    </svg>
+               </button>
+          </div>
+
+          <!-- Content -->
+          <div class="flex-1 overflow-y-auto min-h-0 p-6">
+               <div *ngIf="editingParameter" class="space-y-6">
+                    <!-- Parameter Name -->
+                    <div>
+                         <label class="block text-sm font-medium text-gray-700 mb-2">Nombre del Parámetro *</label>
+                         <input type="text" [(ngModel)]="editingParameter.parameterName"
+                              (input)="validateParameterField('parameterName', editingParameter.parameterName)"
+                              placeholder="Ej: Nivel máximo de cloro, Email de notificaciones"
+                              class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                              [class.border-red-300]="editingParameter.validationErrors?.parameterName"
+                              [class.border-green-300]="editingParameter.parameterName && editingParameter.parameterName.trim().length >= 3 && !editingParameter.validationErrors?.parameterName">
+                         <div class="text-xs text-gray-500 mt-1">
+                              Mínimo 3 caracteres. Nombre descriptivo del parámetro.
+                         </div>
+                         <div *ngIf="editingParameter.validationErrors?.parameterName"
+                              class="text-red-500 text-sm mt-1">
+                              {{ editingParameter.validationErrors.parameterName }}
+                         </div>
+                    </div>
+
+                    <!-- Parameter Value -->
+                    <div>
+                         <label class="block text-sm font-medium text-gray-700 mb-2">Valor del Parámetro *</label>
+                         <input type="text" [(ngModel)]="editingParameter.parameterValue"
+                              (input)="validateParameterField('parameterValue', editingParameter.parameterValue)"
+                              placeholder="Ej: 2.0, admin@jass.gob.pe, true"
+                              class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                              [class.border-red-300]="editingParameter.validationErrors?.parameterValue"
+                              [class.border-green-300]="editingParameter.parameterValue && editingParameter.parameterValue.trim() && !editingParameter.validationErrors?.parameterValue">
+                         <div class="text-xs text-gray-500 mt-1">
+                              Valor del parámetro (puede ser texto, número, email, etc.)
+                         </div>
+                         <div *ngIf="editingParameter.validationErrors?.parameterValue"
+                              class="text-red-500 text-sm mt-1">
+                              {{ editingParameter.validationErrors.parameterValue }}
+                         </div>
+                    </div>
+
+                    <!-- Description -->
+                    <div>
+                         <label class="block text-sm font-medium text-gray-700 mb-2">Descripción *</label>
+                         <textarea [(ngModel)]="editingParameter.parameterDescription"
+                              (input)="validateParameterField('parameterDescription', editingParameter.parameterDescription)"
+                              placeholder="Describe para qué sirve este parámetro y cómo se usa" rows="4"
+                              class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 resize-none"
+                              [class.border-red-300]="editingParameter.validationErrors?.parameterDescription"
+                              [class.border-green-300]="editingParameter.parameterDescription && editingParameter.parameterDescription.trim() && !editingParameter.validationErrors?.parameterDescription"></textarea>
+                         <div class="flex justify-between text-xs text-gray-500 mt-1">
+                              <span>Explica el propósito y uso del parámetro.</span>
+                              <span>{{ (editingParameter.parameterDescription || '').length }}/500</span>
+                         </div>
+                         <div *ngIf="editingParameter.validationErrors?.parameterDescription"
+                              class="text-red-500 text-sm mt-1">
+                              {{ editingParameter.validationErrors.parameterDescription }}
+                         </div>
+                    </div>
+               </div>
+          </div>
+
+          <!-- Footer -->
+          <div
+               class="flex items-center justify-end space-x-3 px-6 py-4 bg-gray-50 border-t border-gray-200 flex-shrink-0">
+               <button (click)="closeParameterModal()"
+                    class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+                    Cancelar
+               </button>
+               <button (click)="saveParameter()" [disabled]="savingParameter"
+                    class="px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors">
+                    <span *ngIf="!savingParameter">{{ isEditMode ? 'Actualizar' : 'Crear' }} Parámetro</span>
+                    <span *ngIf="savingParameter" class="flex items-center">
+                         <svg class="w-4 h-4 mr-2 animate-spin" fill="none" viewBox="0 0 24 24">
+                              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4">
+                              </circle>
+                              <path class="opacity-75" fill="currentColor"
+                                   d="m4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                              </path>
+                         </svg>
+                         Guardando...
+                    </span>
+               </button>
+          </div>
+     </div>
+</div>
+
+<!-- Tarifa Modal -->
+<div *ngIf="showTarifaModal" class="fixed inset-0 z-[8000] flex items-center justify-end"
+     (keydown.escape)="closeTarifaModal()" tabindex="0">
+     <div class="w-full max-w-2xl h-full bg-white shadow-2xl transform transition-all duration-300 ease-out flex flex-col"
+          [class.translate-x-full]="!showTarifaModal" [class.translate-x-0]="showTarifaModal"
+          (click)="$event.stopPropagation()">
+          <div class="flex items-center justify-between px-6 py-4 bg-slate-900 text-white flex-shrink-0">
+               <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 rounded-lg flex items-center justify-center bg-slate-700 text-white">
+                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                   d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z">
+                              </path>
+                         </svg>
+                    </div>
+                    <div>
+                         <h2 class="text-lg font-semibold">{{ isEditMode ? 'Editar Tarifa' : 'Nueva Tarifa' }}</h2>
+                         <p class="text-sm text-slate-400">{{ isEditMode ? 'Modifique los datos de la tarifa' :
+                              'Complete la información de la nueva tarifa' }}</p>
+                    </div>
+               </div>
+               <button (click)="closeTarifaModal()"
+                    class="p-2 hover:bg-slate-800 rounded-lg transition-colors text-slate-400 hover:text-white">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
+                         </path>
+                    </svg>
+               </button>
+          </div>
+          <div class="flex-1 overflow-y-auto min-h-0 p-6">
+               <div *ngIf="editingTarifa" class="space-y-6">
+                    <div>
+                         <label class="block text-sm font-medium text-gray-700 mb-2">Nombre de la Tarifa *</label>
+                         <input type="text" [(ngModel)]="editingTarifa.fareName"
+                              (input)="validateTarifaField('fareName', editingTarifa.fareName)"
+                              placeholder="Ej: Tarifa Residencial, Tarifa Comercial"
+                              class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                              [class.border-red-300]="editingTarifa.validationErrors?.fareName"
+                              [class.border-green-300]="editingTarifa.fareName && editingTarifa.fareName.trim().length >= 3 && !editingTarifa.validationErrors?.fareName">
+                         <div class="text-xs text-gray-500 mt-1">Mínimo 3 caracteres. Nombre descriptivo de la tarifa.
+                         </div>
+                         <div *ngIf="editingTarifa.validationErrors?.fareName" class="text-red-500 text-sm mt-1">{{
+                              editingTarifa.validationErrors.fareName }}</div>
+                    </div>
+                    <div>
+                         <label class="block text-sm font-medium text-gray-700 mb-2">Valor de la Tarifa (S/) *</label>
+                         <input type="number" step="0.01" [(ngModel)]="editingTarifa.fareAmount"
+                              (input)="validateTarifaField('fareAmount', editingTarifa.fareAmount)"
+                              placeholder="Ej: 15.50"
+                              class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                              [class.border-red-300]="editingTarifa.validationErrors?.fareAmount"
+                              [class.border-green-300]="editingTarifa.fareAmount && !editingTarifa.validationErrors?.fareAmount">
+                         <div class="text-xs text-gray-500 mt-1">Valor numérico de la tarifa en soles.</div>
+                         <div *ngIf="editingTarifa.validationErrors?.fareAmount" class="text-red-500 text-sm mt-1">{{
+                              editingTarifa.validationErrors.fareAmount }}</div>
+                    </div>
+                    <div>
+                         <label class="block text-sm font-medium text-gray-700 mb-2">Zona *</label>
+                         <select [(ngModel)]="editingTarifa.zoneId"
+                              (change)="validateTarifaField('zoneId', editingTarifa.zoneId)"
+                              class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                              [class.border-red-300]="editingTarifa.validationErrors?.zoneId"
+                              [class.border-green-300]="editingTarifa.zoneId && !editingTarifa.validationErrors?.zoneId">
+                              <option value="">Seleccionar zona</option>
+                              <option *ngFor="let zone of zones" [value]="zone.zoneId">{{ zone.zoneName }}</option>
+                         </select>
+                         <div class="text-xs text-gray-500 mt-1">La tarifa debe estar asociada a una zona.</div>
+                         <div *ngIf="editingTarifa.validationErrors?.zoneId" class="text-red-500 text-sm mt-1">{{
+                              editingTarifa.validationErrors.zoneId }}</div>
+                    </div>
+                    <div>
+                         <label class="block text-sm font-medium text-gray-700 mb-2">Descripción *</label>
+                         <textarea [(ngModel)]="editingTarifa.fareDescription"
+                              (input)="validateTarifaField('fareDescription', editingTarifa.fareDescription)"
+                              placeholder="Describe para qué sirve esta tarifa y cómo se aplica" rows="4"
+                              class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 resize-none"
+                              [class.border-red-300]="editingTarifa.validationErrors?.fareDescription"
+                              [class.border-green-300]="editingTarifa.fareDescription && editingTarifa.fareDescription.trim() && !editingTarifa.validationErrors?.fareDescription"></textarea>
+                         <div class="flex justify-between text-xs text-gray-500 mt-1">
+                              <span>Explica el propósito y aplicación de la tarifa.</span>
+                              <span>{{ (editingTarifa.fareDescription || '').length }}/500</span>
+                         </div>
+                         <div *ngIf="editingTarifa.validationErrors?.fareDescription" class="text-red-500 text-sm mt-1">
+                              {{ editingTarifa.validationErrors.fareDescription }}
+                         </div>
+                    </div>
+               </div>
+          </div>
+          <div
+               class="flex items-center justify-end space-x-3 px-6 py-4 bg-gray-50 border-t border-gray-200 flex-shrink-0">
+               <button (click)="closeTarifaModal()"
+                    class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">Cancelar</button>
+               <button (click)="saveTarifa()" [disabled]="savingTarifa"
+                    class="px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors">
+                    <span *ngIf="!savingTarifa">{{ isEditMode ? 'Actualizar' : 'Crear' }} Tarifa</span>
+                    <span *ngIf="savingTarifa" class="flex items-center">
+                         <svg class="w-4 h-4 mr-2 animate-spin" fill="none" viewBox="0 0 24 24">
+                              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4">
+                              </circle>
+                              <path class="opacity-75" fill="currentColor"
+                                   d="m4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                              </path>
+                         </svg>
+                         Guardando...
+                    </span>
+               </button>
+          </div>
+     </div>
+</div>
+
+
+<!-- Fare History Modal -->
+<div *ngIf="showFareHistoryModal" class="fixed inset-0 z-[8000] flex items-center justify-end"
+     (keydown.escape)="closeFareHistoryModal()" tabindex="0">
+     <div class="w-full max-w-2xl h-full bg-white shadow-2xl transform transition-all duration-300 ease-out flex flex-col"
+          [class.translate-x-full]="!showFareHistoryModal" [class.translate-x-0]="showFareHistoryModal"
+          (click)="$event.stopPropagation()">
+
+          <!-- Header -->
+          <div class="flex items-center justify-between px-6 py-4 bg-slate-900 text-white flex-shrink-0">
+               <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 rounded-lg flex items-center justify-center bg-slate-700 text-white">
+                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                   d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                         </svg>
+                    </div>
+                    <div>
+                         <h2 class="text-lg font-semibold">Historial de Tarifas</h2>
+                         <p class="text-sm text-slate-400">{{ getZoneName(selectedZoneForHistory) }}</p>
+                    </div>
+               </div>
+               <button (click)="closeFareHistoryModal()"
+                    class="p-2 hover:bg-slate-800 rounded-lg transition-colors text-slate-400 hover:text-white">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
+                         </path>
+                    </svg>
+               </button>
+          </div>
+
+          <!-- Content -->
+          <div class="flex-1 overflow-y-auto min-h-0 p-6">
+               <!-- Loading State -->
+               <div *ngIf="loadingHistory" class="flex flex-col items-center justify-center py-12">
+                    <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mb-3"></div>
+                    <p class="text-lg font-medium text-gray-700">Cargando historial...</p>
+               </div>
+
+               <!-- History List -->
+               <div *ngIf="!loadingHistory && fareHistory.length > 0" class="space-y-4">
+                    <div *ngFor="let fare of fareHistory; let i = index"
+                         class="border rounded-lg p-4 hover:shadow-md transition-shadow bg-white"
+                         [class.border-green-500]="fare.status === 'ACTIVE'"
+                         [class.border-l-4]="fare.status === 'ACTIVE'"
+                         [class.border-gray-300]="fare.status === 'INACTIVE'">
+
+                         <div class="flex items-start justify-between">
+                              <div class="flex-1">
+                                   <div class="flex items-center space-x-3 mb-2">
+                                        <h3 class="text-lg font-semibold text-gray-900">{{ fare.fareName }}</h3>
+                                        <span [class]="getStatusBadgeClass(fare.status)">
+                                             {{ getStatusLabel(fare.status) }}
+                                        </span>
+                                   </div>
+
+                                   <p class="text-sm text-gray-600 mb-3">{{ fare.fareDescription }}</p>
+
+                                   <div class="grid grid-cols-2 gap-4 text-sm">
+                                        <div>
+                                             <span class="text-gray-500">Monto:</span>
+                                             <span class="ml-2 font-semibold text-gray-900">S/ {{ fare.fareAmount
+                                                  }}</span>
+                                        </div>
+                                        <div>
+                                             <span class="text-gray-500">Código:</span>
+                                             <span class="ml-2 font-mono text-gray-900">{{ fare.fareCode }}</span>
+                                        </div>
+                                        <div class="col-span-2">
+                                             <span class="text-gray-500">Período de Vigencia:</span>
+                                             <span class="ml-2 font-medium text-gray-900">{{ getValidityPeriod(fare)
+                                                  }}</span>
+                                        </div>
+                                   </div>
+                              </div>
+                         </div>
+                    </div>
+               </div>
+
+               <!-- Empty State -->
+               <div *ngIf="!loadingHistory && fareHistory.length === 0"
+                    class="flex flex-col items-center justify-center py-12">
+                    <svg class="w-16 h-16 text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
+                         </path>
+                    </svg>
+                    <p class="text-lg font-medium text-gray-700">No hay historial disponible</p>
+                    <p class="text-sm text-gray-500 mt-1">Esta es la primera tarifa para esta zona</p>
+               </div>
+          </div>
+
+          <!-- Footer -->
+          <div
+               class="flex items-center justify-end space-x-3 px-6 py-4 bg-gray-50 border-t border-gray-200 flex-shrink-0">
+               <button (click)="closeFareHistoryModal()"
+                    class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+                    Cerrar
+               </button>
+          </div>
+     </div>
+</div>
+
+<!-- Toast notifications component -->
+<app-toast></app-toast>

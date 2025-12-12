@@ -1,0 +1,79 @@
+<!-- Overlay del Modal -->
+<div *ngIf="isOpen"
+     class="fixed inset-0  bg-opacity-50 backdrop-blur-sm transition-all duration-300 z-50 flex items-center justify-center p-4">
+
+     <!-- Contenedor del Modal -->
+     <div
+          class="relative transform overflow-hidden rounded-xl bg-white text-left shadow-2xl transition-all duration-300 w-full max-w-lg animate-in slide-in-from-bottom-4 fade-in-0">
+
+          <!-- Header con Icono -->
+          <div class="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
+               <div class="sm:flex sm:items-start">
+
+                    <!-- Icono -->
+                    <div class="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full sm:mx-0 sm:h-10 sm:w-10"
+                         [class]="getIconClass()">
+                         <span class="text-2xl">{{getIcon()}}</span>
+                    </div>
+
+                    <!-- Contenido -->
+                    <div class="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left flex-1">
+                         <h3 class="text-base font-semibold leading-6 text-gray-900" id="modal-title">
+                              {{data.title}}
+                         </h3>
+                         <div class="mt-2">
+                              <p class="text-sm text-gray-500">
+                                   {{data.message}}
+                              </p>
+
+                              <!-- Información adicional del programa si está disponible -->
+                              <div *ngIf="data.programCode || data.routeName || data.programDate"
+                                   class="mt-3 p-4 bg-gray-50 rounded-lg border border-gray-200">
+                                   <div *ngIf="data.programCode" class="mb-2">
+                                        <p class="text-sm font-medium text-gray-600">
+                                             Código: <span class="font-semibold text-gray-900">{{data.programCode}}</span>
+                                        </p>
+                                   </div>
+                                   <div *ngIf="data.routeName" class="mb-2">
+                                        <p class="text-sm font-medium text-gray-600">
+                                             Ruta: <span class="font-semibold text-gray-900">{{data.routeName}}</span>
+                                        </p>
+                                   </div>
+                                   <div *ngIf="data.programDate" class="mb-2">
+                                        <p class="text-sm font-medium text-gray-600">
+                                             Fecha: <span class="font-semibold text-gray-900">{{data.programDate}}</span>
+                                        </p>
+                                   </div>
+                                   <div *ngIf="data.plannedStartTime && data.plannedEndTime" class="mb-2">
+                                        <p class="text-sm font-medium text-gray-600">
+                                             Horario: <span class="font-semibold text-gray-900">{{data.plannedStartTime}} - {{data.plannedEndTime}}</span>
+                                        </p>
+                                   </div>
+                                   <div *ngIf="data.status">
+                                        <p class="text-sm font-medium text-gray-600">
+                                             Estado: <span class="font-semibold text-gray-900">{{data.status}}</span>
+                                        </p>
+                                   </div>
+                              </div>
+                         </div>
+                    </div>
+               </div>
+          </div>
+
+          <!-- Footer con Botones -->
+          <div class="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
+               <!-- Botón Confirmar -->
+               <button type="button" (click)="onConfirm()"
+                    class="inline-flex w-full justify-center rounded-md px-3 py-2 text-sm font-semibold text-white shadow-sm sm:ml-3 sm:w-auto transition-colors duration-200"
+                    [class]="getConfirmButtonClass()">
+                    {{data.confirmText}}
+               </button>
+
+               <!-- Botón Cancelar -->
+               <button type="button" (click)="onCancel()"
+                    class="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto transition-colors duration-200">
+                    {{data.cancelText}}
+               </button>
+          </div>
+     </div>
+</div>

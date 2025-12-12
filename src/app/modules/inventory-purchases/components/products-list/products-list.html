@@ -1,0 +1,1251 @@
+<app-breadcrumb [items]="breadcrumbItems"></app-breadcrumb>
+
+<!-- Header de la página -->
+<div class="p-4">
+     <h1 class="text-3xl font-bold text-gray-900 mb-2">Lista de Productos</h1>
+     <p class="text-lg text-gray-600">Catálogo y gestión de productos en inventario</p>
+</div>
+
+
+<!-- Header con estadísticas -->
+<div class="p-6">
+     <!-- Stats Cards -->
+     <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+          <!-- Total Productos -->
+          <div class="bg-blue-50 rounded-xl p-6">
+               <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                         <div class="w-12 h-12 bg-blue-500 rounded-lg flex items-center justify-center">
+                              <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
+                              </svg>
+                         </div>
+                    </div>
+                    <div class="ml-4">
+                         <h3 class="text-2xl font-bold text-gray-900">{{ products.length }}</h3>
+                         <p class="text-blue-600 font-medium">Total Productos</p>
+                    </div>
+               </div>
+          </div>
+
+          <!-- Productos Activos -->
+          <div class="bg-green-50 rounded-xl p-6">
+               <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                         <div class="w-12 h-12 bg-green-500 rounded-lg flex items-center justify-center">
+                              <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                              </svg>
+                         </div>
+                    </div>
+                    <div class="ml-4">
+                         <h3 class="text-2xl font-bold text-gray-900">{{ activeProductsCount }}</h3>
+                         <p class="text-green-600 font-medium">Productos Activos</p>
+                    </div>
+               </div>
+          </div>
+
+          <!-- Stock Bajo -->
+          <div class="bg-red-50 rounded-xl p-6">
+               <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                         <div class="w-12 h-12 bg-red-500 rounded-lg flex items-center justify-center">
+                              <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.864-.833-2.634 0L4.168 16.5c-.77.833.192 2.5 1.732 2.5z">
+                                   </path>
+                              </svg>
+                         </div>
+                    </div>
+                    <div class="ml-4">
+                         <h3 class="text-2xl font-bold text-gray-900">{{ lowStockCount }}</h3>
+                         <p class="text-red-600 font-medium">Stock Bajo</p>
+                    </div>
+               </div>
+          </div>
+
+          <!-- Mostrando -->
+          <div class="bg-purple-50 rounded-xl p-6">
+               <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                         <div class="w-12 h-12 bg-purple-500 rounded-lg flex items-center justify-center">
+                              <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z">
+                                   </path>
+                              </svg>
+                         </div>
+                    </div>
+                    <div class="ml-4">
+                         <h3 class="text-2xl font-bold text-gray-900">{{ paginatedProducts.length }}</h3>
+                         <p class="text-purple-600 font-medium">Mostrando</p>
+                    </div>
+               </div>
+          </div>
+     </div>
+
+     <!-- Filtros y Búsqueda -->
+     <div class="flex flex-col md:flex-row gap-4 mb-6">
+          <!-- Búsqueda -->
+          <div class="flex-1">
+               <div class="relative">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                         <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                   d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                         </svg>
+                    </div>
+                    <input type="text" [(ngModel)]="filters.searchTerm" (input)="onSearchChange()"
+                         placeholder="Buscar productos..."
+                         class="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm">
+               </div>
+          </div>
+
+          <!-- Dropdown de Estado -->
+          <div class="relative">
+               <button type="button" (click)="toggleStatusDropdown()"
+                    class="inline-flex items-center justify-between w-48 px-4 py-2.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    <span>{{ getCurrentStatusLabel() }}</span>
+                    <svg class="w-4 h-4 ml-2 transform transition-transform" [class.rotate-180]="statusDropdownOpen"
+                         fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7">
+                         </path>
+                    </svg>
+               </button>
+
+               <!-- Dropdown Menu -->
+               <div *ngIf="statusDropdownOpen"
+                    class="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-lg z-10">
+                    <ul class="py-1">
+                         <li *ngFor="let option of statusOptions">
+                              <button type="button" (click)="onStatusFilterChange(option.value)"
+                                   class="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 flex items-center"
+                                   [class.bg-blue-50]="filters.status === option.value"
+                                   [class.text-blue-600]="filters.status === option.value">
+                                   <svg *ngIf="filters.status === option.value" class="w-4 h-4 mr-2 text-blue-600"
+                                        fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd"
+                                             d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                             clip-rule="evenodd"></path>
+                                   </svg>
+                                   {{ option.label }}
+                              </button>
+                         </li>
+                    </ul>
+               </div>
+          </div>
+
+          <!-- Botón Nuevo -->
+          <button (click)="createNewProduct()"
+               class="inline-flex items-center px-4 py-2.5 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors">
+               <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                         d="M12 6v6m0 0v6m0-6h6m-6 0H6">
+                    </path>
+               </svg>
+               Nuevo Producto
+          </button>
+
+          <!-- Botón Generar Reporte -->
+          <button (click)="generateProductReport()"
+               class="inline-flex items-center px-4 py-2.5 bg-green-600 text-white text-sm font-medium rounded-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-colors">
+               <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                         d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
+                    </path>
+               </svg>
+               Generar Reporte
+          </button>
+     </div>
+
+
+     <!-- Loading -->
+     <div *ngIf="loading" class="px-6">
+          <div class="bg-white rounded-lg shadow p-8 text-center">
+               <div class="inline-flex items-center px-4 py-2 font-semibold leading-6 text-sm text-blue-600">
+                    <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-blue-600" fill="none" viewBox="0 0 24 24">
+                         <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4">
+                         </circle>
+                         <path class="opacity-75" fill="currentColor"
+                              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                         </path>
+                    </svg>
+                    Cargando productos...
+               </div>
+          </div>
+     </div>
+
+     <!-- Error -->
+     <div *ngIf="error" class="px-6">
+          <div class="bg-red-50 border border-red-200 rounded-lg p-4">
+               <div class="flex items-center">
+                    <svg class="w-5 h-5 text-red-400 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                         <path fill-rule="evenodd"
+                              d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                              clip-rule="evenodd"></path>
+                    </svg>
+                    <span class="text-red-800">{{ error }}</span>
+               </div>
+          </div>
+     </div>
+
+     <!-- Contenido Principal -->
+     <div *ngIf="!loading && !error" class="px-6">
+          <!-- Desktop: Tabla -->
+          <div class="hidden md:block bg-white rounded-lg shadow overflow-hidden">
+
+
+               <!-- Tabla -->
+               <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200">
+                         <thead class="bg-gray-50">
+                              <tr>
+                                   <th
+                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        CÓDIGO</th>
+                                   <th
+                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        PRODUCTO</th>
+                                   <th
+                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        INFORMACIÓN</th>
+                                   <th
+                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        STOCK</th>
+                                   <th
+                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        PRECIO</th>
+                                   <th
+                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        ESTADO</th>
+                                   <th
+                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        ACCIONES</th>
+                              </tr>
+                         </thead>
+                         <tbody class="bg-white divide-y divide-gray-200">
+                              <tr *ngFor="let product of paginatedProducts; trackBy: trackByProductId"
+                                   class="hover:bg-gray-50 transition-colors">
+                                   <!-- Código -->
+                                   <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="text-sm font-mono text-gray-900">{{ product.productCode }}</span>
+                                   </td>
+
+                                   <!-- Producto -->
+                                   <td class="px-6 py-4">
+                                        <div class="flex items-center">
+                                             <div class="flex-shrink-0 h-10 w-10">
+                                                  <div
+                                                       class="h-10 w-10 rounded-lg bg-gray-200 flex items-center justify-center">
+                                                       <svg class="w-5 h-5 text-gray-500" fill="none"
+                                                            stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                                 stroke-width="2"
+                                                                 d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4">
+                                                            </path>
+                                                       </svg>
+                                                  </div>
+                                             </div>
+                                             <div class="ml-4">
+                                                  <div class="text-sm font-medium text-gray-900">{{ product.productName
+                                                       }}
+                                                  </div>
+                                                  <div class="text-sm text-gray-500">{{ product.categoryName }}</div>
+                                             </div>
+                                        </div>
+                                   </td>
+
+                                   <!-- Información -->
+                                   <td class="px-6 py-4">
+                                        <div class="text-sm text-gray-900">{{ product.unitOfMeasure }}</div>
+                                        <div class="text-sm text-gray-500">Unidad de medida</div>
+                                   </td>
+
+                                   <!-- Stock -->
+                                   <td class="px-6 py-4">
+                                        <div class="text-sm font-medium text-gray-900">{{ product.currentStock }}
+                                             unidades
+                                        </div>
+                                        <div class="text-xs text-gray-500 mb-1">Min: {{ product.minimumStock }} | Max:
+                                             {{
+                                             product.maximumStock }}</div>
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium"
+                                             [ngClass]="getStockStatusClass(product)">
+                                             {{ getStockStatusText(product) }}
+                                        </span>
+                                   </td>
+
+                                   <!-- Precio -->
+                                   <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="text-sm font-medium text-gray-900">{{
+                                             formatCurrency(product.unitCost)
+                                             }}</span>
+                                   </td>
+
+                                   <!-- Estado -->
+                                   <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium"
+                                             [ngClass]="getStatusClass(product.status)">
+                                             {{ product.status }}
+                                        </span>
+                                   </td>
+
+                                   <!-- Acciones -->
+                                   <td class="px-2 py-2">
+                                        <div class="flex flex-wrap gap-2">
+                                             <button (click)="viewProductDetails(product)"
+                                                  class="flex items-center px-3 py-2 text-blue-600 hover:text-blue-700 hover:bg-blue-50 rounded-lg transition-all duration-150 text-xs font-medium border border-blue-200 hover:border-blue-300"
+                                                  title="Ver Detalles">
+                                                  <svg class="w-3.5 h-3.5 mr-1.5" fill="none" stroke="currentColor"
+                                                       viewBox="0 0 24 24">
+                                                       <path stroke-linecap="round" stroke-linejoin="round"
+                                                            stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z">
+                                                       </path>
+                                                       <path stroke-linecap="round" stroke-linejoin="round"
+                                                            stroke-width="2"
+                                                            d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z">
+                                                       </path>
+                                                  </svg>
+                                                  <span>Ver Detalles</span>
+                                             </button>
+                                             <button *ngIf="product.status !== ProductStatus.ACTIVO"
+                                                  (click)="prepareRestoreProduct(product)"
+                                                  class="flex items-center px-3 py-2 text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50 rounded-lg transition-all duration-150 text-xs font-medium border border-emerald-200 hover:border-emerald-300">
+                                                  <svg class="w-3.5 h-3.5 mr-1.5" fill="none" stroke="currentColor"
+                                                       viewBox="0 0 24 24">
+                                                       <path stroke-linecap="round" stroke-linejoin="round"
+                                                            stroke-width="2"
+                                                            d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15">
+                                                       </path>
+                                                  </svg>
+                                                  <span>Restaurar</span>
+                                             </button>
+                                             <!-- Botón Eliminar con icono + texto (solo para productos ACTIVOS) -->
+                                             <button *ngIf="product.status === ProductStatus.ACTIVO"
+                                                  (click)="prepareDeleteProduct(product)"
+                                                  class="flex items-center px-3 py-2 text-red-600 hover:text-red-700 hover:bg-red-50 rounded-lg transition-all duration-150 text-xs font-medium border border-red-200 hover:border-red-300">
+                                                  <svg class="w-3.5 h-3.5 mr-1.5" fill="none" stroke="currentColor"
+                                                       viewBox="0 0 24 24">
+                                                       <path stroke-linecap="round" stroke-linejoin="round"
+                                                            stroke-width="2"
+                                                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16">
+                                                       </path>
+                                                  </svg>
+                                                  <span>Eliminar</span>
+                                             </button>
+                                        </div>
+                                   </td>
+                              </tr>
+
+                              <!-- Empty state -->
+                              <tr *ngIf="paginatedProducts.length === 0">
+                                   <td colspan="7" class="px-6 py-12 text-center">
+                                        <div class="text-gray-500">
+                                             <svg class="w-12 h-12 mx-auto mb-4 text-gray-400" fill="none"
+                                                  stroke="currentColor" viewBox="0 0 24 24">
+                                                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                       d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293L16 14.586a1 1 0 01-.707.293H8.707a1 1 0 01-.707-.293L5.414 13.293A1 1 0 004.828 13H2">
+                                                  </path>
+                                             </svg>
+                                             <p class="text-lg font-medium">No se encontraron productos</p>
+                                             <p class="text-sm">Intenta ajustar los filtros o crear un nuevo producto
+                                             </p>
+                                        </div>
+                                   </td>
+                              </tr>
+                         </tbody>
+                    </table>
+               </div>
+          </div>
+
+          <!-- Mobile: Cards -->
+          <div class="md:hidden space-y-4">
+               <div *ngFor="let product of paginatedProducts; trackBy: trackByProductId"
+                    class="bg-white rounded-lg shadow p-4">
+                    <div class="flex items-start justify-between mb-3">
+                         <div class="flex items-center">
+                              <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+                                   <span class="text-blue-600 font-semibold text-sm">{{ product.productCode.substring(0,
+                                        2).toUpperCase() }}</span>
+                              </div>
+                              <div class="ml-3">
+                                   <h3 class="text-sm font-medium text-gray-900">{{ product.productName }}</h3>
+                                   <p class="text-xs text-gray-500">{{ product.productCode }}</p>
+                              </div>
+                         </div>
+                         <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium"
+                              [ngClass]="getStatusClass(product.status)">
+                              {{ product.status }}
+                         </span>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4 text-sm">
+                         <div>
+                              <p class="text-gray-500">Categoría:</p>
+                              <p class="font-medium">{{ product.categoryName }}</p>
+                         </div>
+                         <div>
+                              <p class="text-gray-500">Stock:</p>
+                              <div class="flex items-center">
+                                   <span class="font-medium">{{ product.currentStock }}</span>
+                                   <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ml-2"
+                                        [ngClass]="getStockStatusClass(product)">
+                                        {{ getStockStatusText(product) }}
+                                   </span>
+                              </div>
+                         </div>
+                         <div>
+                              <p class="text-gray-500">Precio:</p>
+                              <p class="font-medium">{{ formatCurrency(product.unitCost) }}</p>
+                         </div>
+                         <div>
+                              <p class="text-gray-500">Unidad:</p>
+                              <p class="font-medium">{{ product.unitOfMeasure }}</p>
+                         </div>
+                    </div>
+
+                    <div class="mt-4 flex justify-end space-x-2">
+                         <button (click)="viewProductDetails(product)" class="text-blue-600 hover:text-blue-900 p-2"
+                              title="Ver Detalles">
+                              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                              </svg>
+                         </button>
+                         <button *ngIf="product.status !== ProductStatus.ACTIVO"
+                              class="text-green-600 hover:text-green-900 p-2" title="Restaurar">
+                              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15">
+                                   </path>
+                              </svg>
+                         </button>
+                         <button (click)="prepareDeleteProduct(product)" class="text-red-600 hover:text-red-900 p-2"
+                              title="Eliminar">
+                              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16">
+                                   </path>
+                              </svg>
+                         </button>
+                    </div>
+               </div>
+          </div>
+
+          <!-- Paginación Moderna -->
+          <div class="bg-white rounded-xl shadow-lg border border-gray-100 p-4 mt-6" *ngIf="totalPages > 1">
+               <div class="flex flex-col sm:flex-row items-center justify-between space-y-3 sm:space-y-0">
+                    <!-- Información de resultados -->
+                    <div class="text-sm text-gray-600 text-center sm:text-left">
+                         Mostrando <span class="font-semibold text-gray-900">{{ (currentPage - 1) * itemsPerPage + 1
+                              }}</span>
+                         a <span class="font-semibold text-gray-900">{{ Math.min(currentPage * itemsPerPage, totalItems)
+                              }}</span>
+                         de <span class="font-semibold text-gray-900">{{ totalItems }}</span> resultados
+                    </div>
+
+                    <!-- Controles de paginación -->
+                    <div class="flex items-center space-x-2">
+                         <!-- Botón Anterior -->
+                         <button (click)="previousPage()" [disabled]="currentPage === 1"
+                              class="px-3 py-2 text-sm font-medium text-gray-600 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 hover:text-gray-800 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-150 shadow-sm hover:shadow-md">
+                              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M15 19l-7-7 7-7">
+                                   </path>
+                              </svg>
+                         </button>
+
+                         <!-- Números de página -->
+                         <div class="flex space-x-1">
+                              <button *ngFor="let page of getPaginationArray()" (click)="goToPage(page)"
+                                   [class]="page === currentPage ?
+                                   'px-3 py-2 text-sm font-medium text-white bg-blue-500 border border-blue-500 rounded-lg shadow-md' :
+                                   'px-3 py-2 text-sm font-medium text-gray-600 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 hover:text-gray-800 transition-all duration-150 shadow-sm hover:shadow-md'">
+                                   {{ page }}
+                              </button>
+                         </div>
+
+                         <!-- Botón Siguiente -->
+                         <button (click)="nextPage()" [disabled]="currentPage === totalPages"
+                              class="px-3 py-2 text-sm font-medium text-gray-600 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 hover:text-gray-800 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-150 shadow-sm hover:shadow-md">
+                              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M9 5l7 7-7 7">
+                                   </path>
+                              </svg>
+                         </button>
+                    </div>
+               </div>
+          </div>
+     </div>
+
+     <!-- Modal de Detalles del Producto -->
+     <div *ngIf="showProductModal" class="fixed inset-0 z-[8000] overflow-hidden border border-l-sky-100 bg-opacity-20"
+          (click)="closeProductModal()" (keydown.escape)="closeProductModal()">
+
+          <!-- Panel lateral derecho -->
+          <div class="absolute right-0 top-0 h-full w-full max-w-2xl bg-white shadow-2xl"
+               (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()">
+
+               <!-- Header del modal -->
+               <div class="bg-slate-900 px-6 py-4 text-white flex items-center justify-between">
+                    <div class="flex items-center space-x-3">
+                         <div class="w-10 h-10 bg-white rounded-lg flex items-center justify-center">
+                              <svg class="w-5 h-5 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
+                              </svg>
+                         </div>
+                         <div>
+                              <h2 class="text-lg font-semibold">{{ selectedProduct?.productName }}</h2>
+                              <p class="text-sm opacity-90">{{ selectedProduct?.productCode }}</p>
+                         </div>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                         <!-- Botón Editar -->
+                         <button *ngIf="selectedProduct" (click)="editProduct(selectedProduct)"
+                              class="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-lg transition-colors text-sm font-medium border-white border-2">
+                              <svg class="w-4 h-4 mr-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z">
+                                   </path>
+                              </svg>
+                              Editar
+                         </button>
+                         <!-- Botón Cerrar -->
+                         <button (click)="closeProductModal()"
+                              class="p-1 hover:bg-white hover:bg-opacity-20 rounded hover:text-slate-900">
+                              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M6 18L18 6M6 6l12 12"></path>
+                              </svg>
+                         </button>
+                    </div>
+               </div>
+
+               <!-- Contenido del modal -->
+               <div class="h-full overflow-y-auto pb-20" *ngIf="selectedProduct">
+                    <!-- Información del Producto -->
+                    <div class="p-6 border-b border-gray-200">
+                         <div class="flex items-center text-gray-700 mb-4">
+                              <svg class="w-5 h-5 mr-2 text-blue-600" fill="none" stroke="currentColor"
+                                   viewBox="0 0 24 24">
+                                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                              </svg>
+                              <span class="font-medium">Información del Producto</span>
+                         </div>
+
+                         <div class="grid grid-cols-2 gap-4 text-sm">
+                              <div>
+                                   <p class="text-gray-500 mb-1">Código de Producto:</p>
+                                   <p class="font-medium text-gray-900">{{ selectedProduct.productCode }}</p>
+                              </div>
+                              <div>
+                                   <p class="text-gray-500 mb-1">Estado:</p>
+                                   <span
+                                        class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                        {{ selectedProduct.status }}
+                                   </span>
+                              </div>
+                              <div>
+                                   <p class="text-gray-500 mb-1">Nombre Completo:</p>
+                                   <p class="font-medium text-gray-900">{{ selectedProduct.productName }}</p>
+                              </div>
+                              <div>
+                                   <p class="text-gray-500 mb-1">Categoría:</p>
+                                   <p class="text-gray-900">{{ selectedProduct.categoryName }}</p>
+                              </div>
+                              <div>
+                                   <p class="text-gray-500 mb-1">Unidad de Medida:</p>
+                                   <p class="text-gray-900">{{ selectedProduct.unitOfMeasure }}</p>
+                              </div>
+                              <div>
+                                   <p class="text-gray-500 mb-1">Costo Unitario:</p>
+                                   <p class="font-medium text-gray-900">{{ formatCurrency(selectedProduct.unitCost) }}
+                                   </p>
+                              </div>
+                         </div>
+                    </div>
+
+                    <!-- Gestión de Stock -->
+                    <div class="p-6 border-b border-gray-200">
+                         <div class="flex items-center text-gray-700 mb-4">
+                              <svg class="w-5 h-5 mr-2 text-green-600" fill="none" stroke="currentColor"
+                                   viewBox="0 0 24 24">
+                                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
+                              </svg>
+                              <span class="font-medium">Gestión de Stock</span>
+                         </div>
+
+                         <!-- Stock Actual - Card Principal -->
+                         <div class="bg-blue-50 rounded-xl p-4 mb-4">
+                              <div class="flex items-center justify-between">
+                                   <div>
+                                        <p class="text-blue-700 font-medium text-sm">Stock Actual</p>
+                                        <p class="text-2xl font-bold text-blue-900">{{ selectedProduct.currentStock }}
+                                             unidades</p>
+                                   </div>
+                                   <div class="w-12 h-12 bg-blue-500 rounded-lg flex items-center justify-center">
+                                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor"
+                                             viewBox="0 0 24 24">
+                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                  d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293L16 14.586a1 1 0 01-.707.293H8.707a1 1 0 01-.707-.293L5.414 13.293A1 1 0 004.828 13H2">
+                                             </path>
+                                        </svg>
+                                   </div>
+                              </div>
+                         </div>
+
+                         <!-- Stock Mínimo y Máximo -->
+                         <div class="grid grid-cols-2 gap-4 mb-4">
+                              <div class="bg-yellow-50 rounded-xl p-4">
+                                   <p class="text-yellow-700 font-medium text-sm">Stock Mínimo</p>
+                                   <p class="text-2xl font-bold text-yellow-900">{{ selectedProduct.minimumStock }}</p>
+                              </div>
+                              <div class="bg-green-50 rounded-xl p-4">
+                                   <p class="text-green-700 font-medium text-sm">Stock Máximo</p>
+                                   <p class="text-2xl font-bold text-green-900">{{ selectedProduct.maximumStock }}</p>
+                              </div>
+                         </div>
+
+                         <!-- Estado del Stock -->
+                         <div class="bg-gray-50 rounded-xl p-4">
+                              <div class="flex items-center justify-between">
+                                   <div>
+                                        <p class="text-gray-600 font-medium text-sm">Estado del Stock</p>
+                                        <span
+                                             class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-orange-100 text-orange-800 mt-1">
+                                             Stock Normal
+                                        </span>
+                                   </div>
+                                   <div class="text-right">
+                                        <p class="text-gray-500 text-sm">Porcentaje utilizado</p>
+                                        <p class="text-xl font-bold text-gray-900">
+                                             {{ ((selectedProduct.currentStock / selectedProduct.maximumStock) *
+                                             100).toFixed(1) }}%
+                                        </p>
+                                   </div>
+                              </div>
+                         </div>
+                    </div>
+
+                    <!-- Información Adicional -->
+                    <div class="p-6">
+                         <div class="flex items-center text-gray-700 mb-4">
+                              <svg class="w-5 h-5 mr-2 text-purple-600" fill="none" stroke="currentColor"
+                                   viewBox="0 0 24 24">
+                                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
+                                   </path>
+                              </svg>
+                              <span class="font-medium">Información Adicional</span>
+                         </div>
+
+                         <!-- Descripción -->
+                         <div class="mb-4">
+                              <p class="text-gray-500 text-sm mb-2">Descripción:</p>
+                              <p class="text-gray-900">{{ selectedProduct.productName }}</p>
+                         </div>
+
+                    </div>
+               </div>
+          </div>
+     </div>
+</div>
+
+<!-- Modal de Crear Producto - Angular 20 con diseño slate -->
+<div *ngIf="isCreateModalOpen" class="fixed inset-0 z-[8000]" (keydown.escape)="closeCreateModal()"
+     (keyup.escape)="closeCreateModal()" tabindex="0" [@slideIn]>
+
+     <!-- Background overlay -->
+     <div class="absolute inset-0 bg-gray-900/50" (click)="closeCreateModal()"></div>
+
+     <!-- Modal Panel -->
+     <div class="absolute right-0 top-0 h-full w-full max-w-3xl bg-slate-900 shadow-xl transform transition-transform duration-300 ease-out flex flex-col"
+          (click)="$event.stopPropagation()">
+
+          <!-- Header slate -->
+          <div class="flex items-center justify-between px-6 py-4 bg-slate-900 border-b border-slate-800 flex-shrink-0">
+               <div class="flex items-center space-x-3">
+                    <div
+                         class="w-12 h-12 rounded-full flex items-center justify-center text-slate-600 font-semibold bg-slate-100">
+                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                   d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                         </svg>
+                    </div>
+                    <div>
+                         <h2 class="text-xl font-semibold text-slate-100">Crear Nuevo Producto</h2>
+                         <p class="text-sm text-slate-400">Complete los datos para registrar un nuevo producto</p>
+                    </div>
+               </div>
+               <button (click)="closeCreateModal()"
+                    class="p-2 hover:bg-slate-800 rounded-lg transition-colors text-slate-400 hover:text-slate-200"
+                    [disabled]="isSaving">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
+                         </path>
+                    </svg>
+               </button>
+          </div>
+
+          <!-- Contenido del Modal -->
+          <div class="flex-1 overflow-y-auto bg-white min-h-0">
+               <!-- Loading de categorías -->
+               <div *ngIf="isLoadingCategories" class="flex items-center justify-center py-12">
+                    <div class="text-center">
+                         <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+                         <p class="mt-4 text-slate-600">Cargando categorías...</p>
+                    </div>
+               </div>
+
+               <!-- Formulario -->
+               <form *ngIf="!isLoadingCategories" [formGroup]="createForm" (ngSubmit)="onCreateSubmit()"
+                    class="p-8 space-y-8">
+
+                    <!-- Sección 1: Información Básica del Producto -->
+                    <div class="bg-white rounded-lg border border-slate-200">
+                         <div class="px-6 py-4 border-b border-slate-200">
+                              <h3 class="text-lg font-semibold text-slate-900">Información Básica</h3>
+                              <p class="text-sm text-slate-600">Datos identificativos del producto</p>
+                         </div>
+
+                         <div class="p-6 space-y-6">
+                              <!-- Código y Nombre en fila -->
+                              <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                   <!-- Código del Producto -->
+                                   <div>
+                                        <label for="product-code" class="block text-sm font-medium text-slate-700 mb-2">
+                                             Código del Producto <span class="text-red-500">*</span>
+                                        </label>
+                                        <input type="text" formControlName="productCode" id="product-code" readonly
+                                             class="w-full px-4 py-3 bg-slate-50 rounded-lg text-slate-600 border border-slate-200 cursor-not-allowed"
+                                             placeholder="PROD001">
+                                        <!-- Código generado automáticamente -->
+                                        <p class="mt-1 text-xs text-slate-500">
+                                             <svg class="w-3 h-3 inline mr-1" fill="none" stroke="currentColor"
+                                                  viewBox="0 0 24 24">
+                                                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                       d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z">
+                                                  </path>
+                                             </svg>
+                                             Código generado automáticamente
+                                        </p>
+                                   </div>
+
+                                   <!-- Nombre del Producto -->
+                                   <div>
+                                        <label for="product-name" class="block text-sm font-medium text-slate-700 mb-2">
+                                             Nombre del Producto <span class="text-red-500">*</span>
+                                        </label>
+                                        <div class="relative">
+                                             <input type="text" formControlName="productName" id="product-name"
+                                                  class="w-full px-4 py-3 bg-white rounded-lg text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 border border-slate-200 hover:border-slate-300 focus:border-blue-500 transition-colors"
+                                                  [class.border-red-300]="hasFieldError('productName')"
+                                                  [class.focus:border-red-500]="hasFieldError('productName')"
+                                                  [class.focus:ring-red-500/20]="hasFieldError('productName')"
+                                                  placeholder="Ej: Cemento Portland Tipo I"
+                                                  (blur)="checkProductNameUnique()">
+
+                                             <!-- Error icon -->
+                                             <div *ngIf="hasFieldError('productName')"
+                                                  class="absolute inset-y-0 right-0 pr-3 flex items-center">
+                                                  <svg class="w-5 h-5 text-red-500" fill="none" stroke="currentColor"
+                                                       viewBox="0 0 24 24">
+                                                       <path stroke-linecap="round" stroke-linejoin="round"
+                                                            stroke-width="2"
+                                                            d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z">
+                                                       </path>
+                                                  </svg>
+                                             </div>
+                                        </div>
+                                        <p *ngIf="hasFieldError('productName')" class="mt-2 text-sm text-red-600">
+                                             {{getFieldError('productName')}}
+                                        </p>
+                                   </div>
+                              </div>
+                         </div>
+                    </div>
+
+                    <!-- Sección 2: Categoría y Unidad de Medida -->
+                    <div class="bg-white rounded-lg border border-slate-200">
+                         <div class="px-6 py-4 border-b border-slate-200">
+                              <h3 class="text-lg font-semibold text-slate-900">Clasificación</h3>
+                              <p class="text-sm text-slate-600">Categoría y unidad de medida del producto</p>
+                         </div>
+
+                         <div class="p-6 space-y-6">
+                              <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                   <!-- Categoría -->
+                                   <div>
+                                        <label for="category" class="block text-sm font-medium text-slate-700 mb-2">
+                                             Categoría <span class="text-red-500">*</span>
+                                        </label>
+                                        <select formControlName="categoryId" id="category"
+                                             class="w-full px-4 py-3 bg-white rounded-lg text-slate-900 border border-slate-200 hover:border-slate-300 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-colors"
+                                             [class.border-red-300]="hasFieldError('categoryId')"
+                                             [class.focus:border-red-500]="hasFieldError('categoryId')"
+                                             [class.focus:ring-red-500/20]="hasFieldError('categoryId')">
+                                             <option value="">Seleccione una categoría</option>
+                                             <option *ngFor="let category of availableCategories"
+                                                  [value]="category.categoryId">
+                                                  {{category.categoryName}}
+                                             </option>
+                                        </select>
+                                        <p *ngIf="hasFieldError('categoryId')" class="mt-2 text-sm text-red-600">
+                                             {{getFieldError('categoryId')}}
+                                        </p>
+                                   </div>
+
+                                   <!-- Unidad de Medida -->
+                                   <div>
+                                        <label for="unit-measure" class="block text-sm font-medium text-slate-700 mb-2">
+                                             Unidad de Medida <span class="text-red-500">*</span>
+                                        </label>
+                                        <select formControlName="unitOfMeasure" id="unit-measure"
+                                             class="w-full px-4 py-3 bg-white rounded-lg text-slate-900 border border-slate-200 hover:border-slate-300 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-colors">
+                                             <option *ngFor="let unit of unitOfMeasureOptions" [value]="unit.value">
+                                                  {{unit.label}}
+                                             </option>
+                                        </select>
+                                   </div>
+                              </div>
+                         </div>
+                    </div>
+
+                    <!-- Sección 3: Gestión de Stock -->
+                    <div class="bg-white rounded-lg border border-slate-200">
+                         <div class="px-6 py-4 border-b border-slate-200">
+                              <h3 class="text-lg font-semibold text-slate-900">Gestión de Stock</h3>
+                              <p class="text-sm text-slate-600">Configuración de niveles de inventario y costos</p>
+                         </div>
+
+                         <div class="p-6 space-y-6">
+                              <!-- Stock Mínimo y Máximo -->
+                              <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                   <!-- Stock Mínimo -->
+                                   <div>
+                                        <label for="min-stock" class="block text-sm font-medium text-slate-700 mb-2">
+                                             Stock Mínimo <span class="text-red-500">*</span>
+                                        </label>
+                                        <div class="relative">
+                                             <input type="number" formControlName="minimumStock" id="min-stock" min="0"
+                                                  class="w-full px-4 py-3 bg-white rounded-lg text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 border border-slate-200 hover:border-slate-300 focus:border-blue-500 transition-colors"
+                                                  [class.border-red-300]="hasFieldError('minimumStock')"
+                                                  [class.focus:border-red-500]="hasFieldError('minimumStock')"
+                                                  [class.focus:ring-red-500/20]="hasFieldError('minimumStock')"
+                                                  placeholder="0" (input)="onNumericInput($event, 'minimumStock')">
+                                        </div>
+                                        <p *ngIf="hasFieldError('minimumStock')" class="mt-2 text-sm text-red-600">
+                                             {{getFieldError('minimumStock')}}
+                                        </p>
+                                   </div>
+
+                                   <!-- Stock Máximo -->
+                                   <div>
+                                        <label for="max-stock" class="block text-sm font-medium text-slate-700 mb-2">
+                                             Stock Máximo <span class="text-red-500">*</span>
+                                        </label>
+                                        <div class="relative">
+                                             <input type="number" formControlName="maximumStock" id="max-stock" min="0"
+                                                  class="w-full px-4 py-3 bg-white rounded-lg text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 border border-slate-200 hover:border-slate-300 focus:border-blue-500 transition-colors"
+                                                  [class.border-red-300]="hasFieldError('maximumStock')"
+                                                  [class.focus:border-red-500]="hasFieldError('maximumStock')"
+                                                  [class.focus:ring-red-500/20]="hasFieldError('maximumStock')"
+                                                  placeholder="0" (input)="onNumericInput($event, 'maximumStock')">
+                                        </div>
+                                        <p *ngIf="hasFieldError('maximumStock')" class="mt-2 text-sm text-red-600">
+                                             {{getFieldError('maximumStock')}}
+                                        </p>
+                                   </div>
+
+                                   <!-- Stock Actual -->
+                                   <div>
+                                        <label for="current-stock"
+                                             class="block text-sm font-medium text-slate-700 mb-2">
+                                             Stock Actual <span class="text-red-500">*</span>
+                                        </label>
+                                        <div class="relative">
+                                             <input type="number" formControlName="currentStock" id="current-stock"
+                                                  min="0"
+                                                  class="w-full px-4 py-3 bg-white rounded-lg text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 border border-slate-200 hover:border-slate-300 focus:border-blue-500 transition-colors"
+                                                  [class.border-red-300]="hasFieldError('currentStock')"
+                                                  [class.focus:border-red-500]="hasFieldError('currentStock')"
+                                                  [class.focus:ring-red-500/20]="hasFieldError('currentStock')"
+                                                  placeholder="0" (input)="onNumericInput($event, 'currentStock')">
+                                        </div>
+                                        <p *ngIf="hasFieldError('currentStock')" class="mt-2 text-sm text-red-600">
+                                             {{getFieldError('currentStock')}}
+                                        </p>
+                                        <p class="mt-1 text-xs text-slate-500">
+                                             Debe ser mayor o igual al stock mínimo
+                                        </p>
+                                   </div>
+                              </div>
+
+                              <!-- Costo Unitario -->
+                              <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                   <div>
+                                        <label for="unit-cost" class="block text-sm font-medium text-slate-700 mb-2">
+                                             Costo Unitario <span class="text-red-500">*</span>
+                                        </label>
+                                        <div class="relative">
+                                             <div
+                                                  class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                                  <span class="text-slate-500 sm:text-sm">S/</span>
+                                             </div>
+                                             <input type="number" formControlName="unitCost" id="unit-cost" step="0.01"
+                                                  min="0.01"
+                                                  class="w-full pl-10 pr-4 py-3 bg-white rounded-lg text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 border border-slate-200 hover:border-slate-300 focus:border-blue-500 transition-colors"
+                                                  [class.border-red-300]="hasFieldError('unitCost')"
+                                                  [class.focus:border-red-500]="hasFieldError('unitCost')"
+                                                  [class.focus:ring-red-500/20]="hasFieldError('unitCost')"
+                                                  placeholder="0.00" (input)="onNumericInput($event, 'unitCost')">
+                                        </div>
+                                        <p *ngIf="hasFieldError('unitCost')" class="mt-2 text-sm text-red-600">
+                                             {{getFieldError('unitCost')}}
+                                        </p>
+                                   </div>
+                              </div>
+                         </div>
+                    </div>
+
+                    <!-- Botones de Acción -->
+                    <div class="flex items-center justify-end space-x-4 pt-6 border-t border-slate-200">
+                         <button type="button" (click)="closeCreateModal()"
+                              class="px-6 py-3 border border-slate-300 rounded-lg text-slate-700 hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-slate-500/20 transition-colors"
+                              [disabled]="isSaving">
+                              Cancelar
+                         </button>
+                         <button type="submit"
+                              class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-colors disabled:bg-slate-400 disabled:cursor-not-allowed flex items-center"
+                              [disabled]="isSaving || createForm.invalid">
+                              <div *ngIf="isSaving"
+                                   class="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                              <span>{{isSaving ? 'Creando...' : 'Crear Producto'}}</span>
+                         </button>
+                    </div>
+               </form>
+          </div>
+     </div>
+</div>
+
+<!-- Modal de Editar Producto - Angular 20 con diseño slate -->
+<div *ngIf="isEditModalOpen && selectedProductForEdit" class="fixed inset-0 z-[8000]"
+     (keydown.escape)="closeEditModal()" (keyup.escape)="closeEditModal()" tabindex="0" [@slideIn]>
+
+     <!-- Background overlay -->
+     <div class="absolute inset-0 bg-gray-900/50" (click)="closeEditModal()"></div>
+
+     <!-- Modal Panel -->
+     <div class="absolute right-0 top-0 h-full w-full max-w-3xl bg-slate-900 shadow-xl transform transition-transform duration-300 ease-out flex flex-col"
+          (click)="$event.stopPropagation()">
+
+          <!-- Header slate -->
+          <div class="flex items-center justify-between px-6 py-4 bg-slate-900 border-b border-slate-800 flex-shrink-0">
+               <div class="flex items-center space-x-3">
+                    <div
+                         class="w-12 h-12 rounded-full flex items-center justify-center text-slate-600 font-semibold bg-slate-100">
+                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                   d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z">
+                              </path>
+                         </svg>
+                    </div>
+                    <div>
+                         <h2 class="text-xl font-semibold text-slate-100">Editar Producto</h2>
+                         <p class="text-sm text-slate-400">Modifique los datos del producto
+                              "{{selectedProductForEdit.productName}}"</p>
+                    </div>
+               </div>
+               <button (click)="closeEditModal()"
+                    class="p-2 hover:bg-slate-800 rounded-lg transition-colors text-slate-400 hover:text-slate-200"
+                    [disabled]="isUpdating">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
+                         </path>
+                    </svg>
+               </button>
+          </div>
+
+          <!-- Contenido del Modal -->
+          <div class="flex-1 overflow-y-auto bg-white min-h-0">
+               <!-- Loading de categorías -->
+               <div *ngIf="isLoadingCategories" class="flex items-center justify-center py-12">
+                    <div class="text-center">
+                         <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+                         <p class="mt-4 text-slate-600">Cargando categorías...</p>
+                    </div>
+               </div>
+
+               <!-- Formulario -->
+               <form *ngIf="!isLoadingCategories" [formGroup]="editForm" (ngSubmit)="onEditSubmit()"
+                    class="p-8 space-y-8">
+
+                    <!-- Información del producto actual -->
+                    <div class="bg-blue-50 rounded-lg p-6">
+                         <h3 class="text-lg font-semibold text-blue-900 mb-4">Producto a Editar</h3>
+                         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                              <div>
+                                   <p class="text-sm font-medium text-blue-700">Código Actual</p>
+                                   <p class="text-blue-900">{{selectedProductForEdit.productCode}}</p>
+                              </div>
+                              <div>
+                                   <p class="text-sm font-medium text-blue-700">Nombre Actual</p>
+                                   <p class="text-blue-900">{{selectedProductForEdit.productName}}</p>
+                              </div>
+                              <div>
+                                   <p class="text-sm font-medium text-blue-700">Stock Actual</p>
+                                   <p class="text-blue-900">{{selectedProductForEdit.currentStock}}
+                                        {{selectedProductForEdit.unitOfMeasure}}</p>
+                              </div>
+                         </div>
+                    </div>
+
+                    <!-- Sección 1: Información Básica del Producto -->
+                    <div class="bg-white rounded-lg border border-slate-200">
+                         <div class="px-6 py-4 border-b border-slate-200">
+                              <h3 class="text-lg font-semibold text-slate-900">Información Básica</h3>
+                              <p class="text-sm text-slate-600">Datos identificativos del producto</p>
+                         </div>
+
+                         <div class="p-6 space-y-6">
+                              <!-- Código y Nombre en fila -->
+                              <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                   <!-- Código del Producto -->
+                                   <div>
+                                        <label for="edit-product-code"
+                                             class="block text-sm font-medium text-slate-700 mb-2">
+                                             Código del Producto <span class="text-red-500">*</span>
+                                        </label>
+                                        <input type="text" formControlName="productCode" id="edit-product-code" readonly
+                                             class="w-full px-4 py-3 bg-slate-50 rounded-lg text-slate-600 border border-slate-200 cursor-not-allowed"
+                                             placeholder="PROD001">
+                                        <!-- Código no editable -->
+                                        <p class="mt-1 text-xs text-slate-500">
+                                             <svg class="w-3 h-3 inline mr-1" fill="none" stroke="currentColor"
+                                                  viewBox="0 0 24 24">
+                                                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                       d="M12 15v2m0 0v2m0-2h2m-2 0H9.5M21 12a9 9 0 11-18 0 9 9 0 0118 0z">
+                                                  </path>
+                                             </svg>
+                                             El código del producto no se puede modificar
+                                        </p>
+                                   </div>
+
+                                   <!-- Nombre del Producto -->
+                                   <div>
+                                        <label for="edit-product-name"
+                                             class="block text-sm font-medium text-slate-700 mb-2">
+                                             Nombre del Producto <span class="text-red-500">*</span>
+                                        </label>
+                                        <div class="relative">
+                                             <input type="text" formControlName="productName" id="edit-product-name"
+                                                  class="w-full px-4 py-3 bg-white rounded-lg text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 border border-slate-200 hover:border-slate-300 focus:border-blue-500 transition-colors"
+                                                  [class.border-red-300]="hasEditFieldError('productName')"
+                                                  [class.focus:border-red-500]="hasEditFieldError('productName')"
+                                                  [class.focus:ring-red-500/20]="hasEditFieldError('productName')"
+                                                  placeholder="Ej: Cemento Portland Tipo I"
+                                                  (blur)="checkEditProductNameUnique()">
+
+                                             <!-- Error icon -->
+                                             <div *ngIf="hasEditFieldError('productName')"
+                                                  class="absolute inset-y-0 right-0 pr-3 flex items-center">
+                                                  <svg class="w-5 h-5 text-red-500" fill="none" stroke="currentColor"
+                                                       viewBox="0 0 24 24">
+                                                       <path stroke-linecap="round" stroke-linejoin="round"
+                                                            stroke-width="2"
+                                                            d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z">
+                                                       </path>
+                                                  </svg>
+                                             </div>
+                                        </div>
+                                        <p *ngIf="hasEditFieldError('productName')" class="mt-2 text-sm text-red-600">
+                                             {{getEditFieldError('productName')}}
+                                        </p>
+                                   </div>
+                              </div>
+                         </div>
+                    </div>
+
+                    <!-- Sección 2: Categoría y Unidad de Medida -->
+                    <div class="bg-white rounded-lg border border-slate-200">
+                         <div class="px-6 py-4 border-b border-slate-200">
+                              <h3 class="text-lg font-semibold text-slate-900">Clasificación</h3>
+                              <p class="text-sm text-slate-600">Categoría y unidad de medida del producto</p>
+                         </div>
+
+                         <div class="p-6 space-y-6">
+                              <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                   <!-- Categoría -->
+                                   <div>
+                                        <label for="edit-category"
+                                             class="block text-sm font-medium text-slate-700 mb-2">
+                                             Categoría <span class="text-red-500">*</span>
+                                        </label>
+                                        <select formControlName="categoryId" id="edit-category"
+                                             class="w-full px-4 py-3 bg-white rounded-lg text-slate-900 border border-slate-200 hover:border-slate-300 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-colors"
+                                             [class.border-red-300]="hasEditFieldError('categoryId')"
+                                             [class.focus:border-red-500]="hasEditFieldError('categoryId')"
+                                             [class.focus:ring-red-500/20]="hasEditFieldError('categoryId')">
+                                             <option value="">Seleccione una categoría</option>
+                                             <option *ngFor="let category of availableCategories"
+                                                  [value]="category.categoryId">
+                                                  {{category.categoryName}}
+                                             </option>
+                                        </select>
+                                        <p *ngIf="hasEditFieldError('categoryId')" class="mt-2 text-sm text-red-600">
+                                             {{getEditFieldError('categoryId')}}
+                                        </p>
+                                   </div>
+
+                                   <!-- Unidad de Medida -->
+                                   <div>
+                                        <label for="edit-unit-measure"
+                                             class="block text-sm font-medium text-slate-700 mb-2">
+                                             Unidad de Medida <span class="text-red-500">*</span>
+                                        </label>
+                                        <select formControlName="unitOfMeasure" id="edit-unit-measure"
+                                             class="w-full px-4 py-3 bg-white rounded-lg text-slate-900 border border-slate-200 hover:border-slate-300 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-colors">
+                                             <option *ngFor="let unit of unitOfMeasureOptions" [value]="unit.value">
+                                                  {{unit.label}}
+                                             </option>
+                                        </select>
+                                   </div>
+                              </div>
+                         </div>
+                    </div>
+
+                    <!-- Sección 3: Gestión de Stock -->
+                    <div class="bg-white rounded-lg border border-slate-200">
+                         <div class="px-6 py-4 border-b border-slate-200">
+                              <h3 class="text-lg font-semibold text-slate-900">Gestión de Stock</h3>
+                              <p class="text-sm text-slate-600">Configuración de niveles de inventario y costos</p>
+                         </div>
+
+                         <div class="p-6 space-y-6">
+                              <!-- Stock Mínimo y Máximo -->
+                              <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                   <!-- Stock Mínimo -->
+                                   <div>
+                                        <label for="edit-min-stock"
+                                             class="block text-sm font-medium text-slate-700 mb-2">
+                                             Stock Mínimo <span class="text-red-500">*</span>
+                                        </label>
+                                        <div class="relative">
+                                             <input type="number" formControlName="minimumStock" id="edit-min-stock"
+                                                  min="0"
+                                                  class="w-full px-4 py-3 bg-white rounded-lg text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 border border-slate-200 hover:border-slate-300 focus:border-blue-500 transition-colors"
+                                                  [class.border-red-300]="hasEditFieldError('minimumStock')"
+                                                  [class.focus:border-red-500]="hasEditFieldError('minimumStock')"
+                                                  [class.focus:ring-red-500/20]="hasEditFieldError('minimumStock')"
+                                                  placeholder="0" (input)="onEditNumericInput($event, 'minimumStock')">
+                                        </div>
+                                        <p *ngIf="hasEditFieldError('minimumStock')" class="mt-2 text-sm text-red-600">
+                                             {{getEditFieldError('minimumStock')}}
+                                        </p>
+                                   </div>
+
+                                   <!-- Stock Máximo -->
+                                   <div>
+                                        <label for="edit-max-stock"
+                                             class="block text-sm font-medium text-slate-700 mb-2">
+                                             Stock Máximo <span class="text-red-500">*</span>
+                                        </label>
+                                        <div class="relative">
+                                             <input type="number" formControlName="maximumStock" id="edit-max-stock"
+                                                  min="0"
+                                                  class="w-full px-4 py-3 bg-white rounded-lg text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 border border-slate-200 hover:border-slate-300 focus:border-blue-500 transition-colors"
+                                                  [class.border-red-300]="hasEditFieldError('maximumStock')"
+                                                  [class.focus:border-red-500]="hasEditFieldError('maximumStock')"
+                                                  [class.focus:ring-red-500/20]="hasEditFieldError('maximumStock')"
+                                                  placeholder="0" (input)="onEditNumericInput($event, 'maximumStock')">
+                                        </div>
+                                        <p *ngIf="hasEditFieldError('maximumStock')" class="mt-2 text-sm text-red-600">
+                                             {{getEditFieldError('maximumStock')}}
+                                        </p>
+                                   </div>
+
+                                   <!-- Stock Actual -->
+                                   <div>
+                                        <label for="edit-current-stock"
+                                             class="block text-sm font-medium text-slate-700 mb-2">
+                                             Stock Actual <span class="text-red-500">*</span>
+                                        </label>
+                                        <div class="relative">
+                                             <input type="number" formControlName="currentStock" id="edit-current-stock"
+                                                  min="0"
+                                                  class="w-full px-4 py-3 bg-white rounded-lg text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 border border-slate-200 hover:border-slate-300 focus:border-blue-500 transition-colors"
+                                                  [class.border-red-300]="hasEditFieldError('currentStock')"
+                                                  [class.focus:border-red-500]="hasEditFieldError('currentStock')"
+                                                  [class.focus:ring-red-500/20]="hasEditFieldError('currentStock')"
+                                                  placeholder="0" (input)="onEditNumericInput($event, 'currentStock')">
+                                        </div>
+                                        <p *ngIf="hasEditFieldError('currentStock')" class="mt-2 text-sm text-red-600">
+                                             {{getEditFieldError('currentStock')}}
+                                        </p>
+                                        <p class="mt-1 text-xs text-slate-500">
+                                             Debe ser mayor o igual al stock mínimo
+                                        </p>
+                                   </div>
+                              </div>
+
+                              <!-- Costo Unitario -->
+                              <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                   <div>
+                                        <label for="edit-unit-cost"
+                                             class="block text-sm font-medium text-slate-700 mb-2">
+                                             Costo Unitario <span class="text-red-500">*</span>
+                                        </label>
+                                        <div class="relative">
+                                             <div
+                                                  class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                                  <span class="text-slate-500 sm:text-sm">S/</span>
+                                             </div>
+                                             <input type="number" formControlName="unitCost" id="edit-unit-cost"
+                                                  step="0.01" min="0.01"
+                                                  class="w-full pl-10 pr-4 py-3 bg-white rounded-lg text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 border border-slate-200 hover:border-slate-300 focus:border-blue-500 transition-colors"
+                                                  [class.border-red-300]="hasEditFieldError('unitCost')"
+                                                  [class.focus:border-red-500]="hasEditFieldError('unitCost')"
+                                                  [class.focus:ring-red-500/20]="hasEditFieldError('unitCost')"
+                                                  placeholder="0.00" (input)="onEditNumericInput($event, 'unitCost')">
+                                        </div>
+                                        <p *ngIf="hasEditFieldError('unitCost')" class="mt-2 text-sm text-red-600">
+                                             {{getEditFieldError('unitCost')}}
+                                        </p>
+                                   </div>
+                              </div>
+                         </div>
+                    </div>
+
+                    <!-- Botones de Acción -->
+                    <div class="flex items-center justify-end space-x-4 pt-6 border-t border-slate-200">
+                         <button type="button" (click)="closeEditModal()"
+                              class="px-6 py-3 border border-slate-300 rounded-lg text-slate-700 hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-slate-500/20 transition-colors"
+                              [disabled]="isUpdating">
+                              Cancelar
+                         </button>
+                         <button type="submit"
+                              class="px-6 py-3 bg-orange-600 text-white rounded-lg hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-orange-500/20 transition-colors disabled:bg-slate-400 disabled:cursor-not-allowed flex items-center"
+                              [disabled]="isUpdating || editForm.invalid">
+                              <div *ngIf="isUpdating"
+                                   class="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                              <span>{{isUpdating ? 'Actualizando...' : 'Actualizar Producto'}}</span>
+                         </button>
+                    </div>
+               </form>
+          </div>
+     </div>
+</div>
+
+<!-- Modal de Confirmación -->
+<app-confirmation-modal [isOpen]="isConfirmationModalOpen" [data]="confirmationData" (confirm)="onConfirmAction()"
+     (cancel)="onCancelAction()">
+</app-confirmation-modal>

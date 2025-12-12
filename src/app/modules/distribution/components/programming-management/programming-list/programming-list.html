@@ -1,0 +1,616 @@
+<!-- Breadcrumb -->
+<app-breadcrumb [items]="breadcrumbItems"></app-breadcrumb>
+
+<!-- Header de la página -->
+<div class="p-4">
+     <h1 class="text-3xl font-bold text-gray-900 mb-2">Programación de Distribución</h1>
+     <p class="text-lg text-gray-600">Planificación y programación de la distribución de agua</p>
+</div>
+
+<!-- Estadísticas -->
+<div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6 px-4">
+     <div class="bg-white rounded-xl shadow-lg border border-gray-100 p-5">
+          <div class="flex items-center">
+               <div class="p-3 rounded-lg bg-blue-100 text-blue-600 mr-4">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z">
+                         </path>
+                    </svg>
+               </div>
+               <div>
+                    <p class="text-sm font-medium text-gray-500">Total Programas</p>
+                    <p class="text-2xl font-bold text-gray-900">{{totalPrograms}}</p>
+               </div>
+          </div>
+     </div>
+
+     <div class="bg-white rounded-xl shadow-lg border border-gray-100 p-5">
+          <div class="flex items-center">
+               <div class="p-3 rounded-lg bg-green-100 text-green-600 mr-4">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+               </div>
+               <div>
+                    <p class="text-sm font-medium text-gray-500">Programas Activas</p>
+                    <p class="text-2xl font-bold text-gray-900">{{activePrograms}}</p>
+               </div>
+          </div>
+     </div>
+
+     <div class="bg-white rounded-xl shadow-lg border border-gray-100 p-5">
+          <div class="flex items-center">
+               <div class="p-3 rounded-lg bg-red-100 text-red-600 mr-4">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+               </div>
+               <div>
+                    <p class="text-sm font-medium text-gray-500">Programas Inactivas</p>
+                    <p class="text-2xl font-bold text-gray-900">{{inactivePrograms}}</p>
+               </div>
+          </div>
+     </div>
+</div>
+
+<!-- Filtros y Controles -->
+<div class="bg-white rounded-xl shadow-lg border border-gray-100 p-4 sm:p-6 mb-6">
+     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-4 sm:gap-6 mb-4">
+          <!-- Buscador -->
+          <div class="relative lg:col-span-2">
+               <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                    </svg>
+               </div>
+               <input type="text" placeholder="Buscar programas..." [(ngModel)]="searchTerm" (ngModelChange)="onSearch()"
+                    class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 hover:border-gray-400 text-sm sm:text-base">
+          </div>
+
+          <!-- Filtro por Rango de Fechas -->
+          <div class="flex flex-col gap-1 lg:col-span-2">
+               <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                         <label for="startDate" class="block text-xs font-medium text-gray-700 mb-1">
+                              Desde
+                         </label>
+                         <input
+                              type="date"
+                              id="startDate"
+                              [(ngModel)]="startDate"
+                              (change)="onDateRangeChange()"
+                              class="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 hover:border-gray-400 bg-white text-sm"
+                         />
+                    </div>
+
+                    <div>
+                         <label for="endDate" class="block text-xs font-medium text-gray-700 mb-1">
+                              Hasta
+                         </label>
+                         <input
+                              type="date"
+                              id="endDate"
+                              [(ngModel)]="endDate"
+                              (change)="onDateRangeChange()"
+                              class="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 hover:border-gray-400 bg-white text-sm"
+                         />
+                    </div>
+               </div>
+          </div>
+
+          <!-- Toggle Activos/Inactivos -->
+          <div class="relative dropdown-container">
+               <button (click)="toggleStatusDropdown()"
+                    class="w-full px-3 py-2.5 pr-8 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 hover:border-gray-400 bg-white text-sm font-medium text-gray-700 cursor-pointer hover:bg-gray-50 flex items-center justify-between">
+                    <span class="text-gray-700 truncate">
+                         {{getStatusDisplayText()}}
+                    </span>
+                    <svg class="w-4 h-4 transition-transform duration-200 ml-1 flex-shrink-0"
+                         [class.rotate-180]="isStatusDropdownOpen" fill="none" stroke="currentColor"
+                         viewBox="0 0 24 24">
+                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m6 9 6 6 6-6">
+                         </path>
+                    </svg>
+               </button>
+
+               <!-- Dropdown Menu -->
+               <div *ngIf="isStatusDropdownOpen"
+                    class="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg">
+                    <div class="py-1">
+                         <button (click)="selectStatus('all')" [class.bg-blue-50]="statusFilter === 'all'"
+                              [class.text-blue-600]="statusFilter === 'all'"
+                              class="w-full px-3 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 transition-colors duration-150 flex items-center">
+                              <svg *ngIf="statusFilter === 'all'" class="w-4 h-4 mr-2 text-blue-500" fill="none"
+                                   stroke="currentColor" viewBox="0 0 24 24">
+                                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M5 13l4 4L19 7"></path>
+                              </svg>
+                              <span *ngIf="statusFilter === 'all'">Todos los programas</span>
+                              <span class="ml-6" *ngIf="statusFilter !== 'all'">Todos los programas</span>
+                         </button>
+                         <button (click)="selectStatus('active')" [class.bg-blue-50]="statusFilter === 'active'"
+                              [class.text-blue-600]="statusFilter === 'active'"
+                              class="w-full px-3 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 transition-colors duration-150 flex items-center">
+                              <svg *ngIf="statusFilter === 'active'" class="w-4 h-4 mr-2 text-green-500"
+                                   fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M5 13l4 4L19 7"></path>
+                              </svg>
+                              <span *ngIf="statusFilter === 'active'">Solo activos</span>
+                              <span class="ml-6" *ngIf="statusFilter !== 'active'">Solo activos</span>
+                         </button>
+                         <button (click)="selectStatus('inactive')"
+                              [class.bg-blue-50]="statusFilter === 'inactive'"
+                              [class.text-blue-600]="statusFilter === 'inactive'"
+                              class="w-full px-3 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 transition-colors duration-150 flex items-center">
+                              <svg *ngIf="statusFilter === 'inactive'" class="w-4 h-4 mr-2 text-red-500"
+                                   fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M5 13l4 4L19 7"></path>
+                              </svg>
+                              <span *ngIf="statusFilter === 'inactive'">Solo inactivos</span>
+                              <span class="ml-6" *ngIf="statusFilter !== 'inactive'">Solo inactivos</span>
+                         </button>
+                    </div>
+               </div>
+          </div>
+
+          <!-- Botón de Reporte -->
+          <div class="flex gap-2">
+               <button (click)="generateReport()"
+                    class="flex-1 bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white font-medium py-2.5 px-4 rounded-lg transition-all duration-200 shadow hover:shadow-md text-sm flex items-center justify-center">
+                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor"
+                         viewBox="0 0 24 24">
+                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
+                         </path>
+                    </svg>
+                    <span class="hidden sm:inline">Reporte</span>
+                    <span class="sm:hidden">PDF</span>
+               </button>
+
+               <!-- Nuevo Programa -->
+               <button (click)="openCreateProgramModal()"
+                    class="flex-1 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-medium py-2.5 px-4 rounded-lg transition-all duration-200 shadow hover:shadow-md text-sm flex items-center justify-center">
+                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor"
+                         viewBox="0 0 24 24">
+                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                    </svg>
+                    <span class="hidden sm:inline">Nuevo</span>
+                    <span class="sm:hidden">+</span>
+               </button>
+          </div>
+     </div>
+     
+     <!-- Fila adicional para filtros especiales -->
+     <div class="flex flex-wrap items-center gap-4 pt-4 border-t border-gray-200">
+          <div class="flex items-center">
+               <input
+                    type="checkbox"
+                    id="showDeletedPrograms"
+                    [(ngModel)]="showDeletedPrograms"
+                    (ngModelChange)="onShowDeletedProgramsChange()"
+                    class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+               <label for="showDeletedPrograms" class="ml-2 block text-sm text-gray-700">
+                    Mostrar programas eliminados
+               </label>
+          </div>
+     </div>
+</div>
+
+<!-- Vista de Tabla para Desktop -->
+<div class="hidden lg:block bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden">
+     <div class="overflow-x-auto">
+          <table class="min-w-full divide-y divide-gray-200">
+               <thead class="bg-gray-50">
+                    <tr>
+                         <th scope="col"
+                              class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                              Programa</th>
+                         <th scope="col"
+                              class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                              Fecha</th>
+                         <th scope="col"
+                              class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                              Horario</th>
+                         <th scope="col"
+                              class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                              Ruta</th>
+                         <th scope="col"
+                              class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                              Ubicación</th>
+                         <th scope="col"
+                              class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                              Estado</th>
+                         <th scope="col"
+                              class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                              Acciones</th>
+                    </tr>
+               </thead>
+               <tbody class="bg-white divide-y divide-gray-200">
+                    <tr *ngFor="let program of paginatedPrograms; trackBy: trackByProgramId"
+                         class="hover:bg-gray-50 transition-colors duration-150"
+                         [class]="getDeletedProgramRowClass(program)">
+
+                         <!-- Código -->
+                         <td class="px-6 py-4 whitespace-nowrap">
+                              <div class="flex items-center">
+                                   <div class="flex-shrink-0 h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center">
+                                        <span class="text-blue-800 font-medium text-sm">{{ program.programCode.substring(0, 2) }}</span>
+                                   </div>
+                                   <div class="ml-4">
+                                        <div class="text-sm font-medium text-gray-900">{{ program.programCode }}</div>
+                                        <!-- Indicador de programa eliminado -->
+                                        <div *ngIf="isProgramDeleted(program)" class="text-xs text-red-600 font-medium flex items-center mt-1">
+                                             <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                             </svg>
+                                             Eliminado
+                                        </div>
+                                   </div>
+                              </div>
+                         </td>
+
+                         <!-- Fecha -->
+                         <td class="px-6 py-4 whitespace-nowrap">
+                              <div class="text-sm text-gray-900">
+                                   {{ program.programDate | date:'dd/MM/yyyy' }}
+                              </div>
+                              <div class="text-sm text-gray-500">
+                                   {{ program.programDate | date:'EEEE' | titlecase }}
+                              </div>
+                         </td>
+
+                         <!-- Horario -->
+                         <td class="px-6 py-4 whitespace-nowrap">
+                              <div class="text-sm text-gray-900">
+                                   <span *ngIf="hasActualTimes(program); else plannedTime">
+                                        {{ program.actualStartTime }} - {{ program.actualEndTime }}
+                                   </span>
+                                   <ng-template #plannedTime>
+                                        {{ program.plannedStartTime }} - {{ program.plannedEndTime }}
+                                   </ng-template>
+                              </div>
+                              <div class="text-sm text-gray-500" *ngIf="hasActualTimes(program)">
+                                   Planificado: {{ program.plannedStartTime }} - {{ program.plannedEndTime }}
+                              </div>
+                         </td>
+
+                         <!-- Ruta -->
+                         <td class="px-6 py-4 whitespace-nowrap">
+                              <div class="text-sm font-medium text-gray-900">
+                                   {{ getRouteName(program.routeId) }}
+                              </div>
+                         </td>
+
+                         <!-- Ubicación (Zona + Calle) -->
+                         <td class="px-6 py-4">
+                              <div class="text-sm text-gray-900">
+                                   {{ getZoneName(program.zoneId) }}
+                              </div>
+                              <div class="text-sm text-gray-500">
+                                   {{ getStreetName(program.streetId) }}
+                              </div>
+                         </td>
+
+                         <!-- Estado -->
+                         <td class="px-6 py-4 whitespace-nowrap">
+                              <span [class]="getStatusBadgeClass(program.status, program.id)">
+                                   {{getStatusLabel(program.status, program.id)}}
+                              </span>
+                         </td>
+
+                         <!-- Acciones -->
+                         <td class="px-2 py-2 whitespace-nowrap text-right text-sm font-medium">
+                              <div class="flex flex-wrap gap-2">
+                                   <!-- Botón Ver Detalles -->
+                                   <button (click)="viewProgramDetails(program)"
+                                        class="flex items-center px-3 py-2 text-gray-600 hover:text-gray-700 hover:bg-gray-50 rounded-lg transition-all duration-150 text-xs font-medium border border-gray-200 hover:border-gray-300">
+                                        <svg class="w-3.5 h-3.5 mr-1.5" fill="none" stroke="currentColor"
+                                             viewBox="0 0 24 24">
+                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                  d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                  d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z">
+                                             </path>
+                                        </svg>
+                                        <span>Ver</span>
+                                   </button>
+
+                                   <!-- Botón Editar -->
+                                   <button (click)="editProgram(program)"
+                                        class="flex items-center px-3 py-2 text-blue-600 hover:text-blue-700 hover:bg-blue-50 rounded-lg transition-all duration-150 text-xs font-medium border border-blue-200 hover:border-blue-300">
+                                        <svg class="w-3.5 h-3.5 mr-1.5" fill="none" stroke="currentColor"
+                                             viewBox="0 0 24 24">
+                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                  d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z">
+                                             </path>
+                                        </svg>
+                                        <span>Editar</span>
+                                   </button>
+
+                                   <!-- Botón Eliminar Permanentemente -->
+                                   <button *ngIf="program.status !== ProgramStatus.COMPLETED" (click)="preparePhysicalDeleteProgram(program)"
+                                        class="flex items-center px-3 py-2 text-white bg-red-600 hover:bg-red-700 rounded-lg transition-all duration-150 text-xs font-medium border border-red-200 hover:border-red-300">
+                                        <svg class="w-3.5 h-3.5 mr-1.5" fill="none" stroke="currentColor"
+                                             viewBox="0 0 24 24">
+                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                  d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16">
+                                             </path>
+                                        </svg>
+                                        <span>Eliminar</span>
+                                   </button>
+
+                                   <!-- Botón Activar (para programas cancelados) -->
+                                   <button *ngIf="program.status === ProgramStatus.CANCELLED" (click)="prepareRestoreProgram(program)"
+                                        class="flex items-center px-3 py-2 text-white bg-green-600 hover:bg-green-700 rounded-lg transition-all duration-150 text-xs font-medium border border-green-200 hover:border-green-300">
+                                        <svg class="w-3.5 h-3.5 mr-1.5" fill="none" stroke="currentColor"
+                                             viewBox="0 0 24 24">
+                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                  d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15">
+                                             </path>
+                                        </svg>
+                                        <span>Activar</span>
+                                   </button>
+                              </div>
+                         </td>
+                    </tr>
+                    
+                    <!-- Mensaje cuando no hay programas -->
+                    <tr *ngIf="paginatedPrograms.length === 0 && !isLoading">
+                         <td colspan="7" class="px-6 py-12 text-center">
+                              <div class="flex flex-col items-center justify-center">
+                                   <svg class="w-16 h-16 text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                             d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2">
+                                        </path>
+                                   </svg>
+                                   <h3 class="text-lg font-medium text-gray-900 mb-1">No se encontraron programas</h3>
+                                   <p class="text-gray-500 max-w-md">
+                                        <span *ngIf="searchTerm || statusFilter !== 'all' || startDate || endDate">
+                                             No hay programas que coincidan con los filtros aplicados.
+                                        </span>
+                                        <span *ngIf="!searchTerm && statusFilter === 'all' && !startDate && !endDate">
+                                             Aún no se han creado programas. 
+                                             <button (click)="openCreateProgramModal()" class="text-blue-600 hover:text-blue-800 font-medium">
+                                                  Crear el primero
+                                             </button>
+                                        </span>
+                                   </p>
+                              </div>
+                         </td>
+                    </tr>
+                    
+                    <!-- Mensaje de carga -->
+                    <tr *ngIf="isLoading">
+                         <td colspan="7" class="px-6 py-12 text-center">
+                              <div class="flex flex-col items-center justify-center">
+                                   <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mb-4"></div>
+                                   <p class="text-gray-600">Cargando programas...</p>
+                              </div>
+                         </td>
+                    </tr>
+               </tbody>
+          </table>
+     </div>
+</div>
+
+<!-- Vista de Tarjetas para Mobile -->
+<div class="lg:hidden grid grid-cols-1 md:grid-cols-2 gap-4 px-4">
+     <div *ngFor="let program of paginatedPrograms; trackBy: trackByProgramId"
+          class="bg-white rounded-xl shadow-lg border border-gray-100 p-4 hover:shadow-xl transition-shadow duration-200"
+          [class]="getDeletedProgramRowClass(program)">
+          <div class="flex justify-between items-start">
+               <div>
+                    <div class="flex items-center mb-2">
+                         <div
+                              class="w-8 h-8 rounded-full flex items-center justify-center text-white font-bold text-xs bg-blue-500 mr-2">
+                              {{program.programCode.charAt(0)}}
+                         </div>
+                         <h3 class="text-lg font-bold text-gray-900">{{program.programCode}}</h3>
+                    </div>
+                    <!-- Indicador de programa eliminado en vista móvil -->
+                    <div *ngIf="isProgramDeleted(program)" class="text-xs text-red-600 font-medium flex items-center mb-2">
+                         <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                         </svg>
+                         Eliminado
+                    </div>
+                    <div class="text-sm text-gray-500 mb-1">
+                         <span class="font-medium">Fecha:</span> {{ program.programDate | date:'dd/MM/yyyy' }}
+                    </div>
+                    <div class="text-sm text-gray-500 mb-1">
+                         <span class="font-medium">Horario:</span>
+                         <span *ngIf="hasActualTimes(program); else plannedTimeMobile">
+                              {{ program.actualStartTime }} - {{ program.actualEndTime }}
+                         </span>
+                         <ng-template #plannedTimeMobile>
+                              {{ program.plannedStartTime }} - {{ program.plannedEndTime }}
+                         </ng-template>
+                    </div>
+                    <div class="text-sm text-gray-500 mb-1">
+                         <span class="font-medium">Ruta:</span> {{ getRouteName(program.routeId) }}
+                    </div>
+                    <div class="text-sm text-gray-500 mb-1">
+                         <span class="font-medium">Zona:</span> {{ getZoneName(program.zoneId) }}
+                    </div>
+                    <div class="text-sm text-gray-500 mb-1">
+                         <span class="font-medium">Calle:</span> {{ getStreetName(program.streetId) }}
+                    </div>
+                    <div class="mt-2">
+                         <span [class]="getStatusBadgeClass(program.status, program.id)">
+                              {{getStatusLabel(program.status, program.id)}}
+                         </span>
+                    </div>
+               </div>
+          </div>
+          <div class="mt-4 flex flex-wrap gap-2">
+               <!-- Botón Ver Detalles -->
+               <button (click)="viewProgramDetails(program)"
+                    class="flex items-center px-3 py-1.5 text-gray-600 hover:text-gray-700 hover:bg-gray-50 rounded-lg transition-all duration-150 text-xs font-medium border border-gray-200 hover:border-gray-300">
+                    <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z">
+                         </path>
+                    </svg>
+                    <span>Ver</span>
+               </button>
+               
+               <!-- Botón Editar -->
+               <button (click)="editProgram(program)"
+                    class="flex items-center px-3 py-1.5 text-blue-600 hover:text-blue-700 hover:bg-blue-50 rounded-lg transition-all duration-150 text-xs font-medium border border-blue-200 hover:border-blue-300">
+                    <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z">
+                         </path>
+                    </svg>
+                    <span>Editar</span>
+               </button>
+               
+               <!-- Botón Eliminar Permanentemente -->
+               <button *ngIf="program.status !== ProgramStatus.COMPLETED" (click)="preparePhysicalDeleteProgram(program)"
+                    class="flex items-center px-3 py-1.5 text-white bg-red-600 hover:bg-red-700 rounded-lg transition-all duration-150 text-xs font-medium border border-red-200 hover:border-red-300">
+                    <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16">
+                         </path>
+                    </svg>
+                    <span>Eliminar</span>
+               </button>
+               
+               <!-- Botón Activar (para programas cancelados) -->
+               <button *ngIf="program.status === ProgramStatus.CANCELLED" (click)="prepareRestoreProgram(program)"
+                    class="flex items-center px-3 py-1.5 text-white bg-green-600 hover:bg-green-700 rounded-lg transition-all duration-150 text-xs font-medium border border-green-200 hover:border-green-300">
+                    <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15">
+                             </path>
+                    </svg>
+                    <span>Activar</span>
+               </button>
+          </div>
+     </div>
+     
+     <!-- Mensaje cuando no hay programas en vista móvil -->
+     <div *ngIf="paginatedPrograms.length === 0 && !isLoading" 
+          class="col-span-full bg-white rounded-xl shadow-lg border border-gray-100 p-8 text-center">
+          <div class="flex flex-col items-center justify-center">
+               <svg class="w-16 h-16 text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                         d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2">
+                    </path>
+               </svg>
+               <h3 class="text-lg font-medium text-gray-900 mb-1">No se encontraron programas</h3>
+               <p class="text-gray-500 mb-4">
+                    <span *ngIf="searchTerm || statusFilter !== 'all' || startDate || endDate">
+                         No hay programas que coincidan con los filtros aplicados.
+                    </span>
+                    <span *ngIf="!searchTerm && statusFilter === 'all' && !startDate && !endDate">
+                         Aún no se han creado programas.
+                    </span>
+               </p>
+               <button *ngIf="!searchTerm && statusFilter === 'all' && !startDate && !endDate"
+                    (click)="openCreateProgramModal()"
+                    class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+                    Crear Programa
+               </button>
+          </div>
+     </div>
+     
+     <!-- Mensaje de carga en vista móvil -->
+     <div *ngIf="isLoading" class="col-span-full bg-white rounded-xl shadow-lg border border-gray-100 p-8 text-center">
+          <div class="flex flex-col items-center justify-center">
+               <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mb-4"></div>
+               <p class="text-gray-600">Cargando programas...</p>
+          </div>
+     </div>
+</div>
+
+<!-- Paginación -->
+<div class="bg-white rounded-xl shadow-lg border border-gray-100 p-4 sm:p-6 mt-6" *ngIf="totalPages > 1">
+     <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div class="text-sm text-gray-700">
+               Mostrando
+               <span class="font-medium">{{(currentPage - 1) * pageSize + 1}}</span>
+               a
+               <span class="font-medium">{{Math.min(currentPage * pageSize, filteredPrograms.length)}}</span>
+               de
+               <span class="font-medium">{{filteredPrograms.length}}</span>
+               resultados
+          </div>
+          <div class="flex items-center space-x-2">
+               <button (click)="previousPage()"
+                    [disabled]="currentPage === 1"
+                    class="px-3 py-2 rounded-lg border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-150">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7">
+                         </path>
+                    </svg>
+               </button>
+
+               <div class="flex space-x-1">
+                    <button *ngFor="let page of getPages()" (click)="goToPage(page)"
+                         [class.bg-blue-500]="page === currentPage"
+                         [class.text-white]="page === currentPage"
+                         [class.border-blue-500]="page === currentPage"
+                         class="w-10 h-10 flex items-center justify-center rounded-lg border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors duration-150">
+                         {{page}}
+                    </button>
+               </div>
+
+               <button (click)="nextPage()"
+                    [disabled]="currentPage === totalPages"
+                    class="px-3 py-2 rounded-lg border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-150">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7">
+                         </path>
+                    </svg>
+               </button>
+          </div>
+     </div>
+</div>
+
+<!-- Modal de Crear Programa - ahora usamos el modal lateral con el diseño de horarios -->
+<app-create-program-modal-v2 
+     *ngIf="isCreateProgramModalOpen" 
+     [isOpen]="isCreateProgramModalOpen" 
+     [organizationId]="currentOrganizationId"
+     (close)="closeCreateProgramModal()"
+     (programCreated)="onProgramCreated()">
+</app-create-program-modal-v2>
+
+<!-- Modal de Actualizar Programa -->
+<app-update-program-modal
+     *ngIf="isUpdateProgramModalOpen"
+     [isOpen]="isUpdateProgramModalOpen"
+     [organizationId]="currentOrganizationId"
+     [program]="programToUpdate"
+     (close)="closeUpdateProgramModal()"
+     (programUpdated)="onProgramUpdated()">
+</app-update-program-modal>
+
+<!-- Modal de Detalles del Programa -->
+<app-view-program-modal
+     *ngIf="isProgramDetailsModalOpen"
+     [isOpen]="isProgramDetailsModalOpen"
+     [program]="getProgramById(selectedProgramId)"
+     (close)="closeProgramDetailsModal()">
+</app-view-program-modal>
+
+<!-- Modal de Confirmación -->
+<app-program-confirmation-modal
+     *ngIf="isConfirmationModalOpen"
+     [isOpen]="isConfirmationModalOpen"
+     [data]="confirmationData"
+     (confirm)="onConfirmAction()"
+     (cancel)="onCancelAction()">
+</app-program-confirmation-modal>
+
+

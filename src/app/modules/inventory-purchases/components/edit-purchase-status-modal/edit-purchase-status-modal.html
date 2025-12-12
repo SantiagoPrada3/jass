@@ -1,0 +1,163 @@
+<!-- Modal Backdrop -->
+<div class="fixed inset-0 bg-transparent bg-opacity-50 z-[9998] flex items-center justify-center p-4" (click)="onClose()"
+     (keydown.escape)="onClose()">
+
+     <!-- Modal Panel -->
+     <div class="bg-white rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-hidden flex flex-col"
+          (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()">
+
+          <!-- Header -->
+          <div class="px-6 py-4 bg-gradient-to-r from-blue-600 to-blue-700 text-white flex-shrink-0">
+               <div class="flex items-center justify-between">
+                    <div class="flex items-center">
+                         <div
+                              class="w-10 h-10 bg-white bg-opacity-20 rounded-full flex items-center justify-center mr-3">
+                              <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z">
+                                   </path>
+                              </svg>
+                         </div>
+                         <div>
+                              <h2 class="text-xl font-bold">Editar Estado de Compra</h2>
+                              <p class="text-sm text-blue-100">{{ purchase.purchaseCode }}</p>
+                         </div>
+                    </div>
+                    <button (click)="onClose()"
+                         class="text-blue-100 hover:text-white p-1 rounded-lg hover:bg-white hover:bg-opacity-20 transition-colors">
+                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                   d="M6 18L18 6M6 6l12 12"></path>
+                         </svg>
+                    </button>
+               </div>
+          </div>
+
+          <!-- Content -->
+          <div class="flex-1 overflow-y-auto p-6">
+
+               <!-- Información de la Compra -->
+               <div class="bg-slate-50 rounded-lg p-4 mb-6">
+                    <h3 class="text-lg font-semibold text-slate-800 mb-3">Información de la Compra</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                         <div>
+                              <span class="text-slate-600">Proveedor:</span>
+                              <p class="font-medium text-slate-900">{{ purchase.supplierName }}</p>
+                         </div>
+                         <div>
+                              <span class="text-slate-600">Fecha de Compra:</span>
+                              <p class="font-medium text-slate-900">{{ purchase.purchaseDate | date:'dd/MM/yyyy' }}</p>
+                         </div>
+                         <div>
+                              <span class="text-slate-600">Total:</span>
+                              <p class="font-medium text-slate-900">S/ {{ purchase.totalAmount | number:'1.2-2' }}</p>
+                         </div>
+                         <div>
+                              <span class="text-slate-600">Estado Actual:</span>
+                              <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium"
+                                   [class]="getStatusColor(purchase.status)">
+                                   {{ PurchaseStatusConfig[purchase.status].label || purchase.status }}
+                              </span>
+                         </div>
+                    </div>
+               </div>
+
+               <!-- Formulario -->
+               <form [formGroup]="statusForm" (ngSubmit)="onSubmit()">
+
+                    <!-- Nuevo Estado -->
+                    <div class="mb-6">
+                         <label for="status" class="block text-sm font-medium text-slate-700 mb-3">
+                              Nuevo Estado <span class="text-red-500">*</span>
+                         </label>
+
+                         <!-- Mensaje si no se puede cambiar -->
+                         <div *ngIf="!canChangeStatus()"
+                              class="bg-amber-50 border border-amber-200 rounded-lg p-4 mb-4">
+                              <div class="flex items-center">
+                                   <svg class="w-5 h-5 text-amber-600 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd"
+                                             d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
+                                             clip-rule="evenodd"></path>
+                                   </svg>
+                                   <span class="text-amber-800 text-sm">
+                                        Esta compra está en un estado final y no se puede modificar.
+                                   </span>
+                              </div>
+                         </div>
+
+                         <!-- Radio buttons para estados disponibles -->
+                         <div class="space-y-3">
+                              <div *ngFor="let statusOption of availableStatuses" class="relative">
+                                   <label
+                                        class="flex items-start p-4 border border-slate-200 rounded-lg cursor-pointer hover:bg-slate-50 transition-colors"
+                                        [class.border-blue-500]="statusForm.get('status')?.value === statusOption.value"
+                                        [class.bg-blue-50]="statusForm.get('status')?.value === statusOption.value">
+                                        <input type="radio" formControlName="status" [value]="statusOption.value"
+                                             [disabled]="!canChangeStatus()" class="mt-1 mr-3 text-blue-600">
+                                        <div class="flex-1">
+                                             <div class="flex items-center justify-between">
+                                                  <span class="font-medium text-slate-900">{{ statusOption.label
+                                                       }}</span>
+                                                  <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium"
+                                                       [class]="getStatusColor(statusOption.value)">
+                                                       {{ statusOption.label }}
+                                                  </span>
+                                             </div>
+                                             <p class="text-sm text-slate-600 mt-1">{{ statusOption.description }}</p>
+                                        </div>
+                                   </label>
+                              </div>
+                         </div>
+
+                         <div *ngIf="isFieldInvalid('status')" class="mt-2 text-xs text-red-600">
+                              {{ getFieldError('status') }}
+                         </div>
+                    </div>
+
+                    <!-- Observaciones -->
+                    <div class="mb-6">
+                         <label for="observations" class="block text-sm font-medium text-slate-700 mb-2">
+                              Observaciones
+                              <span class="text-slate-500 text-xs">(Opcional, máximo 500 caracteres)</span>
+                         </label>
+                         <textarea id="observations" formControlName="observations" rows="4" maxlength="500"
+                              placeholder="Ingrese observaciones adicionales sobre el cambio de estado..."
+                              class="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none"
+                              [class.border-red-500]="isFieldInvalid('observations')"></textarea>
+                         <div class="flex justify-between items-center mt-1">
+                              <div *ngIf="isFieldInvalid('observations')" class="text-xs text-red-600">
+                                   {{ getFieldError('observations') }}
+                              </div>
+                              <div class="text-xs text-slate-500 ml-auto">
+                                   {{ (statusForm.get('observations')?.value || '').length }}/500 caracteres
+                              </div>
+                         </div>
+                    </div>
+
+               </form>
+          </div>
+
+          <!-- Footer con botones -->
+          <div class="border-t border-slate-200 px-6 py-4 flex-shrink-0">
+               <div class="flex justify-end space-x-3">
+                    <button type="button" (click)="onClose()" [disabled]="loading"
+                         class="px-4 py-2 border border-slate-300 rounded-md text-sm font-medium text-slate-700 bg-white hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 transition-colors">
+                         Cancelar
+                    </button>
+                    <button type="button" (click)="onSubmit()"
+                         [disabled]="loading || statusForm.invalid || !canChangeStatus()"
+                         class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors">
+                         <div *ngIf="loading" class="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2">
+                         </div>
+                         <svg *ngIf="!loading" class="w-4 h-4 mr-2" fill="none" stroke="currentColor"
+                              viewBox="0 0 24 24">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7">
+                              </path>
+                         </svg>
+                         {{ loading ? 'Actualizando...' : 'Actualizar Estado' }}
+                    </button>
+               </div>
+          </div>
+     </div>
+</div>

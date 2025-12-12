@@ -1,0 +1,446 @@
+/* ===== RESPONSIVE DESIGN PARA PAYMENTS ADMIN ===== */
+
+/* Animaciones personalizadas para el modal lateral */
+@keyframes slideInFromRight {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideOutToRight {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(100%);
+  }
+}
+
+@keyframes slideInFromBottom {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideOutToBottom {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(100%);
+  }
+}
+
+.modal-slide-in {
+  animation: slideInFromRight 0.3s ease-out;
+}
+
+.modal-slide-out {
+  animation: slideOutToRight 0.3s ease-in;
+}
+
+.modal-slide-in-mobile {
+  animation: slideInFromBottom 0.3s ease-out;
+}
+
+.modal-slide-out-mobile {
+  animation: slideOutToBottom 0.3s ease-in;
+}
+
+/* Scrollbar personalizado */
+.modal-scroll::-webkit-scrollbar {
+  width: 6px;
+}
+
+.modal-scroll::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+
+.modal-scroll::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 3px;
+}
+
+.modal-scroll::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* ===== RESPONSIVE BREAKPOINTS ===== */
+
+/* Extra Small devices (phones, 320px and up) */
+@media (max-width: 479px) {
+  /* Header responsive */
+  .page-header h1 {
+    font-size: 1.5rem !important;
+    line-height: 2rem !important;
+  }
+  
+  .page-header p {
+    font-size: 0.875rem !important;
+    line-height: 1.25rem !important;
+  }
+
+  /* Stats cards - stack vertically */
+  .stats-grid {
+    grid-template-columns: 1fr !important;
+    gap: 0.75rem !important;
+  }
+
+  .stats-card {
+    padding: 1rem !important;
+  }
+
+  .stats-card .stats-icon {
+    width: 2rem !important;
+    height: 2rem !important;
+    padding: 0.5rem !important;
+    margin-right: 0.75rem !important;
+  }
+
+  .stats-card .stats-value {
+    font-size: 1.25rem !important;
+    line-height: 1.75rem !important;
+  }
+
+  .stats-card .stats-label {
+    font-size: 0.75rem !important;
+  }
+
+  /* Filters section */
+  .filters-container {
+    flex-direction: column !important;
+    gap: 0.75rem !important;
+  }
+
+  .search-container {
+    max-width: 100% !important;
+  }
+
+  .filters-actions {
+    flex-direction: column !important;
+    gap: 0.5rem !important;
+    width: 100% !important;
+  }
+
+  .filters-actions select {
+    width: 100% !important;
+  }
+
+  .export-buttons {
+    flex-direction: column !important;
+    gap: 0.5rem !important;
+    width: 100% !important;
+  }
+
+  .export-buttons button {
+    width: 100% !important;
+    justify-content: center !important;
+  }
+
+  /* Table responsive */
+  .table-container {
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .payments-table {
+    min-width: 800px !important;
+  }
+
+  .table-cell {
+    padding: 0.5rem !important;
+    font-size: 0.75rem !important;
+  }
+
+  .user-avatar {
+    width: 2rem !important;
+    height: 2rem !important;
+    font-size: 0.75rem !important;
+  }
+
+  .user-info .user-name {
+    font-size: 0.75rem !important;
+  }
+
+  .user-info .user-email {
+    font-size: 0.625rem !important;
+  }
+
+  .action-buttons {
+    flex-direction: column !important;
+    gap: 0.25rem !important;
+  }
+
+  .action-button {
+    font-size: 0.625rem !important;
+    padding: 0.25rem 0.5rem !important;
+  }
+
+  /* Modal responsive */
+  .modal-panel {
+    width: 100% !important;
+    max-width: 100% !important;
+    height: 100vh !important;
+    top: 0 !important;
+    right: 0 !important;
+    border-radius: 0 !important;
+  }
+
+  .modal-header {
+    padding: 1rem !important;
+  }
+
+  .modal-header h2 {
+    font-size: 1.125rem !important;
+  }
+
+  .modal-header p {
+    font-size: 0.75rem !important;
+  }
+
+  .modal-content {
+    padding: 1rem !important;
+  }
+
+  .form-section {
+    padding: 0.75rem !important;
+  }
+
+  .form-section h3 {
+    font-size: 1rem !important;
+    margin-bottom: 0.75rem !important;
+  }
+
+  .form-grid {
+    grid-template-columns: 1fr !important;
+    gap: 0.75rem !important;
+  }
+
+  .form-input {
+    font-size: 0.875rem !important;
+    padding: 0.5rem 0.75rem !important;
+  }
+
+  /* Pagination */
+  .pagination-container {
+    flex-direction: column !important;
+    gap: 0.75rem !important;
+    text-align: center !important;
+  }
+
+  .pagination-info {
+    font-size: 0.75rem !important;
+  }
+
+  .pagination-buttons button {
+    padding: 0.5rem !important;
+  }
+}
+
+/* Small devices (landscape phones, 480px and up) */
+@media (min-width: 480px) and (max-width: 767px) {
+  /* Stats cards - 2 columns */
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+
+  /* Filters */
+  .filters-container {
+    flex-direction: column !important;
+    gap: 1rem !important;
+  }
+
+  .filters-actions {
+    flex-direction: row !important;
+    flex-wrap: wrap !important;
+    gap: 0.5rem !important;
+  }
+
+  .export-buttons {
+    flex-wrap: wrap !important;
+  }
+
+  /* Table */
+  .table-container {
+    overflow-x: auto !important;
+  }
+
+  .payments-table {
+    min-width: 900px !important;
+  }
+
+  /* Modal */
+  .modal-panel {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  .form-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+}
+
+/* Medium devices (tablets, 768px and up) */
+@media (min-width: 768px) and (max-width: 1023px) {
+  /* Stats cards - 3 columns */
+  .stats-grid {
+    grid-template-columns: repeat(3, 1fr) !important;
+  }
+
+  /* Filters */
+  .filters-container {
+    flex-direction: row !important;
+    flex-wrap: wrap !important;
+    gap: 1rem !important;
+  }
+
+  .search-container {
+    flex: 1 !important;
+    min-width: 250px !important;
+  }
+
+  /* Table */
+  .table-container {
+    overflow-x: auto !important;
+  }
+
+  .payments-table {
+    min-width: 1000px !important;
+  }
+
+  /* Modal */
+  .modal-panel {
+    width: 90% !important;
+    max-width: 600px !important;
+  }
+}
+
+/* Large devices (desktops, 1024px and up) */
+@media (min-width: 1024px) {
+  /* Default desktop styles - no changes needed */
+  .table-container {
+    overflow-x: visible !important;
+  }
+
+  .modal-panel {
+    width: 100% !important;
+    max-width: 768px !important;
+  }
+}
+
+/* Extra large devices (large desktops, 1200px and up) */
+@media (min-width: 1200px) {
+  .modal-panel {
+    max-width: 896px !important;
+  }
+
+  .container-padding {
+    padding-left: 2rem !important;
+    padding-right: 2rem !important;
+  }
+}
+
+/* ===== UTILITY CLASSES FOR RESPONSIVE ===== */
+
+/* Hide elements on mobile */
+@media (max-width: 767px) {
+  .hidden-mobile {
+    display: none !important;
+  }
+}
+
+/* Hide elements on desktop */
+@media (min-width: 768px) {
+  .hidden-desktop {
+    display: none !important;
+  }
+}
+
+/* Responsive text sizes */
+.text-responsive-xl {
+  font-size: 1.5rem;
+  line-height: 2rem;
+}
+
+@media (min-width: 768px) {
+  .text-responsive-xl {
+    font-size: 1.875rem;
+    line-height: 2.25rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .text-responsive-xl {
+    font-size: 2.25rem;
+    line-height: 2.5rem;
+  }
+}
+
+/* Responsive spacing */
+.spacing-responsive {
+  padding: 0.75rem;
+}
+
+@media (min-width: 768px) {
+  .spacing-responsive {
+    padding: 1rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .spacing-responsive {
+    padding: 1.5rem;
+  }
+}
+
+/* Touch-friendly buttons */
+@media (max-width: 767px) {
+  .touch-button {
+    min-height: 44px !important;
+    min-width: 44px !important;
+    padding: 0.75rem 1rem !important;
+  }
+}
+
+/* Responsive dropdown */
+@media (max-width: 767px) {
+  .dropdown-menu {
+    position: fixed !important;
+    top: auto !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    width: 100% !important;
+    border-radius: 0.5rem 0.5rem 0 0 !important;
+    max-height: 50vh !important;
+    overflow-y: auto !important;
+  }
+}
+
+/* Responsive modal overlay */
+@media (max-width: 767px) {
+  .modal-overlay {
+    background-color: rgba(0, 0, 0, 0.75) !important;
+  }
+}
+
+/* Print styles */
+@media print {
+  .no-print {
+    display: none !important;
+  }
+  
+  .print-full-width {
+    width: 100% !important;
+  }
+  
+  .page-break {
+    page-break-before: always;
+  }
+}

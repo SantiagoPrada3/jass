@@ -1,0 +1,37 @@
+/* Programming List Component Styles */
+
+.scroll-container {
+  overflow-x: auto;
+}
+
+.scrollbar-thin::-webkit-scrollbar {
+  height: 8px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background: #c5c5c5;
+  border-radius: 4px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb:hover {
+  background: #a0a0a0;
+}
+
+.dropdown-container {
+  position: relative;
+}
+
+@media (max-width: 1023px) {
+  .lg\:hidden {
+    display: block !important;
+  }
+  
+  .lg\:block {
+    display: none !important;
+  }
+}

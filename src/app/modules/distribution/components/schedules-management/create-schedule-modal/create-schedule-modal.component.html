@@ -1,0 +1,283 @@
+<!-- Modal de Crear Horario - Lateral Derecho -->
+<div *ngIf="isOpen" class="fixed inset-0 z-[8000] " (keydown.escape)="onClose()" (keyup.escape)="onClose()"
+     tabindex="0">
+
+     <!-- Background overlay - CLIC PARA CERRAR -->
+     <div class="absolute inset-0 bg-gray-900/50" (click)="onClose()"></div>
+
+     <!-- Modal Panel -->
+     <div class="absolute right-0 top-0 h-full w-full max-w-3xl bg-slate-900 shadow-xl transform transition-transform duration-300 ease-out flex flex-col"
+          [class.translate-x-full]="!isOpen" [class.translate-x-0]="isOpen" (click)="$event.stopPropagation()">
+
+          <!-- Header -->
+          <div class="flex items-center justify-between px-6 py-4 bg-slate-900 border-b border-slate-800 flex-shrink-0">
+               <div class="flex items-center space-x-3">
+                    <div
+                         class="w-12 h-12 rounded-full flex items-center justify-center text-slate-600 font-semibold bg-slate-100">
+                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                   d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                         </svg>
+                    </div>
+                    <div>
+                         <h2 class="text-xl font-semibold text-slate-100">Crear Nuevo Horario</h2>
+                         <p class="text-sm text-slate-400">Complete los datos para registrar un nuevo horario</p>
+                    </div>
+               </div>
+               <button (click)="onClose()"
+                    class="p-2 hover:bg-slate-800 rounded-lg transition-colors text-slate-400 hover:text-slate-200"
+                    [disabled]="isSaving">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
+                         </path>
+                    </svg>
+               </button>
+          </div>
+
+          <!-- Contenido del Modal -->
+          <div class="flex-1 overflow-y-auto bg-white min-h-0">
+               <!-- Loading State -->
+               <div *ngIf="isLoading" class="flex items-center justify-center py-12">
+                    <div class="text-center">
+                         <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+                         <p class="mt-4 text-slate-600">Cargando información...</p>
+                    </div>
+               </div>
+
+               <!-- Formulario -->
+               <form *ngIf="!isLoading" [formGroup]="createForm" (ngSubmit)="onCreateSchedule()" class="p-8 space-y-8">
+
+                    <!-- Información de la Organización -->
+                    <div *ngIf="organizationData" class="bg-slate-50 rounded-lg p-6">
+                         <h3 class="text-lg font-semibold text-slate-900 mb-4">Organización</h3>
+                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                              <div>
+                                   <p class="text-sm font-medium text-slate-700">Código</p>
+                                   <p class="text-slate-900">{{organizationData.organizationCode}}</p>
+                              </div>
+                              <div>
+                                   <p class="text-sm font-medium text-slate-700">Nombre</p>
+                                   <p class="text-slate-900">{{organizationData.organizationName}}</p>
+                              </div>
+                         </div>
+                    </div>
+
+                    <!-- Sección 1: Datos del Horario -->
+                    <div class="bg-white rounded-lg border border-slate-200">
+                         <div class="px-6 py-4 border-b border-slate-200">
+                              <h3 class="text-lg font-semibold text-slate-900">Datos del Horario</h3>
+                         </div>
+
+                         <div class="p-6 space-y-6">
+                              <!-- Nombre del Horario -->
+                              <div>
+                                   <label for="scheduleName" class="block text-sm font-medium text-slate-700 mb-2">
+                                        Nombre del Horario <span class="text-red-500">*</span>
+                                   </label>
+                                   <input type="text" formControlName="scheduleName" id="scheduleName"
+                                        class="w-full px-4 py-3 bg-white rounded-lg text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 border border-slate-200 hover:border-slate-300 focus:border-blue-500 transition-colors"
+                                        [class.border-red-300]="hasFieldError('scheduleName')"
+                                        [class.focus:border-red-500]="hasFieldError('scheduleName')"
+                                        [class.focus:ring-red-500/20]="hasFieldError('scheduleName')"
+                                        placeholder="Ingrese el nombre del horario">
+                                   <p *ngIf="hasFieldError('scheduleName')" class="mt-2 text-sm text-red-600">
+                                        {{getFieldError('scheduleName')}}
+                                   </p>
+                                   <p class="mt-1 text-xs text-slate-500">
+                                        Solo se permiten letras y espacios
+                                   </p>
+                              </div>
+
+                              <!-- Ubicación -->
+                              <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                   <!-- Zona -->
+                                   <div>
+                                        <label for="zoneId" class="block text-sm font-medium text-slate-700 mb-2">
+                                             Zona <span class="text-red-500">*</span>
+                                        </label>
+                                        <select formControlName="zoneId" id="zoneId"
+                                             class="w-full px-4 py-3 bg-white rounded-lg text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 border border-slate-200 hover:border-slate-300 focus:border-blue-500 transition-colors"
+                                             [class.border-red-300]="hasFieldError('zoneId')"
+                                             [class.focus:border-red-500]="hasFieldError('zoneId')"
+                                             [class.focus:ring-red-500/20]="hasFieldError('zoneId')">
+                                             <option value="">Seleccione una zona</option>
+                                             <option *ngFor="let zone of availableZones" [value]="zone.zoneId">
+                                                  {{zone.zoneCode}} - {{zone.zoneName}}
+                                             </option>
+                                        </select>
+                                        <p *ngIf="hasFieldError('zoneId')" class="mt-2 text-sm text-red-600">
+                                             {{getFieldError('zoneId')}}
+                                        </p>
+                                   </div>
+
+                                   <!-- Calle -->
+                                   <div>
+                                        <label for="streetId" class="block text-sm font-medium text-slate-700 mb-2">
+                                             Calle <span class="text-red-500">*</span>
+                                        </label>
+                                        <div class="relative">
+                                             <select formControlName="streetId" id="streetId"
+                                                  class="w-full px-4 py-3 bg-white rounded-lg text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 border border-slate-200 hover:border-slate-300 focus:border-blue-500 transition-colors"
+                                                  [class.border-red-300]="hasFieldError('streetId')"
+                                                  [class.focus:border-red-500]="hasFieldError('streetId')"
+                                                  [class.focus:ring-red-500/20]="hasFieldError('streetId')"
+                                                  [disabled]="!createForm.get('zoneId')?.value || isLoadingStreets">
+                                                  <option value="">{{!createForm.get('zoneId')?.value ? 'Primero seleccione una zona' : 'Seleccione una calle'}}</option>
+                                                  <option *ngFor="let street of availableStreets" [value]="street.streetId">
+                                                       {{street.streetType}} {{street.streetName}}
+                                                  </option>
+                                             </select>
+
+                                             <!-- Loading icon para calles -->
+                                             <div *ngIf="isLoadingStreets"
+                                                  class="absolute inset-y-0 right-0 pr-3 flex items-center">
+                                                  <div
+                                                       class="animate-spin rounded-full h-5 w-5 border-b-2 border-blue-600">
+                                                  </div>
+                                             </div>
+                                        </div>
+                                        <p *ngIf="hasFieldError('streetId')" class="mt-2 text-sm text-red-600">
+                                             {{getFieldError('streetId')}}
+                                        </p>
+                                   </div>
+                              </div>
+
+                              <!-- Resumen de ubicación -->
+                              <div *ngIf="getSelectedZoneName() && getSelectedStreetName()"
+                                   class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                                   <h4 class="text-sm font-medium text-blue-800 mb-2">Ubicación seleccionada:</h4>
+                                   <p class="text-sm text-blue-700">
+                                        📍 {{getSelectedZoneName()}} → {{getSelectedStreetName()}}
+                                   </p>
+                              </div>
+                         </div>
+                    </div>
+
+                    <!-- Sección 2: Horario y Días -->
+                    <div class="bg-white rounded-lg border border-slate-200">
+                         <div class="px-6 py-4 border-b border-slate-200">
+                              <h3 class="text-lg font-semibold text-slate-900">Horario y Días</h3>
+                         </div>
+
+                         <div class="p-6 space-y-6">
+                              <!-- Días de la Semana -->
+                              <div>
+                                   <label class="block text-sm font-medium text-slate-700 mb-2">
+                                        Días de la Semana <span class="text-red-500">*</span>
+                                   </label>
+                                   <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                                        <label class="inline-flex items-center">
+                                             <input type="checkbox" [checked]="isDaySelected('Lunes')" 
+                                                  (change)="onDayChange($event, 'Lunes')"
+                                                  class="rounded border-slate-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50">
+                                             <span class="ml-2 text-sm text-slate-700">Lunes</span>
+                                        </label>
+                                        <label class="inline-flex items-center">
+                                             <input type="checkbox" [checked]="isDaySelected('Martes')" 
+                                                  (change)="onDayChange($event, 'Martes')"
+                                                  class="rounded border-slate-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50">
+                                             <span class="ml-2 text-sm text-slate-700">Martes</span>
+                                        </label>
+                                        <label class="inline-flex items-center">
+                                             <input type="checkbox" [checked]="isDaySelected('Miércoles')" 
+                                                  (change)="onDayChange($event, 'Miércoles')"
+                                                  class="rounded border-slate-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50">
+                                             <span class="ml-2 text-sm text-slate-700">Miércoles</span>
+                                        </label>
+                                        <label class="inline-flex items-center">
+                                             <input type="checkbox" [checked]="isDaySelected('Jueves')" 
+                                                  (change)="onDayChange($event, 'Jueves')"
+                                                  class="rounded border-slate-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50">
+                                             <span class="ml-2 text-sm text-slate-700">Jueves</span>
+                                        </label>
+                                        <label class="inline-flex items-center">
+                                             <input type="checkbox" [checked]="isDaySelected('Viernes')" 
+                                                  (change)="onDayChange($event, 'Viernes')"
+                                                  class="rounded border-slate-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50">
+                                             <span class="ml-2 text-sm text-slate-700">Viernes</span>
+                                        </label>
+                                        <label class="inline-flex items-center">
+                                             <input type="checkbox" [checked]="isDaySelected('Sábado')" 
+                                                  (change)="onDayChange($event, 'Sábado')"
+                                                  class="rounded border-slate-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50">
+                                             <span class="ml-2 text-sm text-slate-700">Sábado</span>
+                                        </label>
+                                        <label class="inline-flex items-center">
+                                             <input type="checkbox" [checked]="isDaySelected('Domingo')" 
+                                                  (change)="onDayChange($event, 'Domingo')"
+                                                  class="rounded border-slate-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50">
+                                             <span class="ml-2 text-sm text-slate-700">Domingo</span>
+                                        </label>
+                                   </div>
+                                   <p *ngIf="hasFieldError('daysOfWeek')" class="mt-2 text-sm text-red-600">
+                                        {{getFieldError('daysOfWeek')}}
+                                   </p>
+                              </div>
+
+                              <!-- Horario -->
+                              <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                   <!-- Hora de Inicio -->
+                                   <div>
+                                        <label for="startTime" class="block text-sm font-medium text-slate-700 mb-2">
+                                             Hora de Inicio <span class="text-red-500">*</span>
+                                        </label>
+                                        <input type="time" formControlName="startTime" id="startTime"
+                                             class="w-full px-4 py-3 bg-white rounded-lg text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 border border-slate-200 hover:border-slate-300 focus:border-blue-500 transition-colors"
+                                             [class.border-red-300]="hasFieldError('startTime')"
+                                             [class.focus:border-red-500]="hasFieldError('startTime')"
+                                             [class.focus:ring-red-500/20]="hasFieldError('startTime')">
+                                        <p *ngIf="hasFieldError('startTime')" class="mt-2 text-sm text-red-600">
+                                             {{getFieldError('startTime')}}
+                                        </p>
+                                   </div>
+
+                                   <!-- Hora de Fin -->
+                                   <div>
+                                        <label for="endTime" class="block text-sm font-medium text-slate-700 mb-2">
+                                             Hora de Fin <span class="text-red-500">*</span>
+                                        </label>
+                                        <input type="time" formControlName="endTime" id="endTime"
+                                             class="w-full px-4 py-3 bg-white rounded-lg text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 border border-slate-200 hover:border-slate-300 focus:border-blue-500 transition-colors"
+                                             [class.border-red-300]="hasFieldError('endTime')"
+                                             [class.focus:border-red-500]="hasFieldError('endTime')"
+                                             [class.focus:ring-red-500/20]="hasFieldError('endTime')">
+                                        <p *ngIf="hasFieldError('endTime')" class="mt-2 text-sm text-red-600">
+                                             {{getFieldError('endTime')}}
+                                        </p>
+                                   </div>
+                              </div>
+
+                              <!-- Duración en Horas -->
+                              <div>
+                                   <label for="durationHours" class="block text-sm font-medium text-slate-700 mb-2">
+                                        Duración (Horas)
+                                   </label>
+                                   <input type="number" formControlName="durationHours" id="durationHours"
+                                        class="w-full px-4 py-3 bg-slate-50 rounded-lg text-slate-700 border border-slate-200"
+                                        placeholder="Se calculará automáticamente" readonly>
+                                   <p class="mt-1 text-xs text-slate-500">
+                                        Se calculará automáticamente según la hora de inicio y fin
+                                   </p>
+                              </div>
+                         </div>
+                    </div>
+
+                    <!-- Botones de Acción -->
+                    <div class="flex justify-end gap-4 pt-6 border-t border-slate-200">
+                         <button type="button" (click)="onClose()" [disabled]="isSaving"
+                              class="px-6 py-3 text-slate-700 bg-white border border-slate-300 rounded-lg hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-slate-500/20 disabled:opacity-50 disabled:cursor-not-allowed transition-colors">
+                              Cancelar
+                         </button>
+
+                         <button type="submit" [disabled]="isSaving || hasValidationErrors()"
+                              class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500/20 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center">
+                              <div *ngIf="isSaving"
+                                   class="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2">
+                              </div>
+                              {{isSaving ? 'Creando Horario...' : 'Crear Horario'}}
+                         </button>
+                    </div>
+               </form>
+          </div> <!-- Cierre del contenido -->
+     </div> <!-- Cierre del modal panel -->
+</div> <!-- Cierre del modal principal -->

@@ -1,0 +1,270 @@
+<!-- Modal Overlay -->
+<div *ngIf="isOpen" class="fixed inset-0 z-[8000]" (keydown.escape)="onClose()" tabindex="0">
+  <!-- Background overlay - CLIC PARA CERRAR -->
+  <div class="absolute inset-0 bg-transparent transition-opacity duration-300" (click)="onClose()"></div>
+
+  <!-- Modal Panel -->
+  <div class="absolute right-0 top-0 h-full w-full max-w-3xl bg-white shadow-xl transform transition-transform duration-300 ease-out flex flex-col"
+       [class.translate-x-full]="!isOpen" [class.translate-x-0]="isOpen" (click)="$event.stopPropagation()">
+
+    <!-- Header -->
+    <div class="flex items-center justify-between px-6 py-4 bg-slate-900 text-white flex-shrink-0">
+      <div class="flex items-center space-x-3">
+        <div class="w-10 h-10 rounded-lg flex items-center justify-center bg-slate-700 text-white">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+          </svg>
+        </div>
+        <div>
+          <h2 class="text-lg font-semibold">{{ editingPoint ? 'Editar Punto de Análisis' : 'Crear Punto de Análisis' }}</h2>
+          <p class="text-sm text-slate-400">{{ editingPoint ? 'Modifique los datos del punto de análisis' : 'Complete los datos del nuevo punto de análisis' }}</p>
+        </div>
+      </div>
+      <button (click)="onClose()"
+              class="p-2 hover:bg-slate-800 rounded-lg transition-colors text-slate-400 hover:text-white"
+              [disabled]="isSaving">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
+          </path>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Contenido del Modal -->
+    <div class="flex-1 overflow-y-auto min-h-0">
+      <form [formGroup]="createForm" (ngSubmit)="onCreatePoint()" class="p-6 space-y-6">
+
+        <!-- Sección: Información Básica -->
+        <div class="bg-white rounded-lg border border-gray-200 shadow-sm">
+          <div class="px-6 py-4 border-b border-gray-200">
+            <div class="flex items-center space-x-3">
+              <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
+                <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+              </div>
+              <h3 class="text-lg font-semibold text-gray-800">Información Básica</h3>
+            </div>
+          </div>
+          <div class="p-6 space-y-6">
+
+
+            <div class="grid grid-cols-1 gap-6">
+              <!-- Nombre -->
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">
+                  Nombre del Punto <span class="text-red-500">*</span>
+                </label>
+                <input type="text" 
+                       formControlName="pointName" 
+                       placeholder="Ej: Reservorio Principal, Casa Sr. López"
+                       maxlength="100"
+                       class="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                <div *ngIf="validationErrors['pointName']" class="flex items-center mt-2 text-red-600 text-sm">
+                  <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                  </svg>
+                  {{ validationErrors['pointName'] }}
+                </div>
+                <p class="text-xs text-gray-500 mt-1">Nombre descriptivo del punto de análisis</p>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <!-- Tipo de Punto -->
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">
+                  Tipo de Punto <span class="text-red-500">*</span>
+                </label>
+                <select formControlName="pointType"
+                        class="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none bg-white">
+                  <option value="" disabled>Seleccione el tipo de punto</option>
+                  <option *ngFor="let type of pointTypes" [value]="type.value">
+                    {{ type.label }} - {{ type.description }}
+                  </option>
+                </select>
+                <div *ngIf="validationErrors['pointType']" class="flex items-center mt-2 text-red-600 text-sm">
+                  <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                  </svg>
+                  {{ validationErrors['pointType'] }}
+                </div>
+                <p class="text-xs text-gray-500 mt-1">Categoría del punto según su función</p>
+              </div>
+
+              <!-- Zona -->
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">
+                  Zona de Ubicación <span class="text-red-500">*</span>
+                </label>
+                <select formControlName="zoneId"
+                        class="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none bg-white">
+                  <option value="" disabled>Seleccione la zona</option>
+                  <option *ngFor="let zone of availableZones" [value]="zone.zoneId">
+                    {{ zone.zoneName }} ({{ zone.status === 'ACTIVE' ? 'Activa' : 'Inactiva' }})
+                  </option>
+                </select>
+                <div *ngIf="validationErrors['zoneId']" class="flex items-center mt-2 text-red-600 text-sm">
+                  <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                  </svg>
+                  {{ validationErrors['zoneId'] }}
+                </div>
+                <p class="text-xs text-gray-500 mt-1">Zona geográfica donde se ubica el punto</p>
+              </div>
+            </div>
+
+            <!-- Campo de Calle (Solo para DOMICILIO) -->
+            <div *ngIf="isDomicilioType" class="grid grid-cols-1 gap-6">
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">
+                  Calle <span class="text-red-500">*</span>
+                </label>
+                <select formControlName="street"
+                        class="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none bg-white">
+                  <option value="" disabled>Seleccione la calle</option>
+                  <option *ngFor="let street of filteredStreets" [value]="street.streetId">
+                    {{ street.streetName }}
+                  </option>
+                </select>
+                <div *ngIf="validationErrors['street']" class="flex items-center mt-2 text-red-600 text-sm">
+                  <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                  </svg>
+                  {{ validationErrors['street'] }}
+                </div>
+                <p class="text-xs text-gray-500 mt-1">Calle específica donde se ubica el punto de domicilio</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sección: Detalles Adicionales -->
+        <div class="bg-white rounded-lg border border-gray-200 shadow-sm">
+          <div class="px-6 py-4 border-b border-gray-200">
+            <div class="flex items-center space-x-3">
+              <div class="w-8 h-8 bg-gray-600 rounded-lg flex items-center justify-center">
+                <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                </svg>
+              </div>
+              <h3 class="text-lg font-semibold text-gray-800">Detalles Adicionales</h3>
+            </div>
+          </div>
+          <div class="p-6 space-y-6">
+            <!-- Descripción -->
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">
+                Descripción de la Ubicación
+              </label>
+              <textarea formControlName="locationDescription" 
+                        rows="4" 
+                        placeholder="Describa la ubicación específica del punto (ej: Al lado de la casa azul, frente al parque central, etc.)"
+                        maxlength="500"
+                        class="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"></textarea>
+              <div class="flex justify-between items-center mt-1">
+                <p class="text-xs text-gray-500">Información adicional para localizar el punto</p>
+                <span class="text-xs text-gray-400">{{ createForm.get('locationDescription')?.value?.length || 0 }}/500</span>
+              </div>
+            </div>
+
+            <!-- Coordenadas y Mapa -->
+            <div class="space-y-6">
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">
+                  Coordenadas GPS
+                </label>
+                <p class="text-xs text-gray-500 mb-3">Puede ingresar manualmente las coordenadas o seleccionar en el mapa</p>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label class="block text-xs font-medium text-gray-700 mb-1">
+                      Latitud
+                    </label>
+                    <input type="number" 
+                           formControlName="latitude" 
+                           placeholder="Ej: -12.0464"
+                           step="0.000001"
+                           (input)="onCoordinatesChange()"
+                           class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                    <div *ngIf="validationErrors['latitude']" class="flex items-center mt-1 text-red-600 text-xs">
+                      <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                      </svg>
+                      {{ validationErrors['latitude'] }}
+                    </div>
+                  </div>
+                  <div>
+                    <label class="block text-xs font-medium text-gray-700 mb-1">
+                      Longitud
+                    </label>
+                    <input type="number" 
+                           formControlName="longitude" 
+                           placeholder="Ej: -77.0428"
+                           step="0.000001"
+                           (input)="onCoordinatesChange()"
+                           class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                    <div *ngIf="validationErrors['longitude']" class="flex items-center mt-1 text-red-600 text-xs">
+                      <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                      </svg>
+                      {{ validationErrors['longitude'] }}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Mapa de Google Maps -->
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">
+                  Seleccione la ubicación en el mapa
+                </label>
+                <p class="text-xs text-gray-500 mb-3">Haga clic en el mapa o arrastre el marcador para seleccionar la ubicación</p>
+                
+                <div class="border border-gray-300 rounded-lg overflow-hidden">
+                  <div #mapContainer class="w-full h-64 bg-gray-100 relative">
+                    <div *ngIf="!isMapLoaded" class="absolute inset-0 flex items-center justify-center bg-gray-50">
+                      <div class="text-center">
+                        <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mb-2"></div>
+                        <p class="text-sm text-gray-600">Cargando mapa...</p>
+                        <p class="text-xs text-gray-500 mt-1">Si tarda mucho, verifique su conexión a internet</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+                <div class="mt-2 text-xs text-gray-500 flex items-center">
+                  <svg class="w-4 h-4 mr-1 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                  </svg>
+                  Arrastre el marcador rojo para ajustar la ubicación
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Botones de Acción -->
+        <div class="flex justify-end gap-4 pt-4">
+          <button type="button" (click)="onClose()" [disabled]="isSaving"
+                  class="px-6 py-3 text-base font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 shadow-sm transition-all">
+            Cancelar
+          </button>
+
+          <button type="submit" [disabled]="isSaving"
+                  class="px-6 py-3 text-base font-medium text-white bg-blue-600 border border-transparent rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 shadow-sm transition-all">
+            <div *ngIf="isSaving"
+                 class="inline-block animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2">
+            </div>
+            {{ isSaving ? 'Guardando...' : (editingPoint ? 'Actualizar' : 'Crear') }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+<!-- Fin Modal Overlay -->
+
+<!-- Toast Notifications - Fuera del modal para evitar problemas de z-index -->
+<app-toast></app-toast>

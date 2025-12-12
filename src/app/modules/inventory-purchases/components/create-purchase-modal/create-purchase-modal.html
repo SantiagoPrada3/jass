@@ -1,0 +1,321 @@
+<!-- Modal Backdrop -->
+<div class="fixed inset-0 bg-transparent z-[9999] flex justify-end" (click)="onClose()" (keydown.escape)="onClose()">
+     <!-- Modal Panel - Aparece desde la derecha -->
+     <div class="bg-white h-full w-full max-w-2xl shadow-2xl transform transition-transform duration-300 ease-out overflow-hidden flex flex-col"
+          (click)="$event.stopPropagation()">
+
+          <!-- Header -->
+          <div class="px-6 py-4 bg-slate-800 border-b-4 border-blue-600 flex-shrink-0">
+               <div class="flex items-center justify-between">
+                    <div class="flex items-center">
+                         <div class="w-10 h-10 bg-white rounded-full flex items-center justify-center mr-3">
+                              <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                              </svg>
+                         </div>
+                         <div>
+                              <h2 class="text-xl font-bold text-white">Crear Nueva Compra</h2>
+                              <p class="text-sm text-slate-300">Complete los datos para registrar una nueva compra</p>
+                         </div>
+                    </div>
+                    <button (click)="onClose()" class="text-slate-300 hover:text-white p-1">
+                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                   d="M6 18L18 6M6 6l12 12"></path>
+                         </svg>
+                    </button>
+               </div>
+          </div>
+
+          <!-- Scrollable Content -->
+          <div class="flex-1 overflow-y-auto">
+
+               <!-- Loading State -->
+               <div *ngIf="loadingData" class="flex items-center justify-center py-12">
+                    <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                    <span class="ml-3 text-slate-600">Cargando datos...</span>
+               </div>
+
+               <!-- Form Content -->
+               <div *ngIf="!loadingData" class="flex-1 overflow-y-auto">
+                    <form id="purchaseForm" [formGroup]="purchaseForm" (ngSubmit)="onSubmit()" class="p-6 space-y-6">
+
+                         <!-- Datos de Identificación -->
+                         <div class="space-y-4">
+                              <h3 class="text-lg font-semibold text-slate-800 border-b border-slate-200 pb-2">
+                                   Datos de Identificación
+                              </h3>
+                              <p class="text-sm text-slate-600">Ingrese los datos principales de la compra</p>
+
+                              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                   <!-- Código de Compra -->
+                                   <div>
+                                        <label for="purchaseCode" class="block text-sm font-medium text-slate-700 mb-2">
+                                             Código de Compra <span class="text-green-600 text-xs">(Autogenerado)</span>
+                                        </label>
+                                        <div class="relative">
+                                             <input id="purchaseCode" type="text" formControlName="purchaseCode"
+                                                  placeholder="Generando código..." readonly
+                                                  class="w-full px-3 py-2 border border-slate-300 rounded-md bg-slate-50 text-slate-600 cursor-not-allowed"
+                                                  [class.border-red-500]="isFieldInvalid('purchaseCode')">
+                                             <div *ngIf="loadingData"
+                                                  class="absolute inset-y-0 right-0 pr-3 flex items-center">
+                                                  <svg class="animate-spin h-4 w-4 text-blue-600" fill="none"
+                                                       viewBox="0 0 24 24">
+                                                       <circle class="opacity-25" cx="12" cy="12" r="10"
+                                                            stroke="currentColor" stroke-width="4"></circle>
+                                                       <path class="opacity-75" fill="currentColor"
+                                                            d="m4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                                                       </path>
+                                                  </svg>
+                                             </div>
+                                        </div>
+                                        <div *ngIf="isFieldInvalid('purchaseCode')" class="mt-1 text-xs text-red-600">
+                                             {{ getFieldError('purchaseCode') }}
+                                        </div>
+                                   </div>
+
+                                   <!-- Proveedor -->
+                                   <div>
+                                        <label for="supplierId" class="block text-sm font-medium text-slate-700 mb-2">
+                                             Proveedor <span class="text-red-500">*</span>
+                                        </label>
+
+                                        <!-- Mensaje cuando no hay proveedores -->
+                                        <div *ngIf="!loadingData && suppliers.length === 0"
+                                             class="w-full px-3 py-2 border border-yellow-300 rounded-md bg-yellow-50 text-yellow-800 text-sm">
+                                             <div class="flex items-center">
+                                                  <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                                       <path fill-rule="evenodd"
+                                                            d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
+                                                            clip-rule="evenodd"></path>
+                                                  </svg>
+                                                  No hay proveedores disponibles para esta organización
+                                             </div>
+                                        </div>
+
+                                        <!-- Select de proveedores -->
+                                        <select *ngIf="loadingData || suppliers.length > 0" id="supplierId"
+                                             formControlName="supplierId"
+                                             class="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                             [class.border-red-500]="isFieldInvalid('supplierId')">
+                                             <option value="">{{ loadingData ? 'Cargando proveedores...' : 'Seleccione
+                                                  un
+                                                  proveedor' }}</option>
+                                             <option *ngFor="let supplier of suppliers" [value]="supplier.supplierId">
+                                                  {{ supplier.supplierName }}
+                                             </option>
+                                        </select>
+
+                                        <div *ngIf="isFieldInvalid('supplierId')" class="mt-1 text-xs text-red-600">
+                                             Debe seleccionar un proveedor
+                                        </div>
+                                   </div>
+                              </div>
+
+                              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                   <!-- Fecha de Compra -->
+                                   <div>
+                                        <label for="purchaseDate" class="block text-sm font-medium text-slate-700 mb-2">
+                                             Fecha de Compra <span class="text-red-500">*</span>
+                                        </label>
+                                        <input id="purchaseDate" type="date" formControlName="purchaseDate"
+                                             class="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                             [class.border-red-500]="isFieldInvalid('purchaseDate')">
+                                        <div *ngIf="isFieldInvalid('purchaseDate')" class="mt-1 text-xs text-red-600">
+                                             La fecha de compra es requerida
+                                        </div>
+                                   </div>
+
+                                   <!-- Fecha de Entrega -->
+                                   <div>
+                                        <label for="deliveryDate" class="block text-sm font-medium text-slate-700 mb-2">
+                                             Fecha de Entrega <span class="text-red-500">*</span>
+                                        </label>
+                                        <input id="deliveryDate" type="date" formControlName="deliveryDate"
+                                             class="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                             [class.border-red-500]="isFieldInvalid('deliveryDate')">
+                                        <div *ngIf="isFieldInvalid('deliveryDate')" class="mt-1 text-xs text-red-600">
+                                             La fecha de entrega es requerida
+                                        </div>
+                                   </div>
+                              </div>
+
+                              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                   <!-- Número de Factura -->
+                                   <div>
+                                        <label for="invoiceNumber"
+                                             class="block text-sm font-medium text-slate-700 mb-2">
+                                             Número de Factura
+                                             <span class="text-sm text-slate-500">(Opcional)</span>
+                                        </label>
+                                        <input id="invoiceNumber" type="text" formControlName="invoiceNumber"
+                                             placeholder="F001-00000001"
+                                             class="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                   </div>
+                              </div>
+
+                              <!-- Observaciones -->
+                              <div>
+                                   <label for="observations" class="block text-sm font-medium text-slate-700 mb-2">
+                                        Observaciones
+                                        <span class="text-sm text-slate-500">(Opcional, máximo 200 caracteres)</span>
+                                   </label>
+                                   <textarea id="observations" formControlName="observations" rows="3" maxlength="200"
+                                        placeholder="Observaciones generales de la compra..."
+                                        class="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"></textarea>
+                                   <div class="mt-1 text-right">
+                                        <span class="text-xs text-slate-500">
+                                             {{ (purchaseForm.get('observations')?.value || '').length }}/200 caracteres
+                                        </span>
+                                   </div>
+                              </div>
+                         </div>
+
+                         <!-- Detalles de Productos -->
+                         <div class="space-y-4">
+                              <div class="flex items-center justify-between">
+                                   <div>
+                                        <h3 class="text-lg font-semibold text-slate-800">Productos</h3>
+                                        <p class="text-sm text-slate-600">Agregue los productos a la orden de compra</p>
+                                   </div>
+                                   <button type="button" (click)="addDetail()"
+                                        class="inline-flex items-center px-3 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                  d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                                        </svg>
+                                        Agregar Producto
+                                   </button>
+                              </div>
+
+                              <div formArrayName="details" class="space-y-4">
+                                   <div *ngFor="let detail of detailsArray.controls; let i = index" [formGroupName]="i"
+                                        class="border border-slate-200 rounded-lg p-4 bg-slate-50">
+                                        <div class="flex items-start justify-between mb-3">
+                                             <h4 class="font-medium text-slate-800">Producto {{ i + 1 }}</h4>
+                                             <button type="button" (click)="removeDetail(i)"
+                                                  [disabled]="detailsArray.length === 1"
+                                                  class="text-red-500 hover:text-red-700 disabled:opacity-50 disabled:cursor-not-allowed">
+                                                  <svg class="w-5 h-5" fill="none" stroke="currentColor"
+                                                       viewBox="0 0 24 24">
+                                                       <path stroke-linecap="round" stroke-linejoin="round"
+                                                            stroke-width="2"
+                                                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16">
+                                                       </path>
+                                                  </svg>
+                                             </button>
+                                        </div>
+
+                                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                                             <!-- Producto -->
+                                             <div>
+                                                  <label class="block text-sm font-medium text-slate-700 mb-2">
+                                                       Producto <span class="text-red-500">*</span>
+                                                  </label>
+                                                  <select formControlName="productId"
+                                                       class="w-full px-3 py-2 border border-slate-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                                       [class.border-red-500]="isDetailFieldInvalid(i, 'productId')">
+                                                       <option value="">Seleccionar producto...</option>
+                                                       <option *ngFor="let product of products"
+                                                            [value]="product.productId">
+                                                            {{ getProductDisplayText(product) }}
+                                                       </option>
+                                                  </select>
+                                                  <div *ngIf="isDetailFieldInvalid(i, 'productId')"
+                                                       class="mt-1 text-xs text-red-600">
+                                                       Campo requerido
+                                                  </div>
+                                             </div>
+
+                                             <!-- Cantidad -->
+                                             <div>
+                                                  <label class="block text-sm font-medium text-slate-700 mb-2">
+                                                       Cantidad <span class="text-red-500">*</span>
+                                                  </label>
+                                                  <input type="number" formControlName="quantityOrdered" min="1"
+                                                       class="w-full px-3 py-2 border border-slate-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                                       [class.border-red-500]="isDetailFieldInvalid(i, 'quantityOrdered')">
+                                                  <div *ngIf="isDetailFieldInvalid(i, 'quantityOrdered')"
+                                                       class="mt-1 text-xs text-red-600">
+                                                       {{ getDetailFieldError(i, 'quantityOrdered') }}
+                                                  </div>
+                                             </div>
+
+                                             <!-- Costo Unitario -->
+                                             <div>
+                                                  <label class="block text-sm font-medium text-slate-700 mb-2">
+                                                       Costo Unit. <span class="text-red-500">*</span>
+                                                  </label>
+                                                  <input type="number" formControlName="unitCost" min="0.01" step="0.01"
+                                                       class="w-full px-3 py-2 border border-slate-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                                       [class.border-red-500]="isDetailFieldInvalid(i, 'unitCost')">
+                                                  <div *ngIf="isDetailFieldInvalid(i, 'unitCost')"
+                                                       class="mt-1 text-xs text-red-600">
+                                                       {{ getDetailFieldError(i, 'unitCost') }}
+                                                  </div>
+                                             </div>
+
+                                             <!-- Subtotal -->
+                                             <div>
+                                                  <label
+                                                       class="block text-sm font-medium text-slate-700 mb-2">Subtotal</label>
+                                                  <div
+                                                       class="px-3 py-2 bg-slate-100 border border-slate-300 rounded-md text-sm font-semibold text-slate-800">
+                                                       S/ {{ getDetailSubtotal(i).toFixed(2) }}
+                                                  </div>
+                                             </div>
+                                        </div>
+
+                                        <!-- Observaciones del detalle -->
+                                        <div class="mt-4">
+                                             <label class="block text-sm font-medium text-slate-700 mb-2">
+                                                  Observaciones del producto
+                                             </label>
+                                             <input type="text" formControlName="observations"
+                                                  placeholder="Observaciones específicas para este producto..."
+                                                  class="w-full px-3 py-2 border border-slate-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                        </div>
+                                   </div>
+                              </div>
+
+                              <!-- Total -->
+                              <div class="border-t border-slate-300 pt-4">
+                                   <div class="flex justify-end">
+                                        <div class="text-right">
+                                             <div class="text-sm text-slate-600">Total de la Compra</div>
+                                             <div class="text-2xl font-bold text-slate-800">S/ {{
+                                                  getTotalAmount().toFixed(2)
+                                                  }}</div>
+                                        </div>
+                                   </div>
+                              </div>
+                         </div>
+                    </form>
+               </div> <!-- Fin del scroll -->
+
+               <!-- Action Buttons - Fuera del scroll -->
+               <div class="border-t border-slate-200 pt-6 px-6 pb-6 flex-shrink-0">
+                    <div class="flex justify-end space-x-3">
+                         <button type="button" (click)="onClose()" [disabled]="loading"
+                              class="px-4 py-2 border border-slate-300 rounded-md text-sm font-medium text-slate-700 bg-white hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50">
+                              Cancelar
+                         </button>
+                         <button type="submit" [disabled]="loading || purchaseForm.invalid || !canCreatePurchase()"
+                              form="purchaseForm"
+                              class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                              [title]="!canCreatePurchase() ? 'No se puede crear compra sin proveedores disponibles' : ''">
+                              <div *ngIf="loading"
+                                   class="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                              <svg *ngIf="!loading" class="w-4 h-4 mr-2" fill="none" stroke="currentColor"
+                                   viewBox="0 0 24 24">
+                                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M5 13l4 4L19 7"></path>
+                              </svg>
+                              {{ loading ? 'Guardando...' : 'Crear Compra' }}
+                         </button>
+                    </div>
+               </div>
+          </div>
+     </div>

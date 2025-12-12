@@ -1,0 +1,70 @@
+/* Estilos personalizados para el componente de categorías */
+
+/* Animaciones personalizadas */
+.table-row-enter {
+  opacity: 0;
+  transform: translateY(-10px);
+}
+
+.table-row-enter-active {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 300ms ease-in-out, transform 300ms ease-in-out;
+}
+
+/* Estados de hover mejorados */
+tbody tr:hover {
+  background-color: rgb(249 250 251);
+}
+
+/* Estilos para botones de estado */
+.status-button {
+  transition: all 200ms ease-in-out;
+}
+
+.status-button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Spinner de carga personalizado */
+.loading-spinner {
+  border-top-color: #3b82f6;
+  animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Estilos para campos de formulario */
+.form-input:focus {
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+/* Estilos responsivos */
+@media (max-width: 768px) {
+  .table-container {
+    overflow-x: auto;
+  }
+
+  .action-buttons {
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .filter-buttons {
+    flex-wrap: wrap;
+  }
+}
+
+/* Estilos para modales */
+.modal-overlay {
+  backdrop-filter: blur(2px);
+}
+
+.modal-content {
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+}

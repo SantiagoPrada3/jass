@@ -1,0 +1,80 @@
+<!-- Breadcrumb -->
+<app-breadcrumb [items]="breadcrumbItems"></app-breadcrumb>
+
+<!-- Header de la página -->
+<div class="p-4">
+     <h1 class="text-3xl font-bold text-gray-900 mb-2">Analytics</h1>
+     <p class="text-lg text-gray-600">Análisis detallado de métricas operativas, rendimiento y estadísticas de la
+          organización</p>
+</div>
+
+<div class="p-6 max-w-7xl mx-auto space-y-6">
+     <!-- Charts Section -->
+     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <!-- Line Chart: Monthly Income -->
+          <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 lg:col-span-2">
+               <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
+                    <div>
+                         <h3 class="text-lg font-bold text-gray-900">Ingresos Mensuales</h3>
+                         <p class="text-sm text-gray-500 mt-1">Visualiza el flujo de ingresos por pagos de servicios
+                              durante el año actual.</p>
+                    </div>
+               </div>
+               <div class="h-80">
+                    <canvas baseChart [data]="incomeChartData" [options]="lineChartOptions" [type]="incomeChartType">
+                    </canvas>
+               </div>
+               <div class="mt-4 p-4 bg-purple-50 rounded-lg border border-purple-100">
+                    <div class="flex items-start">
+                         <svg class="w-5 h-5 text-purple-500 mt-0.5 mr-3" fill="none" stroke="currentColor"
+                              viewBox="0 0 24 24">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                   d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0-2.08-.402-2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z">
+                              </path>
+                         </svg>
+                         <p class="text-sm text-purple-700">
+                              Este gráfico muestra la recaudación total mes a mes. Permite identificar patrones
+                              estacionales
+                              en los pagos y evaluar la salud financiera de la organización.
+                         </p>
+                    </div>
+               </div>
+          </div>
+
+          <!-- Pie Chart: User Status -->
+          <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 flex flex-col">
+               <h3 class="text-lg font-bold text-gray-900 mb-2">Estado de Usuarios</h3>
+               <p class="text-sm text-gray-500 mb-6">Proporción de socios activos vs inactivos.</p>
+
+               <div class="h-64 flex-grow relative">
+                    <canvas baseChart [data]="userStatusChartData" [options]="pieChartOptions"
+                         [type]="userStatusChartType">
+                    </canvas>
+               </div>
+
+               <div class="mt-6 pt-6 border-t border-gray-100">
+                    <p class="text-xs text-gray-500 text-center">
+                         Monitoriza la base de usuarios para mantener un registro actualizado de socios activos.
+                    </p>
+               </div>
+          </div>
+
+          <!-- Doughnut Chart: Payment Status -->
+          <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 flex flex-col">
+               <h3 class="text-lg font-bold text-gray-900 mb-2">Estado de Pagos</h3>
+               <p class="text-sm text-gray-500 mb-6">Distribución de pagos realizados vs pendientes.</p>
+
+               <div class="h-64 flex-grow relative">
+                    <canvas baseChart [data]="paymentStatusChartData" [options]="pieChartOptions"
+                         [type]="paymentStatusChartType">
+                    </canvas>
+               </div>
+
+               <div class="mt-6 pt-6 border-t border-gray-100">
+                    <p class="text-xs text-gray-500 text-center">
+                         Ayuda a identificar el nivel de cumplimiento de pagos y la cartera pendiente.
+                    </p>
+               </div>
+          </div>
+     </div>
+</div>

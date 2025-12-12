@@ -1,0 +1,274 @@
+/* Estilos personalizados para el select con check verde */
+.custom-select option {
+  padding: 8px 12px;
+  background-color: white;
+  color: #374151;
+}
+
+.custom-select option:checked {
+  background-color: #f3f4f6 !important;
+  color: #374151 !important;
+  position: relative;
+}
+
+.custom-select option:checked::before {
+  content: "✓";
+  color: #10b981;
+  font-weight: bold;
+  position: absolute;
+  left: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.custom-select option:hover {
+  background-color: #f9fafb;
+}
+
+/* Remover el highlight azul por defecto */
+.custom-select option:focus,
+.custom-select option:active,
+.custom-select option:selected {
+  background-color: #f3f4f6 !important;
+  color: #374151 !important;
+  outline: none;
+}
+
+/* ============================================
+   NOTIFICACIONES TOAST - NUEVO DISEÑO
+   ============================================ */
+
+/* Contenedor principal del toast */
+.toast-notification {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 10000;
+  min-width: 320px;
+  max-width: 420px;
+  background: #2d3748;
+  border-radius: 8px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+  overflow: hidden;
+  animation: slideInRight 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+/* Contenedor del contenido */
+.toast-content {
+  display: flex;
+  align-items: flex-start;
+  padding: 14px 16px;
+  gap: 12px;
+  position: relative;
+}
+
+/* Wrapper del ícono con checkmark */
+.toast-icon-wrapper {
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: transform 0.2s ease;
+}
+
+.toast-success .toast-icon-wrapper {
+  background: #10b981;
+}
+
+.toast-error .toast-icon-wrapper {
+  background: #ef4444;
+}
+
+.toast-info .toast-icon-wrapper {
+  background: #3b82f6;
+}
+
+/* Ícono SVG */
+.toast-icon {
+  width: 16px;
+  height: 16px;
+}
+
+/* Contenedor del mensaje */
+.toast-message {
+  flex: 1;
+  min-width: 0;
+}
+
+/* Título del toast */
+.toast-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: #ffffff;
+  margin: 0 0 4px 0;
+  line-height: 1.3;
+}
+
+/* Descripción del toast */
+.toast-description {
+  font-size: 13px;
+  color: #cbd5e1;
+  margin: 0;
+  line-height: 1.4;
+}
+
+/* Botón de cerrar */
+.toast-close-btn {
+  background: none;
+  border: none;
+  color: #94a3b8;
+  cursor: pointer;
+  padding: 0;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: color 0.2s ease, background 0.2s ease;
+  border-radius: 4px;
+}
+
+.toast-close-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+}
+
+/* Barra de progreso en el lado IZQUIERDO */
+.toast-progress-bar-left {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 100%;
+  border-radius: 8px 0 0 8px;
+}
+
+/* Barra de progreso en la parte INFERIOR */
+.toast-progress-bar-bottom {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 4px;
+  animation: progressShrinkHorizontal 4s linear forwards;
+  border-radius: 0 0 8px 8px;
+}
+
+.toast-success .toast-progress-bar-left,
+.toast-success .toast-progress-bar-bottom {
+  background: linear-gradient(180deg, #10b981, #34d399);
+}
+
+.toast-error .toast-progress-bar-left,
+.toast-error .toast-progress-bar-bottom {
+  background: linear-gradient(180deg, #ef4444, #f87171);
+}
+
+.toast-info .toast-progress-bar-left,
+.toast-info .toast-progress-bar-bottom {
+  background: linear-gradient(180deg, #3b82f6, #60a5fa);
+}
+
+/* Animaciones */
+@keyframes slideInRight {
+  0% {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  100% {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes progressShrinkVertical {
+  0% {
+    height: 100%;
+  }
+  100% {
+    height: 0%;
+  }
+}
+
+@keyframes progressShrinkHorizontal {
+  0% {
+    width: 100%;
+  }
+  100% {
+    width: 0%;
+  }
+}
+
+/* ============================================
+   RESPONSIVE DESIGN
+   ============================================ */
+
+/* Tablets y pantallas medianas (max-width: 1024px) */
+@media (max-width: 1024px) {
+  /* Toast notifications más pequeñas */
+  .toast-notification {
+    min-width: 280px;
+    max-width: 360px;
+    right: 16px;
+    top: 16px;
+  }
+}
+
+/* Móviles y pantallas pequeñas (max-width: 768px) */
+@media (max-width: 768px) {
+  /* Toast notifications adaptadas */
+  .toast-notification {
+    min-width: calc(100vw - 32px);
+    max-width: calc(100vw - 32px);
+    right: 16px;
+    left: 16px;
+    top: 16px;
+  }
+
+  .toast-content {
+    padding: 12px 14px;
+    gap: 10px;
+  }
+
+  .toast-icon-wrapper {
+    width: 24px;
+    height: 24px;
+  }
+
+  .toast-icon {
+    width: 14px;
+    height: 14px;
+  }
+
+  .toast-title {
+    font-size: 14px;
+  }
+
+  .toast-description {
+    font-size: 12px;
+  }
+
+  .toast-close-btn {
+    width: 18px;
+    height: 18px;
+  }
+}
+
+/* Móviles muy pequeños (max-width: 480px) */
+@media (max-width: 480px) {
+  .toast-notification {
+    min-width: calc(100vw - 24px);
+    max-width: calc(100vw - 24px);
+    right: 12px;
+    left: 12px;
+    top: 12px;
+  }
+
+  .toast-content {
+    padding: 10px 12px;
+  }
+}

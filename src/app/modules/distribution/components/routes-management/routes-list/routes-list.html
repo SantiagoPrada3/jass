@@ -1,0 +1,469 @@
+<!-- Breadcrumb -->
+<app-breadcrumb [items]="breadcrumbItems"></app-breadcrumb>
+
+<!-- Header de la página -->
+<div class="p-4">
+     <h1 class="text-3xl font-bold text-gray-900 mb-2">Gestión de Rutas</h1>
+     <p class="text-lg text-gray-600">Administración de rutas de distribución y cobertura</p>
+</div>
+
+<!-- Estadísticas -->
+<div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6 px-4">
+     <div class="bg-white rounded-xl shadow-lg border border-gray-100 p-5">
+          <div class="flex items-center">
+               <div class="p-3 rounded-lg bg-blue-100 text-blue-600 mr-4">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z">
+                         </path>
+                    </svg>
+               </div>
+               <div>
+                    <p class="text-sm font-medium text-gray-500">Total Rutas</p>
+                    <p class="text-2xl font-bold text-gray-900">{{totalRoutes}}</p>
+               </div>
+          </div>
+     </div>
+
+     <div class="bg-white rounded-xl shadow-lg border border-gray-100 p-5">
+          <div class="flex items-center">
+               <div class="p-3 rounded-lg bg-green-100 text-green-600 mr-4">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+               </div>
+               <div>
+                    <p class="text-sm font-medium text-gray-500">Rutas Activas</p>
+                    <p class="text-2xl font-bold text-gray-900">{{activeRoutes}}</p>
+               </div>
+          </div>
+     </div>
+
+     <div class="bg-white rounded-xl shadow-lg border border-gray-100 p-5">
+          <div class="flex items-center">
+               <div class="p-3 rounded-lg bg-red-100 text-red-600 mr-4">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+               </div>
+               <div>
+                    <p class="text-sm font-medium text-gray-500">Rutas Inactivas</p>
+                    <p class="text-2xl font-bold text-gray-900">{{inactiveRoutes}}</p>
+               </div>
+          </div>
+     </div>
+</div>
+
+<!-- Filtros y Controles -->
+<div class="bg-white rounded-xl shadow-lg border border-gray-100 p-4 sm:p-6 mb-6">
+     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-4">
+          <!-- Buscador -->
+          <div class="relative">
+               <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                    </svg>
+               </div>
+               <input type="text" placeholder="Buscar rutas..." [(ngModel)]="searchTerm" (ngModelChange)="onSearch()"
+                    class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 hover:border-gray-400 text-sm sm:text-base">
+          </div>
+
+          <!-- Toggle Activos/Inactivos - Dropdown Custom -->
+          <div class="relative dropdown-container">
+               <button (click)="toggleStatusDropdown()"
+                    class="w-full px-4 py-3 pr-10 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 hover:border-gray-400 bg-white text-sm font-medium text-gray-700 cursor-pointer hover:bg-gray-50 flex items-center justify-between">
+                    <span class="text-gray-700">
+                         {{getStatusDisplayText()}}
+                    </span>
+                    <svg class="w-4 h-4 transition-transform duration-200"
+                         [class.rotate-180]="isStatusDropdownOpen" fill="none" stroke="currentColor"
+                         viewBox="0 0 24 24">
+                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m6 9 6 6 6-6">
+                         </path>
+                    </svg>
+               </button>
+
+               <!-- Dropdown Menu -->
+               <div *ngIf="isStatusDropdownOpen"
+                    class="absolute z-50 w-full mt-2 bg-white border border-gray-200 rounded-xl shadow-lg">
+                    <div class="py-2">
+                         <button (click)="selectStatus('all')" [class.bg-blue-50]="statusFilter === 'all'"
+                              [class.text-blue-600]="statusFilter === 'all'"
+                              class="w-full px-4 py-3 text-left text-sm text-gray-700 hover:bg-gray-50 transition-colors duration-150 flex items-center">
+                              <svg *ngIf="statusFilter === 'all'" class="w-4 h-4 mr-3 text-blue-500" fill="none"
+                                   stroke="currentColor" viewBox="0 0 24 24">
+                                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M5 13l4 4L19 7"></path>
+                              </svg>
+                              <span class="ml-7" *ngIf="statusFilter !== 'all'">Todas las rutas</span>
+                              <span *ngIf="statusFilter === 'all'">Todas las rutas</span>
+                         </button>
+                         <button (click)="selectStatus('active')" [class.bg-blue-50]="statusFilter === 'active'"
+                              [class.text-blue-600]="statusFilter === 'active'"
+                              class="w-full px-4 py-3 text-left text-sm text-gray-700 hover:bg-gray-50 transition-colors duration-150 flex items-center">
+                              <svg *ngIf="statusFilter === 'active'" class="w-4 h-4 mr-3 text-green-500"
+                                   fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M5 13l4 4L19 7"></path>
+                              </svg>
+                              <span class="ml-7" *ngIf="statusFilter !== 'active'">Solo activas</span>
+                              <span *ngIf="statusFilter === 'active'">Solo activas</span>
+                         </button>
+                         <button (click)="selectStatus('inactive')"
+                              [class.bg-blue-50]="statusFilter === 'inactive'"
+                              [class.text-blue-600]="statusFilter === 'inactive'"
+                              class="w-full px-4 py-3 text-left text-sm text-gray-700 hover:bg-gray-50 transition-colors duration-150 flex items-center">
+                              <svg *ngIf="statusFilter === 'inactive'" class="w-4 h-4 mr-3 text-red-500"
+                                   fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M5 13l4 4L19 7"></path>
+                              </svg>
+                              <span class="ml-7" *ngIf="statusFilter !== 'inactive'">Solo inactivas</span>
+                              <span *ngIf="statusFilter === 'inactive'">Solo inactivas</span>
+                         </button>
+                    </div>
+               </div>
+          </div>
+
+          <!-- Botón de Reporte -->
+          <div class="col-span-1 sm:col-span-2 lg:col-span-1">
+               <button (click)="generateReport()"
+                    class="w-full bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white font-medium py-3 px-6 rounded-xl transition-all duration-200 shadow-md hover:shadow-lg transform hover:-translate-y-0.5 text-sm sm:text-base">
+                    <div class="flex items-center justify-center">
+                         <svg class="w-4 h-4 sm:w-5 sm:h-5 mr-2" fill="none" stroke="currentColor"
+                              viewBox="0 0 24 24">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                   d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
+                              </path>
+                         </svg>
+                         <span class="hidden sm:inline">Reporte</span>
+                         <span class="sm:hidden">Reporte</span>
+                    </div>
+               </button>
+          </div>
+
+          <!-- Nueva Ruta -->
+          <div class="col-span-1 sm:col-span-2 lg:col-span-1">
+               <button (click)="openCreateRouteModal()"
+                    class="w-full bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-medium py-3 px-6 rounded-xl transition-all duration-200 shadow-md hover:shadow-lg transform hover:-translate-y-0.5 text-sm sm:text-base">
+                    <div class="flex items-center justify-center">
+                         <svg class="w-4 h-4 sm:w-5 sm:h-5 mr-2" fill="none" stroke="currentColor"
+                              viewBox="0 0 24 24">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                   d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                         </svg>
+                         <span class="hidden sm:inline">Nueva Ruta</span>
+                         <span class="sm:hidden">Nuevo</span>
+                    </div>
+               </button>
+          </div>
+     </div>
+</div>
+
+<!-- Vista de Tabla para Desktop -->
+<div class="hidden lg:block bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden scroll-container">
+     <div class="overflow-x-auto scrollbar-thin scroll-smooth">
+          <table class="min-w-full table-auto">
+               <thead class="bg-gradient-to-r p-2 from-gray-50 to-gray-100">
+                    <tr>
+                         <th
+                              class="px-6 py-4 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                              CÓDIGO</th>
+                         <th
+                              class="px-6 py-4 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                              NOMBRE</th>
+                         <th
+                              class="px-6 py-4 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                              ZONAS</th>
+                         <th
+                              class="px-6 py-4 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                              DURACIÓN EST.</th>
+                         <th
+                              class="px-6 py-4 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                              ESTADO</th>
+                         <th
+                              class="px-6 py-4 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                              ACCIONES</th>
+                    </tr>
+               </thead>
+               <tbody class="bg-white divide-y divide-gray-100">
+                    <tr *ngFor="let route of paginatedRoutes; trackBy: trackByRouteId"
+                         class="hover:bg-gray-50 transition-colors duration-150">
+
+                         <!-- Código -->
+                         <td class="px-6 py-4">
+                              <div
+                                   class="text-sm font-bold text-gray-900 bg-gray-100 px-3 py-1 rounded-full text-center">
+                                   {{route.routeCode}}
+                              </div>
+                         </td>
+
+                         <!-- Nombre -->
+                         <td class="px-6 py-4">
+                              <div class="text-sm font-medium text-gray-900">{{route.routeName}}</div>
+                         </td>
+
+                         <!-- Zonas -->
+                         <td class="px-6 py-4">
+                              <div class="text-sm text-gray-900">
+                                   <!-- Mostrar nombres de zonas y cantidad -->
+                                   <div *ngIf="route.zones.length > 0" class="flex flex-wrap gap-1">
+                                        <span *ngFor="let routeZone of route.zones.slice(0, 3); let i = index" 
+                                             class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                             {{getZoneName(routeZone.zoneId)}}
+                                        </span>
+                                        <span *ngIf="route.zones.length > 3" 
+                                             class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                                             +{{route.zones.length - 3}} más
+                                        </span>
+                                   </div>
+                                   <div *ngIf="route.zones.length === 0" class="text-gray-500 text-xs">
+                                        Sin zonas asignadas
+                                   </div>
+                              </div>
+                         </td>
+
+                         <!-- Duración Estimada -->
+                         <td class="px-6 py-4">
+                              <div class="text-sm text-gray-900">
+                                   {{route.totalEstimatedDuration}} min
+                              </div>
+                         </td>
+
+                         <!-- Estado -->
+                         <td class="px-6 py-4">
+                              <span [class]="getStatusBadgeClass(route.status)">
+                                   {{getStatusLabel(route.status)}}
+                              </span>
+                         </td>
+
+                         <!-- Acciones -->
+                         <td class="px-2 py-2">
+                              <div class="flex flex-wrap gap-2">
+                                   <!-- Botón Ver Detalles -->
+                                   <button (click)="viewRouteDetails(route)"
+                                        class="flex items-center px-3 py-2 text-blue-600 hover:text-blue-700 hover:bg-blue-50 rounded-lg transition-all duration-150 text-xs font-medium border border-blue-200 hover:border-blue-300">
+                                        <svg class="w-3.5 h-3.5 mr-1.5" fill="none" stroke="currentColor"
+                                             viewBox="0 0 24 24">
+                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                  d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                  d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                                        </svg>
+                                        <span>Ver Detalles</span>
+                                   </button>
+
+                                   <!-- Botón Editar (solo para rutas activas) -->
+                                   <button *ngIf="route.status === Status.ACTIVE" (click)="openUpdateRouteModal(route)"
+                                        class="flex items-center px-3 py-2 text-blue-600 hover:text-blue-700 hover:bg-blue-50 rounded-lg transition-all duration-150 text-xs font-medium border border-blue-200 hover:border-blue-300">
+                                        <svg class="w-3.5 h-3.5 mr-1.5" fill="none" stroke="currentColor"
+                                             viewBox="0 0 24 24">
+                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                  d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z">
+                                             </path>
+                                        </svg>
+                                        <span>Editar</span>
+                                   </button>
+
+                                   <!-- Botón Eliminar (solo para rutas activas) -->
+                                   <button *ngIf="route.status === Status.ACTIVE" (click)="prepareDeleteRoute(route)"
+                                        class="flex items-center px-3 py-2 text-red-600 hover:text-red-700 hover:bg-red-50 rounded-lg transition-all duration-150 text-xs font-medium border border-red-200 hover:border-red-300">
+                                        <svg class="w-3.5 h-3.5 mr-1.5" fill="none" stroke="currentColor"
+                                             viewBox="0 0 24 24">
+                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                  d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16">
+                                             </path>
+                                        </svg>
+                                        <span>Desactivar</span>
+                                   </button>
+
+                                   <!-- Botón Restaurar (solo para rutas inactivas) -->
+                                   <button *ngIf="route.status === Status.INACTIVE" (click)="prepareRestoreRoute(route)"
+                                        class="flex items-center px-3 py-2 text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50 rounded-lg transition-all duration-150 text-xs font-medium border border-emerald-200 hover:border-emerald-300">
+                                        <svg class="w-3.5 h-3.5 mr-1.5" fill="none" stroke="currentColor"
+                                             viewBox="0 0 24 24">
+                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                  d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15">
+                                             </path>
+                                        </svg>
+                                        <span>Activar</span>
+                                   </button>
+                              </div>
+                         </td>
+                    </tr>
+               </tbody>
+          </table>
+     </div>
+</div>
+
+<!-- Vista de Tarjetas para Mobile -->
+<div class="lg:hidden grid grid-cols-1 md:grid-cols-2 gap-4 px-4">
+     <div *ngFor="let route of paginatedRoutes; trackBy: trackByRouteId"
+          class="bg-white rounded-xl shadow-lg border border-gray-100 p-4 hover:shadow-xl transition-shadow duration-200">
+          <div class="flex justify-between items-start">
+               <div>
+                    <div class="flex items-center mb-2">
+                         <div
+                              class="w-8 h-8 rounded-full flex items-center justify-center text-white font-bold text-xs bg-blue-500 mr-2">
+                              {{route.routeCode.charAt(0)}}
+                         </div>
+                         <h3 class="text-lg font-bold text-gray-900">{{route.routeName}}</h3>
+                    </div>
+                    <div class="text-sm text-gray-500 mb-1">
+                         <span class="font-medium">Código:</span> {{route.routeCode}}
+                    </div>
+                    <!-- Zonas en móvil -->
+                    <div class="text-sm text-gray-500 mb-1">
+                         <span class="font-medium">Zonas:</span>
+                         <div *ngIf="route.zones.length > 0" class="flex flex-wrap gap-1 mt-1">
+                              <span *ngFor="let routeZone of route.zones.slice(0, 2); let i = index" 
+                                   class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                   {{getZoneName(routeZone.zoneId)}}
+                              </span>
+                              <span *ngIf="route.zones.length > 2" 
+                                   class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                                   +{{route.zones.length - 2}} más
+                              </span>
+                         </div>
+                         <div *ngIf="route.zones.length === 0" class="text-gray-500 text-xs">
+                              Sin zonas asignadas
+                         </div>
+                    </div>
+                    <div class="text-sm text-gray-500 mb-1">
+                         <span class="font-medium">Duración Est.:</span> {{route.totalEstimatedDuration}} min
+                    </div>
+                    <div class="mt-2">
+                         <span [class]="getStatusBadgeClass(route.status)">
+                              {{getStatusLabel(route.status)}}
+                         </span>
+                    </div>
+               </div>
+          </div>
+          <div class="mt-4 flex flex-wrap gap-2">
+               <!-- Botón Ver Detalles -->
+               <button (click)="viewRouteDetails(route)"
+                    class="flex items-center px-3 py-1.5 text-blue-600 hover:text-blue-700 hover:bg-blue-50 rounded-lg transition-all duration-150 text-xs font-medium border border-blue-200 hover:border-blue-300">
+                    <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                    </svg>
+                    <span>Ver Detalles</span>
+               </button>
+
+               <!-- Botón Editar (solo para rutas activas) -->
+               <button *ngIf="route.status === Status.ACTIVE" (click)="openUpdateRouteModal(route)"
+                    class="flex items-center px-3 py-1.5 text-blue-600 hover:text-blue-700 hover:bg-blue-50 rounded-lg transition-all duration-150 text-xs font-medium border border-blue-200 hover:border-blue-300">
+                    <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z">
+                         </path>
+                    </svg>
+                    <span>Editar</span>
+               </button>
+
+               <!-- Botón Eliminar (solo para rutas activas) -->
+               <button *ngIf="route.status === Status.ACTIVE" (click)="prepareDeleteRoute(route)"
+                    class="flex items-center px-3 py-1.5 text-red-600 hover:text-red-700 hover:bg-red-50 rounded-lg transition-all duration-150 text-xs font-medium border border-red-200 hover:border-red-300">
+                    <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16">
+                         </path>
+                    </svg>
+                    <span>Desactivar</span>
+               </button>
+
+               <!-- Botón Restaurar (solo para rutas inactivas) -->
+               <button *ngIf="route.status === Status.INACTIVE" (click)="prepareRestoreRoute(route)"
+                    class="flex items-center px-3 py-1.5 text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50 rounded-lg transition-all duration-150 text-xs font-medium border border-emerald-200 hover:border-emerald-300">
+                    <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15">
+                         </path>
+                    </svg>
+                    <span>Activar</span>
+               </button>
+          </div>
+     </div>
+</div>
+
+<!-- Paginación -->
+<div class="bg-white rounded-xl shadow-lg border border-gray-100 p-4 sm:p-6 mt-6" *ngIf="totalPages > 1">
+     <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div class="text-sm text-gray-700">
+               Mostrando
+               <span class="font-medium">{{(currentPage - 1) * pageSize + 1}}</span>
+               a
+               <span class="font-medium">{{Math.min(currentPage * pageSize, filteredRoutes.length)}}</span>
+               de
+               <span class="font-medium">{{filteredRoutes.length}}</span>
+               resultados
+          </div>
+          <div class="flex items-center space-x-2">
+               <button (click)="previousPage()"
+                    [disabled]="currentPage === 1"
+                    class="px-3 py-2 rounded-lg border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-150">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7">
+                         </path>
+                    </svg>
+               </button>
+
+               <div class="flex space-x-1">
+                    <button *ngFor="let page of getPages()" (click)="goToPage(page)"
+                         [class.bg-blue-500]="page === currentPage"
+                         [class.text-white]="page === currentPage"
+                         [class.border-blue-500]="page === currentPage"
+                         class="w-10 h-10 flex items-center justify-center rounded-lg border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors duration-150">
+                         {{page}}
+                    </button>
+               </div>
+
+               <button (click)="nextPage()"
+                    [disabled]="currentPage === totalPages"
+                    class="px-3 py-2 rounded-lg border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-150">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7">
+                         </path>
+                    </svg>
+               </button>
+          </div>
+     </div>
+</div>
+
+<!-- Modal de Creación de Ruta -->
+<app-create-route-modal 
+  [isOpen]="isCreateRouteModalOpen" 
+  [organizationId]="currentOrganizationId || ''"
+  (close)="closeCreateRouteModal()"
+  (routeCreated)="onRouteCreated()">
+</app-create-route-modal>
+
+<!-- Modal de Edición de Ruta -->
+<app-update-route-modal 
+  *ngIf="isUpdateRouteModalOpen && editingRoute"
+  [isOpen]="isUpdateRouteModalOpen" 
+  [route]="editingRoute"
+  (close)="closeUpdateRouteModal()"
+  (routeUpdated)="onRouteUpdated()">
+</app-update-route-modal>
+
+<!-- Modal de Visualización de Ruta -->
+<app-view-route-modal 
+  *ngIf="isViewRouteModalOpen && viewingRoute"
+  [isOpen]="isViewRouteModalOpen" 
+  [route]="viewingRoute"
+  (close)="closeViewRouteModal()">
+</app-view-route-modal>
+
+<!-- Modal de Confirmación -->
+<app-route-confirmation-modal 
+  [isOpen]="isConfirmationModalOpen" 
+  [data]="confirmationData"
+  (confirm)="onConfirmAction()"
+  (cancel)="onCancelAction()">
+</app-route-confirmation-modal>

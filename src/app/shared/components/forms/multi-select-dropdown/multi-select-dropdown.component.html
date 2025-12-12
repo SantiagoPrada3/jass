@@ -1,0 +1,31 @@
+<div class="relative" (clickOutside)="closeDropdown()">
+  <label *ngIf="label" class="block text-sm font-medium text-gray-700 mb-2">{{ label }}</label>
+  <div class="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent shadow-sm transition-all flex items-center justify-between cursor-pointer flex-wrap gap-2 bg-white" (click)="toggleDropdown()">
+    <ng-container *ngIf="selectedOptions.length > 0; else placeholderText">
+      <span *ngFor="let option of selectedOptions" class="inline-flex items-center px-3 py-1.5 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
+        {{ option[displayProperty] }}
+        <button (click)="removeOption(option); $event.stopPropagation()" class="ml-2 -mr-1 h-5 w-5 inline-flex items-center justify-center rounded-full hover:bg-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-500">
+          <svg class="h-3 w-3 text-blue-600" stroke="currentColor" fill="none" viewBox="0 0 8 8">
+            <path stroke-linecap="round" stroke-width="1.5" d="M1 1l6 6m0-6L1 7" />
+          </svg>
+        </button>
+      </span>
+    </ng-container>
+    <ng-template #placeholderText>
+      <span class="text-gray-500">{{ placeholder }}</span>
+    </ng-template>
+    <svg class="w-5 h-5 transition-transform duration-200 ml-auto text-gray-500" [class.rotate-180]="isOpen" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+    </svg>
+  </div>
+
+  <div *ngIf="isOpen" class="absolute z-10 w-full bg-white border border-gray-300 rounded-lg shadow-lg mt-2 max-h-60 overflow-y-auto">
+    <ul class="py-2">
+      <li *ngFor="let option of options" class="px-4 py-3 hover:bg-gray-50 cursor-pointer flex items-center space-x-3 transition-colors" (click)="onOptionClick(option)">
+        <input type="checkbox" [checked]="isSelected(option)" class="form-checkbox h-5 w-5 text-blue-600 rounded focus:ring-blue-500 border-gray-300" (click)="$event.stopPropagation()">
+        <span class="text-base text-gray-800">{{ option[displayProperty] }}</span>
+      </li>
+      <li *ngIf="options.length === 0" class="px-4 py-3 text-gray-500 text-base">No hay opciones disponibles</li>
+    </ul>
+  </div>
+</div>

@@ -1,0 +1,63 @@
+<!-- Overlay del Modal -->
+<div *ngIf="isOpen"
+     class="fixed inset-0 bg-gray-900 bg-opacity-50 backdrop-blur-sm transition-all duration-300 z-50 flex items-center justify-center p-4">
+
+     <!-- Contenedor del Modal -->
+     <div
+          class="relative transform overflow-hidden rounded-xl bg-white text-left shadow-2xl transition-all duration-300 w-full max-w-lg animate-in slide-in-from-bottom-4 fade-in-0">
+
+          <!-- Header con Icono -->
+          <div class="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
+               <div class="sm:flex sm:items-start">
+
+                    <!-- Icono de Agua -->
+                    <div class="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-blue-100 sm:mx-0 sm:h-10 sm:w-10">
+                         <svg class="h-6 w-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                         </svg>
+                    </div>
+
+                    <!-- Contenido -->
+                    <div class="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left flex-1">
+                         <h3 class="text-base font-semibold leading-6 text-gray-900" id="modal-title">
+                              Confirmación de Distribución de Agua
+                         </h3>
+                         <div class="mt-2">
+                              <p class="text-sm text-gray-500 mb-3">
+                                   ¿Se dio agua en esta distribución?
+                              </p>
+
+                              <!-- Información del programa -->
+                              <div class="mt-3 p-4 bg-gray-50 rounded-lg border border-gray-200">
+                                   <div class="mb-2">
+                                        <p class="text-sm font-medium text-gray-600">
+                                             Programa: <span class="font-semibold text-gray-900">{{programCode}}</span>
+                                        </p>
+                                   </div>
+                                   <div>
+                                        <p class="text-sm font-medium text-gray-600">
+                                             Hora de finalización: <span class="font-semibold text-gray-900">{{endTime}}</span>
+                                        </p>
+                                   </div>
+                              </div>
+                         </div>
+                    </div>
+               </div>
+          </div>
+
+          <!-- Footer con Botones -->
+          <div class="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
+               <!-- Botón SÍ (Verde) -->
+               <button type="button" (click)="onConfirm(true)"
+                    class="inline-flex w-full justify-center rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-700 sm:ml-3 sm:w-auto transition-colors duration-200">
+                    ✓ Sí, se dio agua
+               </button>
+
+               <!-- Botón NO (Rojo) -->
+               <button type="button" (click)="onConfirm(false)"
+                    class="mt-3 inline-flex w-full justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-700 sm:mt-0 sm:w-auto transition-colors duration-200">
+                    ✗ No, sin agua
+               </button>
+          </div>
+     </div>
+</div>

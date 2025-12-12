@@ -1,0 +1,27 @@
+<!-- Super Admin Layout con Sidebar fijo y Header usando solo Tailwind 4 -->
+<div class="min-h-screen bg-gray-50 scrollbar-styled scroll-smooth">
+
+     <!-- Sidebar -->
+     <app-sidebar [currentRole]="'SUPER_ADMIN'" [isCollapsed]="sidebarCollapsed"
+          (sidebarToggled)="onSidebarToggled($event)" [userProfile]="userProfile">
+     </app-sidebar>
+
+     <!-- Header fijo -->
+     <app-header [userProfile]="userProfile" [sidebarCollapsed]="sidebarCollapsed" (toggleSidebar)="toggleSidebar()"
+          (roleChanged)="onRoleChanged($event)" (logout)="onLogout()">
+     </app-header>
+
+     <!-- No necesitamos botón para alternar sidebars ya -->
+
+     <!-- Main Content Area con margen para el sidebar y espaciado para el header fijo -->
+     <div [class]="'flex flex-col min-h-screen transition-all duration-300 pt-16 bg-gray-50 scroll-container ' +
+          (sidebarCollapsed ? 'lg:ml-16' : 'lg:ml-64')">
+
+          <!-- Page Content -->
+          <main class="flex-1 p-6 overflow-auto scrollbar-styled scroll-smooth">
+               <router-outlet />
+          </main>
+
+     </div>
+
+</div>

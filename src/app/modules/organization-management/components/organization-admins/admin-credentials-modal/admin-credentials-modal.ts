@@ -1,0 +1,150 @@
+import {  Component ,Input ,Output , EventEmitter} from '@angular/core';
+import { CommonModule }from '@angular/common'
+import { AdminCreationResponse } from '../../../models/organization.model';
+import { NotificationService } from '../../../services/notificationServices.service';
+
+@Component({
+  selector: 'app-admin-credentials-modal',
+  imports: [CommonModule],
+  templateUrl: './admin-credentials-modal.html',
+  styleUrl: './admin-credentials-modal.css'
+})
+export class AdminCredentialsModal {
+  @Input() isOpen: boolean = false;
+  @Input() adminCreationData: AdminCreationResponse | null = null;
+  @Output() close = new EventEmitter<void>();
+
+     constructor(private notificationService: NotificationService) { }
+
+     /**
+      * Copia el texto al portapapeles
+      */
+     async copyToClipboard(text: string, type: 'username' | 'password'): Promise<void> {
+          try {
+               await navigator.clipboard.writeText(text);
+
+               const message = type === 'username' ? 'Nombre de administrador copiado al portapapeles' : 'Contraseña copiada al portapapeles';
+               this.notificationService.success('¡Copiado!', message);
+          } catch (error) {
+               console.error('Error copiando al portapapeles:', error);
+               this.notificationService.error('Error', 'No se pudo copiar al portapapeles');
+          }
+     }
+
+     /**
+      * Copia todas las credenciales al portapapeles
+      */
+     async copyAllCredentials(): Promise<void> {
+          if (!this.adminCreationData) return;
+
+          const credentialsText = `
+📋 CREDENCIALES DE ACCESO - ${this.adminCreationData.userInfo.firstName} ${this.adminCreationData.userInfo.lastName}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+👤 Administrador: ${this.adminCreationData.username}
+🔑 Contraseña Temporal: ${this.adminCreationData.temporaryPassword}
+
+📌 INFORMACIÓN IMPORTANTE:
+• El administrador debe cambiar su contraseña en el primer acceso
+• Estas credenciales son temporales por seguridad
+• Guarde esta información de forma segura
+
+🏢 Código de Administrador: ${this.adminCreationData.userInfo.userCode}
+📅 Fecha de Creación: ${new Date().toLocaleDateString('es-ES')}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+`;
+
+          try {
+               await navigator.clipboard.writeText(credentialsText.trim());
+               this.notificationService.success('¡Credenciales copiadas!', 'Todas las credenciales han sido copiadas al portapapeles');
+          } catch (error) {
+               console.error('Error copiando credenciales:', error);
+               this.notificationService.error('Error', 'No se pudieron copiar las credenciales');
+          }
+     }
+
+     /**
+      * Cierra el modal
+      */
+     onClose(): void {
+          this.close.emit();
+     }
+
+     /**
+      * Imprime las credenciales
+      */
+     printCredentials(): void {
+          if (!this.adminCreationData) return;
+
+          const printContent = `
+               <html>
+                    <head>
+                         <title>Credenciales de Acceso - ${this.adminCreationData.userInfo.firstName} ${this.adminCreationData.userInfo.lastName}</title>
+                         <style>
+                              body { font-family: Arial, sans-serif; padding: 20px; }
+                              .header { text-align: center; border-bottom: 2px solid #333; padding-bottom: 10px; margin-bottom: 20px; }
+                              .credentials { background: #f9f9f9; padding: 20px; border-radius: 8px; }
+                              .warning { background: #fff3cd; border: 1px solid #ffeaa7; padding: 15px; border-radius: 8px; margin: 20px 0; }
+                              .footer { text-align: center; margin-top: 30px; font-size: 12px; color: #666; }
+                         </style>
+                    </head>
+                    <body>
+                         <div class="header">
+                              <h1>CREDENCIALES DE ACCESO</h1>
+                              <h2>${this.adminCreationData.userInfo.firstName} ${this.adminCreationData.userInfo.lastName}</h2>
+                              <p>Código de Administrador: <strong>${this.adminCreationData.userInfo.userCode}</strong></p>
+                         </div>
+
+                         <div class="credentials">
+                              <h3>Datos de Acceso:</h3>
+                              <p><strong>Administrador:</strong> ${this.adminCreationData.username}</p>
+                              <p><strong>Contraseña Temporal:</strong> ${this.adminCreationData.temporaryPassword}</p>
+                         </div>
+
+                         <div class="warning">
+                              <h3>⚠️ INFORMACIÓN IMPORTANTE:</h3>
+                              <ul>
+                                   <li>El usuario debe cambiar su contraseña en el primer acceso</li>
+                                   <li>Estas credenciales son temporales por seguridad</li>
+                                   <li>Guarde esta información de forma segura</li>
+                                   <li>No comparta estas credenciales por medios no seguros</li>
+                              </ul>
+                         </div>
+
+                         <div class="footer">
+                              <p>Fecha de generación: ${new Date().toLocaleDateString('es-ES')} ${new Date().toLocaleTimeString('es-ES')}</p>
+                              <p>Sistema de Gestión JASS</p>
+                         </div>
+                    </body>
+               </html>
+          `;
+
+          const printWindow = window.open('', '_blank');
+          if (printWindow) {
+               printWindow.document.write(printContent);
+               printWindow.document.close();
+               printWindow.print();
+
+               this.notificationService.success('Credenciales enviadas a imprimir', 'El documento se ha enviado a la impresora');
+          } else {
+               this.notificationService.error('Error', 'No se pudo abrir la ventana de impresión');
+          }
+     }
+
+     /**
+      * Formatea la fecha de creación
+      */
+     getFormattedDate(): string {
+          if (!this.adminCreationData) return '';
+
+          return new Date(this.adminCreationData.userInfo.createdAt).toLocaleString('es-ES', {
+               year: 'numeric',
+               month: 'long',
+               day: 'numeric',
+               hour: '2-digit',
+               minute: '2-digit'
+          });
+     }
+
+}

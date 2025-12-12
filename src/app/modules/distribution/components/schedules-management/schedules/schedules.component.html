@@ -1,0 +1,495 @@
+<!-- Breadcrumb -->
+<app-breadcrumb [items]="breadcrumbItems"></app-breadcrumb>
+
+<!-- Header de la página -->
+<div class="p-4">
+     <h1 class="text-3xl font-bold text-gray-900 mb-2">Gestión de Horarios</h1>
+     <p class="text-lg text-gray-600">Administración de horarios de distribución de agua</p>
+</div>
+
+<!-- Estadísticas -->
+<div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6 px-4">
+     <div class="bg-white rounded-xl shadow-lg border border-gray-100 p-5">
+          <div class="flex items-center">
+               <div class="p-3 rounded-lg bg-blue-100 text-blue-600 mr-4">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+               </div>
+               <div>
+                    <p class="text-sm font-medium text-gray-500">Total Horarios</p>
+                    <p class="text-2xl font-bold text-gray-900">{{schedules.length}}</p>
+               </div>
+          </div>
+     </div>
+
+     <div class="bg-white rounded-xl shadow-lg border border-gray-100 p-5">
+          <div class="flex items-center">
+               <div class="p-3 rounded-lg bg-green-100 text-green-600 mr-4">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+               </div>
+               <div>
+                    <p class="text-sm font-medium text-gray-500">Horarios Activos</p>
+                    <p class="text-2xl font-bold text-gray-900">{{activeSchedulesCount}}</p>
+               </div>
+          </div>
+     </div>
+
+     <div class="bg-white rounded-xl shadow-lg border border-gray-100 p-5">
+          <div class="flex items-center">
+               <div class="p-3 rounded-lg bg-red-100 text-red-600 mr-4">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+               </div>
+               <div>
+                    <p class="text-sm font-medium text-gray-500">Horarios Inactivos</p>
+                    <p class="text-2xl font-bold text-gray-900">{{inactiveSchedulesCount}}</p>
+               </div>
+          </div>
+     </div>
+</div>
+
+<!-- Filtros y Controles -->
+<div class="bg-white rounded-xl shadow-lg border border-gray-100 p-4 sm:p-6 mb-6">
+     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-4">
+          <!-- Buscador -->
+          <div class="relative">
+               <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                    </svg>
+               </div>
+               <input type="text" placeholder="Buscar horarios..." [(ngModel)]="searchTerm" (ngModelChange)="onSearch()"
+                    class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 hover:border-gray-400 text-sm sm:text-base">
+          </div>
+
+          <!-- Toggle Activos/Inactivos - Dropdown Custom -->
+          <div class="relative dropdown-container">
+               <button (click)="toggleStatusDropdown()"
+                    class="w-full px-4 py-3 pr-10 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 hover:border-gray-400 bg-white text-sm font-medium text-gray-700 cursor-pointer hover:bg-gray-50 flex items-center justify-between">
+                    <span class="text-gray-700">
+                         {{getStatusDisplayText()}}
+                    </span>
+                    <svg class="w-4 h-4 transition-transform duration-200"
+                         [class.rotate-180]="isStatusDropdownOpen" fill="none" stroke="currentColor"
+                         viewBox="0 0 24 24">
+                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m6 9 6 6 6-6">
+                         </path>
+                    </svg>
+               </button>
+
+               <!-- Dropdown Menu -->
+               <div *ngIf="isStatusDropdownOpen"
+                    class="absolute z-50 w-full mt-2 bg-white border border-gray-200 rounded-xl shadow-lg">
+                    <div class="py-2">
+                         <button (click)="selectStatus('all')" [class.bg-blue-50]="statusFilter === 'all'"
+                              [class.text-blue-600]="statusFilter === 'all'"
+                              class="w-full px-4 py-3 text-left text-sm text-gray-700 hover:bg-gray-50 transition-colors duration-150 flex items-center">
+                              <svg *ngIf="statusFilter === 'all'" class="w-4 h-4 mr-3 text-blue-500" fill="none"
+                                   stroke="currentColor" viewBox="0 0 24 24">
+                                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M5 13l4 4L19 7"></path>
+                              </svg>
+                              <span class="ml-7" *ngIf="statusFilter !== 'all'">Todos los horarios</span>
+                              <span *ngIf="statusFilter === 'all'">Todos los horarios</span>
+                         </button>
+                         <button (click)="selectStatus('active')" [class.bg-blue-50]="statusFilter === 'active'"
+                              [class.text-blue-600]="statusFilter === 'active'"
+                              class="w-full px-4 py-3 text-left text-sm text-gray-700 hover:bg-gray-50 transition-colors duration-150 flex items-center">
+                              <svg *ngIf="statusFilter === 'active'" class="w-4 h-4 mr-3 text-green-500"
+                                   fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M5 13l4 4L19 7"></path>
+                              </svg>
+                              <span class="ml-7" *ngIf="statusFilter !== 'active'">Solo activos</span>
+                              <span *ngIf="statusFilter === 'active'">Solo activos</span>
+                         </button>
+                         <button (click)="selectStatus('inactive')"
+                              [class.bg-blue-50]="statusFilter === 'inactive'"
+                              [class.text-blue-600]="statusFilter === 'inactive'"
+                              class="w-full px-4 py-3 text-left text-sm text-gray-700 hover:bg-gray-50 transition-colors duration-150 flex items-center">
+                              <svg *ngIf="statusFilter === 'inactive'" class="w-4 h-4 mr-3 text-red-500"
+                                   fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M5 13l4 4L19 7"></path>
+                              </svg>
+                              <span class="ml-7" *ngIf="statusFilter !== 'inactive'">Solo inactivos</span>
+                              <span *ngIf="statusFilter === 'inactive'">Solo inactivos</span>
+                         </button>
+                    </div>
+               </div>
+          </div>
+
+          <!-- Nuevo Horario y Botón de Reporte -->
+          <div class="col-span-1 sm:col-span-2 lg:col-span-1 flex gap-2">
+               <button (click)="openCreateModal()"
+                    class="flex-1 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-medium py-3 px-6 rounded-xl transition-all duration-200 shadow-md hover:shadow-lg transform hover:-translate-y-0.5 text-sm sm:text-base">
+                    <div class="flex items-center justify-center">
+                         <svg class="w-4 h-4 sm:w-5 sm:h-5 mr-2" fill="none" stroke="currentColor"
+                              viewBox="0 0 24 24">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                   d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                         </svg>
+                         <span class="hidden sm:inline">Nuevo Horario</span>
+                         <span class="sm:hidden">Nuevo</span>
+                    </div>
+               </button>
+               
+               <!-- Botón de Reporte -->
+               <button (click)="generateReport()"
+                    class="flex-1 bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white font-medium py-3 px-6 rounded-xl transition-all duration-200 shadow-md hover:shadow-lg transform hover:-translate-y-0.5 text-sm sm:text-base">
+                    <div class="flex items-center justify-center">
+                         <svg class="w-4 h-4 sm:w-5 sm:h-5 mr-2" fill="none" stroke="currentColor"
+                              viewBox="0 0 24 24">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                   d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
+                              </path>
+                         </svg>
+                         <span class="hidden sm:inline">Reporte</span>
+                         <span class="sm:hidden">Reporte</span>
+                    </div>
+               </button>
+          </div>
+     </div>
+</div>
+
+<!-- Vista de Tabla para Desktop -->
+<div class="hidden lg:block bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden scroll-container">
+     <div class="overflow-x-auto scrollbar-thin scroll-smooth">
+          <table class="min-w-full table-auto">
+               <thead class="bg-gradient-to-r p-2 from-gray-50 to-gray-100">
+                    <tr>
+                         <th
+                              class="px-6 py-4 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                              CÓDIGO</th>
+                         <th
+                              class="px-6 py-4 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                              NOMBRE</th>
+                         <th
+                              class="px-6 py-4 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                              ZONA</th>
+                         <th
+                              class="px-6 py-4 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                              CALLE</th>
+                         <th
+                              class="px-6 py-4 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                              DÍAS</th>
+                         <th
+                              class="px-6 py-4 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                              HORARIO</th>
+                         <th
+                              class="px-6 py-4 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                              DURACIÓN</th>
+                         <th
+                              class="px-6 py-4 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                              ESTADO</th>
+                         <th
+                              class="px-6 py-4 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                              ACCIONES</th>
+                    </tr>
+               </thead>
+               <tbody class="bg-white divide-y divide-gray-100">
+                    <tr *ngFor="let schedule of paginatedSchedules; trackBy: trackByScheduleId"
+                         class="hover:bg-gray-50 transition-colors duration-150">
+
+                         <!-- Código -->
+                         <td class="px-6 py-4">
+                              <div
+                                   class="text-sm font-bold text-gray-900 bg-gray-100 px-3 py-1 rounded-full text-center">
+                                   {{schedule.scheduleCode}}
+                              </div>
+                         </td>
+
+                         <!-- Nombre -->
+                         <td class="px-6 py-4">
+                              <div class="text-sm font-medium text-gray-900">{{schedule.scheduleName}}</div>
+                         </td>
+
+                         <!-- Zona -->
+                         <td class="px-6 py-4">
+                              <div class="text-sm text-gray-900">
+                                   {{getZoneName(schedule.zoneId)}}
+                              </div>
+                         </td>
+
+                         <!-- Calle -->
+                         <td class="px-6 py-4">
+                              <div class="text-sm text-gray-900">
+                                   {{getStreetName(schedule.streetId)}}
+                              </div>
+                         </td>
+
+                         <!-- Días -->
+                         <td class="px-6 py-4">
+                              <div class="text-sm text-gray-900">
+                                   {{schedule.daysOfWeek.join(', ') || 'Todos los días'}}
+                              </div>
+                         </td>
+
+                         <!-- Horario -->
+                         <td class="px-6 py-4">
+                              <div class="text-sm text-gray-900">
+                                   {{schedule.startTime}} - {{schedule.endTime}}
+                              </div>
+                         </td>
+
+                         <!-- Duración -->
+                         <td class="px-6 py-4">
+                              <div class="text-sm text-gray-900">
+                                   {{schedule.durationHours}} horas
+                              </div>
+                         </td>
+
+                         <!-- Estado -->
+                         <td class="px-6 py-4">
+                              <span [class]="getStatusBadgeClass(schedule.status)">
+                                   {{getStatusLabel(schedule.status)}}
+                              </span>
+                         </td>
+
+                         <!-- Acciones -->
+                         <td class="px-2 py-2">
+                              <div class="flex flex-wrap gap-2">
+                                   <!-- Botón Ver - siempre visible -->
+                                   <button (click)="viewScheduleDetails(schedule)"
+                                        class="flex items-center px-3 py-2 text-gray-600 hover:text-gray-700 hover:bg-gray-50 rounded-lg transition-all duration-150 text-xs font-medium border border-gray-200 hover:border-gray-300">
+                                        <svg class="w-3.5 h-3.5 mr-1.5" fill="none" stroke="currentColor"
+                                             viewBox="0 0 24 24">
+                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                  d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                  d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                                        </svg>
+                                        <span>Ver</span>
+                                   </button>
+
+                                   <!-- Botón Editar - siempre visible -->
+                                   <!-- Botón Editar (solo para horarios activos) -->
+                                   <button *ngIf="schedule.status === Status.ACTIVE" (click)="openUpdateModal(schedule)"
+                                        class="flex items-center px-3 py-2 text-blue-600 hover:text-blue-700 hover:bg-blue-50 rounded-lg transition-all duration-150 text-xs font-medium border border-blue-200 hover:border-blue-300">
+                                        <svg class="w-3.5 h-3.5 mr-1.5" fill="none" stroke="currentColor"
+                                             viewBox="0 0 24 24">
+                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                  d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z">
+                                             </path>
+                                        </svg>
+                                        <span>Editar</span>
+                                   </button>
+
+                                   <!-- Botón Desactivar (solo para horarios activos) -->
+                                   <button *ngIf="schedule.status === Status.ACTIVE" (click)="toggleScheduleStatus(schedule)"
+                                        class="flex items-center px-3 py-2 text-white bg-red-600 hover:bg-red-700 rounded-lg transition-all duration-150 text-xs font-medium border border-red-200 hover:border-red-300">
+                                        <svg class="w-3.5 h-3.5 mr-1.5" fill="none" stroke="currentColor"
+                                             viewBox="0 0 24 24">
+                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                  d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path>
+                                        </svg>
+                                        <span>Desactivar</span>
+                                   </button>
+                                   
+                                   <!-- Botón Reactivar (solo para horarios inactivos) -->
+                                   <button *ngIf="schedule.status === Status.INACTIVE" (click)="reactivateSchedule(schedule)"
+                                        class="flex items-center px-3 py-2 text-white bg-green-600 hover:bg-green-700 rounded-lg transition-all duration-150 text-xs font-medium border border-green-200 hover:border-green-300">
+                                        <svg class="w-3.5 h-3.5 mr-1.5" fill="none" stroke="currentColor"
+                                             viewBox="0 0 24 24">
+                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                  d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                                        </svg>
+                                        <span>Reactivar</span>
+                                   </button>
+                                   
+
+                              </div>
+                         </td>
+                    </tr>
+               </tbody>
+          </table>
+     </div>
+</div>
+
+<!-- Vista de Tarjetas para Mobile -->
+<div class="lg:hidden grid grid-cols-1 md:grid-cols-2 gap-4 px-4">
+     <div *ngFor="let schedule of paginatedSchedules; trackBy: trackByScheduleId"
+          class="bg-white rounded-xl shadow-lg border border-gray-100 p-4 hover:shadow-xl transition-shadow duration-200">
+          <div class="flex justify-between items-start">
+               <div>
+                    <div class="flex items-center mb-2">
+                         <div
+                              class="w-8 h-8 rounded-full flex items-center justify-center text-white font-bold text-xs bg-blue-500 mr-2">
+                              {{schedule.scheduleCode.charAt(0)}}
+                         </div>
+                         <h3 class="text-lg font-bold text-gray-900">{{schedule.scheduleName}}</h3>
+                    </div>
+                    <div class="text-sm text-gray-500 mb-1">
+                         <span class="font-medium">Código:</span> {{schedule.scheduleCode}}
+                    </div>
+                    <div class="text-sm text-gray-500 mb-1">
+                         <span class="font-medium">Zona:</span> {{getZoneName(schedule.zoneId)}}
+                    </div>
+                    <div class="text-sm text-gray-500 mb-1">
+                         <span class="font-medium">Calle:</span> {{getStreetName(schedule.streetId)}}
+                    </div>
+                    <div class="text-sm text-gray-500 mb-1">
+                         <span class="font-medium">Días:</span> {{schedule.daysOfWeek.join(', ') || 'Todos los días'}}
+                    </div>
+                    <div class="text-sm text-gray-500 mb-1">
+                         <span class="font-medium">Horario:</span> {{schedule.startTime}} - {{schedule.endTime}}
+                    </div>
+                    <div class="text-sm text-gray-500 mb-1">
+                         <span class="font-medium">Duración:</span> {{schedule.durationHours}} horas
+                    </div>
+                    <div class="mt-2">
+                         <span [class]="getStatusBadgeClass(schedule.status)">
+                              {{getStatusLabel(schedule.status)}}
+                         </span>
+                    </div>
+               </div>
+          </div>
+          <div class="mt-4 flex flex-wrap gap-2">
+               <!-- Botón Ver - siempre visible -->
+               <button (click)="viewScheduleDetails(schedule)"
+                    class="flex items-center px-3 py-1.5 text-gray-600 hover:text-gray-700 hover:bg-gray-50 rounded-lg transition-all duration-150 text-xs font-medium border border-gray-200 hover:border-gray-300">
+                    <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                    </svg>
+                    <span>Ver</span>
+               </button>
+               
+               <!-- Botón Editar (solo para horarios activos) -->
+               <button *ngIf="schedule.status === Status.ACTIVE" (click)="openUpdateModal(schedule)"
+                    class="flex items-center px-3 py-1.5 text-blue-600 hover:text-blue-700 hover:bg-blue-50 rounded-lg transition-all duration-150 text-xs font-medium border border-blue-200 hover:border-blue-300">
+                    <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z">
+                         </path>
+                    </svg>
+                    <span>Editar</span>
+               </button>
+               
+               <!-- Botón Desactivar (solo para horarios activos) -->
+               <button *ngIf="schedule.status === Status.ACTIVE" (click)="toggleScheduleStatus(schedule)"
+                    class="flex items-center px-3 py-1.5 text-white bg-red-600 hover:bg-red-700 rounded-lg transition-all duration-150 text-xs font-medium border border-red-200 hover:border-red-300">
+                    <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path>
+                    </svg>
+                    <span>Desactivar</span>
+               </button>
+               
+               <!-- Botón Reactivar (solo para horarios inactivos) -->
+               <button *ngIf="schedule.status === Status.INACTIVE" (click)="reactivateSchedule(schedule)"
+                    class="flex items-center px-3 py-1.5 text-white bg-green-600 hover:bg-green-700 rounded-lg transition-all duration-150 text-xs font-medium border border-green-200 hover:border-green-300">
+                    <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                    </svg>
+                    <span>Reactivar</span>
+               </button>
+               
+               <!-- Botón Eliminar (solo para horarios inactivos) -->
+               <button *ngIf="schedule.status === Status.INACTIVE" (click)="deleteSchedule(schedule)"
+                    class="flex items-center px-3 py-1.5 text-red-600 hover:text-red-700 hover:bg-red-50 rounded-lg transition-all duration-150 text-xs font-medium border border-red-200 hover:border-red-300">
+                    <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                    </svg>
+                    <span>Eliminar</span>
+               </button>
+          </div>
+     </div>
+</div>
+
+<!-- Botón de prueba para verificar el modal de visualización -->
+<!-- <div class="bg-white rounded-xl shadow-lg border border-gray-100 p-4 sm:p-6 mt-6">
+     <button (click)="testViewModal()" class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600">
+          Probar Modal de Visualización
+     </button>
+</div> -->
+
+<!-- Paginación -->
+<div class="bg-white rounded-xl shadow-lg border border-gray-100 p-4 sm:p-6 mt-6" *ngIf="totalPages > 1">
+     <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div class="text-sm text-gray-700">
+               Mostrando
+               <span class="font-medium">{{(currentPage - 1) * pageSize + 1}}</span>
+               a
+               <span class="font-medium">{{Math.min(currentPage * pageSize, filteredSchedules.length)}}</span>
+               de
+               <span class="font-medium">{{filteredSchedules.length}}</span>
+               resultados
+          </div>
+          <div class="flex items-center space-x-2">
+               <button (click)="previousPage()"
+                    [disabled]="currentPage === 1"
+                    class="px-3 py-2 rounded-lg border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-150">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7">
+                         </path>
+                    </svg>
+               </button>
+
+               <div class="flex space-x-1">
+                    <button *ngFor="let page of getPages()" (click)="goToPage(page)"
+                         [class.bg-blue-500]="page === currentPage"
+                         [class.text-white]="page === currentPage"
+                         [class.border-blue-500]="page === currentPage"
+                         class="w-10 h-10 flex items-center justify-center rounded-lg border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors duration-150">
+                         {{page}}
+                    </button>
+               </div>
+
+               <button (click)="nextPage()"
+                    [disabled]="currentPage === totalPages"
+                    class="px-3 py-2 rounded-lg border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-150">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7">
+                         </path>
+                    </svg>
+               </button>
+          </div>
+     </div>
+</div>
+
+<!-- Modal de Creación -->
+<app-create-schedule-modal 
+  [isOpen]="isCreateModalOpen" 
+  [organizationId]="getCurrentOrganizationId()"
+  (close)="closeCreateModal()"
+  (scheduleCreated)="onScheduleCreated()">
+</app-create-schedule-modal>
+
+<!-- Modal de Actualización -->
+<app-update-schedule-modal 
+  *ngIf="isUpdateModalOpen && editingSchedule"
+  [isOpen]="isUpdateModalOpen"
+  [schedule]="editingSchedule"
+  (close)="closeUpdateModal()"
+  (scheduleUpdated)="onScheduleUpdated()">
+</app-update-schedule-modal>
+
+<!-- Modal de Visualización -->
+<app-view-schedule-modal
+  [isOpen]="isViewModalOpen"
+  [schedule]="viewingSchedule"
+  [zonesData]="zonesData"
+  [streetsData]="streetsData"
+  (close)="closeViewModal()">
+</app-view-schedule-modal>
+
+<!-- Modal de Confirmación -->
+<app-schedule-confirmation-modal
+  [isOpen]="isConfirmationModalOpen"
+  [data]="confirmationData"
+  (confirm)="onConfirmAction()"
+  (cancel)="onCancelAction()">
+</app-schedule-confirmation-modal>

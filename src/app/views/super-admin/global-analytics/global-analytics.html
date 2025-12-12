@@ -1,0 +1,77 @@
+<!-- Breadcrumb -->
+<app-breadcrumb [items]="breadcrumbItems"></app-breadcrumb>
+
+<!-- Header de la página -->
+<div class="p-4">
+     <h1 class="text-3xl font-bold text-gray-900 mb-2">Analytics Global</h1>
+     <p class="text-lg text-gray-600">Análisis consolidado de métricas y rendimiento de todas las organizaciones del
+          sistema</p>
+</div>
+
+<div class="p-6 max-w-7xl mx-auto space-y-6">
+     <!-- Charts Section -->
+     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <!-- Line Chart: Growth -->
+          <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 lg:col-span-2">
+               <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
+                    <div>
+                         <h3 class="text-lg font-bold text-gray-900">Crecimiento de Organizaciones</h3>
+                         <p class="text-sm text-gray-500 mt-1">Visualiza la tendencia de registro de nuevas
+                              organizaciones durante el año actual.</p>
+                    </div>
+               </div>
+               <div class="h-80">
+                    <canvas baseChart [data]="lineChartData" [options]="lineChartOptions" [type]="lineChartType">
+                    </canvas>
+               </div>
+               <div class="mt-4 p-4 bg-blue-50 rounded-lg border border-blue-100">
+                    <div class="flex items-start">
+                         <svg class="w-5 h-5 text-blue-500 mt-0.5 mr-3" fill="none" stroke="currentColor"
+                              viewBox="0 0 24 24">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                   d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                         </svg>
+                         <p class="text-sm text-blue-700">
+                              Este gráfico muestra el número de organizaciones que se han unido a la plataforma mes a
+                              mes.
+                              Una tendencia ascendente indica un crecimiento saludable en la adopción del sistema.
+                         </p>
+                    </div>
+               </div>
+          </div>
+
+          <!-- Pie Chart: Organization Status -->
+          <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 flex flex-col">
+               <h3 class="text-lg font-bold text-gray-900 mb-2">Estado de Organizaciones</h3>
+               <p class="text-sm text-gray-500 mb-6">Proporción de organizaciones activas vs inactivas.</p>
+
+               <div class="h-64 flex-grow relative">
+                    <canvas baseChart [data]="pieChartData" [options]="pieChartOptions" [type]="pieChartType">
+                    </canvas>
+               </div>
+
+               <div class="mt-6 pt-6 border-t border-gray-100">
+                    <p class="text-xs text-gray-500 text-center">
+                         Mantiene un seguimiento de la salud operativa de las JASS registradas.
+                    </p>
+               </div>
+          </div>
+
+          <!-- Pie Chart: Admin Status -->
+          <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 flex flex-col">
+               <h3 class="text-lg font-bold text-gray-900 mb-2">Estado de Administradores</h3>
+               <p class="text-sm text-gray-500 mb-6">Disponibilidad de administradores en el sistema.</p>
+
+               <div class="h-64 flex-grow relative">
+                    <canvas baseChart [data]="pieChartAdminsData" [options]="pieChartOptions" [type]="pieChartType">
+                    </canvas>
+               </div>
+
+               <div class="mt-6 pt-6 border-t border-gray-100">
+                    <p class="text-xs text-gray-500 text-center">
+                         Monitoriza la actividad de los usuarios con privilegios administrativos.
+                    </p>
+               </div>
+          </div>
+     </div>
+</div>

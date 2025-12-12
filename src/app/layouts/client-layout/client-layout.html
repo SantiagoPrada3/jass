@@ -1,0 +1,24 @@
+<!-- Client Layout con Sidebar fijo y Header usando solo Tailwind 4 -->
+<div class="min-h-screen bg-gray-50">
+
+     <!-- Sidebar -->
+     <app-sidebar [currentRole]="'CLIENT'" [isCollapsed]="sidebarCollapsed" (sidebarToggled)="onSidebarToggled($event)"
+          [userProfile]="userProfile">
+     </app-sidebar>
+
+     <!-- Header fijo -->
+     <app-header [userProfile]="userProfile" [sidebarCollapsed]="sidebarCollapsed" (toggleSidebar)="toggleSidebar()"
+          (roleChanged)="onRoleChanged($event)" (logout)="onLogout()">
+     </app-header>
+
+     <div [class]="'flex flex-col min-h-screen transition-all duration-300 pt-16 bg-gray-50 ' +
+          (sidebarCollapsed ? 'lg:ml-16' : 'lg:ml-64')">
+
+          <!-- Page Content -->
+          <main class="flex-1 p-6 overflow-auto">
+               <router-outlet />
+          </main>
+
+     </div>
+
+</div>

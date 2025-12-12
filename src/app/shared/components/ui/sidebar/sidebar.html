@@ -1,0 +1,686 @@
+<!-- Nueva Sidebar Profesional con Dropdowns -->
+<aside [class]="'fixed z-20 top-16 left-0 h-[calc(100vh-4rem)] bg-white text-gray-700 shadow-lg  border-r border-white transition-all duration-300 flex flex-col ' +
+    (isCollapsed ? 'w-16' : 'w-64') +
+    (isMobile && isCollapsed ? ' -translate-x-full' : ' translate-x-0')">
+
+     <!-- Header del Sidebar -->
+     <div class="p-4 border-b border-zinc-200 flex items-center justify-between">
+          <div [class]="'flex items-center space-x-3 ' + (isCollapsed ? 'justify-center' : '')">
+               <div class="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center p-1">
+                    <img src="assets/images/Gotita.png" alt="Sistema JASS" class="w-full h-full object-contain">
+               </div>
+               <span *ngIf="!isCollapsed" class="font-semibold text-lg text-gray-800">Sistema JASS</span>
+          </div>
+
+          <!-- Botón toggle solo en móvil y cuando el sidebar está abierto -->
+          <button *ngIf="isMobile && !isCollapsed" (click)="toggleSidebar()"
+               class="p-1 rounded-md hover:bg-gray-100 transition-colors">
+               <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+               </svg>
+          </button>
+     </div>
+
+     <!-- Navegación -->
+     <nav class="flex-1 px-3 py-4 overflow-y-auto">
+          <ul class="space-y-0.5">
+               <!-- ADMIN MENU ITEMS -->
+               <ng-container *ngIf="currentRole === 'ADMIN'">
+                    <!-- Dashboard -->
+                    <li>
+                         <a [routerLink]="'/admin/dashboard'" routerLinkActive="bg-slate-100 text-slate-800 font-medium"
+                              class="flex items-center px-3 py-2 text-sm rounded-md hover:bg-slate-100 hover:text-slate-800 transition-colors"
+                              [class.justify-center]="isCollapsed">
+                              <div class="flex-shrink-0 text-gray-500">
+                                   <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none"
+                                        viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                             d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                                   </svg>
+                              </div>
+                              <span *ngIf="!isCollapsed" class="ml-3">Dashboard</span>
+                         </a>
+                    </li>
+
+                    <!-- Personas Dropdown -->
+                    <li>
+                         <button type="button" (click)="toggleDropdown('personas'); openDropdownIfDesktop('personas')"
+                              (keydown.enter)="toggleDropdown('personas')" (keydown.space)="toggleDropdown('personas')"
+                              class="w-full flex items-center justify-between px-3 py-2 text-sm rounded-md hover:bg-slate-100 hover:text-slate-800 transition-colors cursor-pointer text-left"
+                              [class.justify-center]="isCollapsed">
+                              <div class="flex items-center" [class.justify-center]="isCollapsed">
+                                   <div class="flex-shrink-0 text-gray-500">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none"
+                                             viewBox="0 0 24 24" stroke="currentColor">
+                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                  d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                                        </svg>
+                                   </div>
+                                   <span *ngIf="!isCollapsed" class="ml-3">Personas</span>
+                              </div>
+                              <svg *ngIf="!isCollapsed" xmlns="http://www.w3.org/2000/svg" fill="none"
+                                   viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"
+                                   class="w-4 h-4 transition-transform" [class.rotate-180]="openDropdowns['personas']">
+                                   <path stroke-linecap="round" stroke-linejoin="round"
+                                        d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                              </svg>
+                         </button>
+
+                         <!-- Personas Submenu -->
+                         <div *ngIf="!isCollapsed && openDropdowns['personas']" class="mt-1 pl-6 ml-2 border-l">
+                              <a [routerLink]="'/admin/users'" routerLinkActive="text-slate-800 font-medium"
+                                   class="flex items-center py-2 pl-3 text-xs text-gray-600 hover:text-slate-800 transition-colors">
+                                   <div class="w-1.5 h-1.5 rounded-full bg-gray-400 mr-2"></div>
+                                   Usuarios
+                              </a>
+                              <a [routerLink]="'/admin/operators'" routerLinkActive="text-slate-800 font-medium"
+                                   class="flex items-center py-2 pl-3 text-xs text-gray-600 hover:text-slate-800 transition-colors">
+                                   <div class="w-1.5 h-1.5 rounded-full bg-gray-400 mr-2"></div>
+                                   Operadores
+                              </a>
+                         </div>
+                    </li>
+
+                    <!-- Suministros Dropdown -->
+                    <li>
+                         <button type="button"
+                              (click)="toggleDropdown('suministros'); openDropdownIfDesktop('suministros')"
+                              (keydown.enter)="toggleDropdown('suministros')"
+                              (keydown.space)="toggleDropdown('suministros')"
+                              class="w-full flex items-center justify-between px-3 py-2 text-sm rounded-md hover:bg-slate-100 hover:text-slate-800 transition-colors cursor-pointer text-left"
+                              [class.justify-center]="isCollapsed">
+                              <div class="flex items-center" [class.justify-center]="isCollapsed">
+                                   <div class="flex-shrink-0 text-gray-500">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none"
+                                             viewBox="0 0 24 24" stroke="currentColor">
+                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                  d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                                        </svg>
+                                   </div>
+                                   <span *ngIf="!isCollapsed" class="ml-3">Suministros</span>
+                              </div>
+                              <svg *ngIf="!isCollapsed" xmlns="http://www.w3.org/2000/svg" fill="none"
+                                   viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"
+                                   class="w-4 h-4 transition-transform"
+                                   [class.rotate-180]="openDropdowns['suministros']">
+                                   <path stroke-linecap="round" stroke-linejoin="round"
+                                        d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                              </svg>
+                         </button>
+
+                         <!-- Suministros Submenu -->
+                         <div *ngIf="!isCollapsed && openDropdowns['suministros']" class="mt-1 pl-6 ml-2 border-l">
+                              <a [routerLink]="'/admin/supplies/management'"
+                                   routerLinkActive="text-slate-800 font-medium"
+                                   class="flex items-center py-2 pl-3 text-xs text-gray-600 hover:text-slate-800 transition-colors">
+                                   <div class="w-1.5 h-1.5 rounded-full bg-gray-400 mr-2"></div>
+                                   Gestión de Suministros
+                              </a>
+                              <a [routerLink]="'/admin/supplies/assignment'"
+                                   routerLinkActive="text-slate-800 font-medium"
+                                   class="flex items-center py-2 pl-3 text-xs text-gray-600 hover:text-slate-800 transition-colors">
+                                   <div class="w-1.5 h-1.5 rounded-full bg-gray-400 mr-2"></div>
+                                   Asignación de Suministros
+                              </a>
+                              <a [routerLink]="'/admin/supplies/transfer'" routerLinkActive="text-slate-800 font-medium"
+                                   class="flex items-center py-2 pl-3 text-xs text-gray-600 hover:text-slate-800 transition-colors">
+                                   <div class="w-1.5 h-1.5 rounded-full bg-gray-400 mr-2"></div>
+                                   Transferencia de Suministros
+                              </a>
+                         </div>
+                    </li>
+
+                    <!-- Inventario Dropdown -->
+                    <li>
+                         <button type="button"
+                              (click)="toggleDropdown('inventario'); openDropdownIfDesktop('inventario')"
+                              (keydown.enter)="toggleDropdown('inventario')"
+                              (keydown.space)="toggleDropdown('inventario')"
+                              class="w-full flex items-center justify-between px-3 py-2 text-sm rounded-md hover:bg-slate-100 hover:text-slate-800 transition-colors cursor-pointer text-left"
+                              [class.justify-center]="isCollapsed">
+                              <div class="flex items-center" [class.justify-center]="isCollapsed">
+                                   <div class="flex-shrink-0 text-gray-500">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none"
+                                             viewBox="0 0 24 24" stroke="currentColor">
+                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                  d="M5 8h14M5 8a2 2 0 110-4h1.586a1 1 0 01.707.293l2.414 2.414a1 1 0 00.707.293H15a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" />
+                                        </svg>
+                                   </div>
+                                   <span *ngIf="!isCollapsed" class="ml-3">Inventario</span>
+                              </div>
+                              <svg *ngIf="!isCollapsed" xmlns="http://www.w3.org/2000/svg" fill="none"
+                                   viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"
+                                   class="w-4 h-4 transition-transform"
+                                   [class.rotate-180]="openDropdowns['inventario']">
+                                   <path stroke-linecap="round" stroke-linejoin="round"
+                                        d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                              </svg>
+                         </button>
+
+                         <!-- Inventario Submenu -->
+                         <div *ngIf="!isCollapsed && openDropdowns['inventario']" class="mt-1 pl-6 ml-2 border-l">
+                              <a [routerLink]="'/admin/inventory/dashboard'"
+                                   routerLinkActive="text-slate-800 font-medium"
+                                   class="flex items-center py-2 pl-3 text-xs text-gray-600 hover:text-slate-800 transition-colors">
+                                   <div class="w-1.5 h-1.5 rounded-full bg-gray-400 mr-2"></div>
+                                   Dashboard
+                              </a>
+                              <a [routerLink]="'/admin/inventory/products'"
+                                   routerLinkActive="text-slate-800 font-medium"
+                                   class="flex items-center py-2 pl-3 text-xs text-gray-600 hover:text-slate-800 transition-colors">
+                                   <div class="w-1.5 h-1.5 rounded-full bg-gray-400 mr-2"></div>
+                                   Productos
+                              </a>
+                              <a [routerLink]="'/admin/inventory/purchases'"
+                                   routerLinkActive="text-slate-800 font-medium"
+                                   class="flex items-center py-2 pl-3 text-xs text-gray-600 hover:text-slate-800 transition-colors">
+                                   <div class="w-1.5 h-1.5 rounded-full bg-gray-400 mr-2"></div>
+                                   Compras
+                              </a>
+                              <a [routerLink]="'/admin/inventory/categories'"
+                                   routerLinkActive="text-slate-800 font-medium"
+                                   class="flex items-center py-2 pl-3 text-xs text-gray-600 hover:text-slate-800 transition-colors">
+                                   <div class="w-1.5 h-1.5 rounded-full bg-gray-400 mr-2"></div>
+                                   Categorías
+                              </a>
+                              <a [routerLink]="'/admin/inventory/suppliers'"
+                                   routerLinkActive="text-slate-800 font-medium"
+                                   class="flex items-center py-2 pl-3 text-xs text-gray-600 hover:text-slate-800 transition-colors">
+                                   <div class="w-1.5 h-1.5 rounded-full bg-gray-400 mr-2"></div>
+                                   Proveedores
+                              </a>
+                              <a [routerLink]="'/admin/inventory/kardex'" routerLinkActive="text-slate-800 font-medium"
+                                   class="flex items-center py-2 pl-3 text-xs text-gray-600 hover:text-slate-800 transition-colors">
+                                   <div class="w-1.5 h-1.5 rounded-full bg-gray-400 mr-2"></div>
+                                   Movimientos Kardex
+                              </a>
+                         </div>
+                    </li>
+
+                    <!-- Distribución Dropdown -->
+                    <li>
+                         <button type="button"
+                              (click)="toggleDropdown('distribucion'); openDropdownIfDesktop('distribucion')"
+                              (keydown.enter)="toggleDropdown('distribucion')"
+                              (keydown.space)="toggleDropdown('distribucion')"
+                              class="w-full flex items-center justify-between px-3 py-2 text-sm rounded-md hover:bg-slate-100 hover:text-slate-800 transition-colors cursor-pointer text-left"
+                              [class.justify-center]="isCollapsed">
+                              <div class="flex items-center" [class.justify-center]="isCollapsed">
+                                   <div class="flex-shrink-0 text-gray-500">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none"
+                                             viewBox="0 0 24 24" stroke="currentColor">
+                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                  d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                                        </svg>
+                                   </div>
+                                   <span *ngIf="!isCollapsed" class="ml-3">Distribución</span>
+                              </div>
+                              <svg *ngIf="!isCollapsed" xmlns="http://www.w3.org/2000/svg" fill="none"
+                                   viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"
+                                   class="w-4 h-4 transition-transform"
+                                   [class.rotate-180]="openDropdowns['distribucion']">
+                                   <path stroke-linecap="round" stroke-linejoin="round"
+                                        d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                              </svg>
+                         </button>
+
+                         <!-- Distribución Submenu -->
+                         <div *ngIf="!isCollapsed && openDropdowns['distribucion']" class="mt-1 pl-6 ml-2 border-l">
+                              <a [routerLink]="'/admin/distribution/routes'"
+                                   routerLinkActive="text-slate-800 font-medium"
+                                   class="flex items-center py-2 pl-3 text-xs text-gray-600 hover:text-slate-800 transition-colors">
+                                   <div class="w-1.5 h-1.5 rounded-full bg-gray-400 mr-2"></div>
+                                   Rutas
+                              </a>
+                              <a [routerLink]="'/admin/distribution/schedules'"
+                                   routerLinkActive="text-slate-800 font-medium"
+                                   class="flex items-center py-2 pl-3 text-xs text-gray-600 hover:text-slate-800 transition-colors">
+                                   <div class="w-1.5 h-1.5 rounded-full bg-gray-400 mr-2"></div>
+                                   Horarios
+                              </a>
+                              <a [routerLink]="'/admin/distribution/programming'"
+                                   routerLinkActive="text-slate-800 font-medium"
+                                   class="flex items-center py-2 pl-3 text-xs text-gray-600 hover:text-slate-800 transition-colors">
+                                   <div class="w-1.5 h-1.5 rounded-full bg-gray-400 mr-2"></div>
+                                   Programación
+                              </a>
+                         </div>
+                    </li>
+
+                    <!-- Calidad de Agua Dropdown -->
+                    <li>
+                         <button type="button"
+                              (click)="toggleDropdown('calidadAgua'); openDropdownIfDesktop('calidadAgua')"
+                              (keydown.enter)="toggleDropdown('calidadAgua')"
+                              (keydown.space)="toggleDropdown('calidadAgua')"
+                              class="w-full flex items-center justify-between px-3 py-2 text-sm rounded-md hover:bg-slate-100 hover:text-slate-800 transition-colors cursor-pointer text-left"
+                              [class.justify-center]="isCollapsed">
+                              <div class="flex items-center" [class.justify-center]="isCollapsed">
+                                   <div class="flex-shrink-0 text-gray-500">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none"
+                                             viewBox="0 0 24 24" stroke="currentColor">
+                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                  d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
+                                        </svg>
+                                   </div>
+                                   <span *ngIf="!isCollapsed" class="ml-3">Calidad de Agua</span>
+                              </div>
+                              <svg *ngIf="!isCollapsed" xmlns="http://www.w3.org/2000/svg" fill="none"
+                                   viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"
+                                   class="w-4 h-4 transition-transform"
+                                   [class.rotate-180]="openDropdowns['calidadAgua']">
+                                   <path stroke-linecap="round" stroke-linejoin="round"
+                                        d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                              </svg>
+                         </button>
+
+                         <!-- Calidad de Agua Submenu -->
+                         <div *ngIf="!isCollapsed && openDropdowns['calidadAgua']" class="mt-1 pl-6 ml-2 border-l">
+                              <a [routerLink]="'/admin/water-quality/chlorine'"
+                                   routerLinkActive="text-slate-800 font-medium"
+                                   class="flex items-center py-2 pl-3 text-xs text-gray-600 hover:text-slate-800 transition-colors">
+                                   <div class="w-1.5 h-1.5 rounded-full bg-gray-400 mr-2"></div>
+                                   Control de Cloro
+                              </a>
+                              <a [routerLink]="'/admin/water-quality/analysis'"
+                                   routerLinkActive="text-slate-800 font-medium"
+                                   class="flex items-center py-2 pl-3 text-xs text-gray-600 hover:text-slate-800 transition-colors">
+                                   <div class="w-1.5 h-1.5 rounded-full bg-gray-400 mr-2"></div>
+                                   Análisis
+                              </a>
+                              <a [routerLink]="'/admin/water-quality/points'"
+                                   routerLinkActive="text-slate-800 font-medium"
+                                   class="flex items-center py-2 pl-3 text-xs text-gray-600 hover:text-slate-800 transition-colors">
+                                   <div class="w-1.5 h-1.5 rounded-full bg-gray-400 mr-2"></div>
+                                   Puntos de Análisis
+                              </a>
+                         </div>
+                    </li>
+
+                    <!-- Pagos -->
+                    <li>
+                         <a [routerLink]="'/admin/payments'" routerLinkActive="bg-slate-100 text-slate-800 font-medium"
+                              class="flex items-center px-3 py-2 text-sm rounded-md hover:bg-slate-100 hover:text-slate-800 transition-colors"
+                              [class.justify-center]="isCollapsed">
+                              <div class="flex-shrink-0 text-gray-500">
+                                   <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none"
+                                        viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                             d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
+                                   </svg>
+                              </div>
+                              <span *ngIf="!isCollapsed" class="ml-3">Pagos</span>
+                         </a>
+                    </li>
+
+                    <!-- Incidencias Dropdown -->
+                    <li>
+                         <button type="button"
+                              (click)="toggleDropdown('incidencias'); openDropdownIfDesktop('incidencias')"
+                              (keydown.enter)="toggleDropdown('incidencias')"
+                              (keydown.space)="toggleDropdown('incidencias')"
+                              class="w-full flex items-center justify-between px-3 py-2 text-sm rounded-md hover:bg-slate-100 hover:text-slate-800 transition-colors cursor-pointer text-left"
+                              [class.justify-center]="isCollapsed">
+                              <div class="flex items-center" [class.justify-center]="isCollapsed">
+                                   <div class="flex-shrink-0 text-gray-500">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none"
+                                             viewBox="0 0 24 24" stroke="currentColor">
+                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                  d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                                        </svg>
+                                   </div>
+                                   <span *ngIf="!isCollapsed" class="ml-3">Incidencias</span>
+
+                              </div>
+                              <svg *ngIf="!isCollapsed" xmlns="http://www.w3.org/2000/svg" fill="none"
+                                   viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"
+                                   class="w-4 h-4 transition-transform"
+                                   [class.rotate-180]="openDropdowns['incidencias']">
+                                   <path stroke-linecap="round" stroke-linejoin="round"
+                                        d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                              </svg>
+                         </button>
+
+                         <!-- Incidencias Submenu -->
+                         <div *ngIf="!isCollapsed && openDropdowns['incidencias']" class="mt-1 pl-6 ml-2 border-l">
+                              <a [routerLink]="'/admin/incidents/types'" routerLinkActive="text-slate-800 font-medium"
+                                   class="flex items-center py-2 pl-3 text-xs text-gray-600 hover:text-slate-800 transition-colors">
+                                   <div class="w-1.5 h-1.5 rounded-full bg-gray-400 mr-2"></div>
+                                   Tipos de Incidencias
+                              </a>
+                              <a [routerLink]="'/admin/incidents/list'" routerLinkActive="text-slate-800 font-medium"
+                                   class="flex items-center py-2 pl-3 text-xs text-gray-600 hover:text-slate-800 transition-colors">
+                                   <div class="w-1.5 h-1.5 rounded-full bg-gray-400 mr-2"></div>
+                                   Incidencias
+                              </a>
+                         </div>
+                    </li>
+
+                    <!-- Reportes -->
+                    <li>
+                         <a [routerLink]="'/admin/reports'" routerLinkActive="bg-slate-100 text-slate-800 font-medium"
+                              class="flex items-center px-3 py-2 text-sm rounded-md hover:bg-slate-100 hover:text-slate-800 transition-colors"
+                              [class.justify-center]="isCollapsed">
+                              <div class="flex-shrink-0 text-gray-500">
+                                   <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none"
+                                        viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                             d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                   </svg>
+                              </div>
+                              <span *ngIf="!isCollapsed" class="ml-3">Reportes</span>
+                         </a>
+                    </li>
+
+                    <!-- Analytics -->
+                    <li>
+                         <a [routerLink]="'/admin/analytics'" routerLinkActive="bg-slate-100 text-slate-800 font-medium"
+                              class="flex items-center px-3 py-2 text-sm rounded-md hover:bg-slate-100 hover:text-slate-800 transition-colors"
+                              [class.justify-center]="isCollapsed">
+                              <div class="flex-shrink-0 text-gray-500">
+                                   <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none"
+                                        viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                             d="M16 8v8m-4-5v5m-4-2v2m-2 4h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                   </svg>
+                              </div>
+                              <span *ngIf="!isCollapsed" class="ml-3">Analytics</span>
+                         </a>
+                    </li>
+
+                    <!-- Configuración del Sistema -->
+                    <li>
+                         <a [routerLink]="'/admin/profile-settings'"
+                              routerLinkActive="bg-slate-100 text-slate-800 font-medium"
+                              class="flex items-center px-3 py-2 text-sm rounded-md hover:bg-slate-100 hover:text-slate-800 transition-colors"
+                              [class.justify-center]="isCollapsed">
+                              <div class="flex-shrink-0 text-gray-500">
+                                   <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none"
+                                        viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                             d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                             d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                   </svg>
+                              </div>
+                              <span *ngIf="!isCollapsed" class="ml-3">Configuración</span>
+                         </a>
+                    </li>
+               </ng-container>
+
+               <!-- SUPER_ADMIN MENU ITEMS -->
+               <ng-container *ngIf="currentRole === 'SUPER_ADMIN'">
+                    <!-- Dashboard -->
+                    <li>
+                         <a [routerLink]="'/super-admin/dashboard'"
+                              routerLinkActive="bg-slate-100 text-slate-800 font-medium"
+                              class="flex items-center px-3 py-2 text-sm rounded-md hover:bg-slate-100 hover:text-slate-800 transition-colors"
+                              [class.justify-center]="isCollapsed">
+                              <div class="flex-shrink-0 text-gray-500">
+                                   <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none"
+                                        viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                             d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                                   </svg>
+                              </div>
+                              <span *ngIf="!isCollapsed" class="ml-3">Dashboard</span>
+                         </a>
+                    </li>
+
+                    <!-- Organizaciones Dropdown -->
+                    <li>
+                         <button type="button"
+                              (click)="toggleDropdown('organizaciones'); openDropdownIfDesktop('organizaciones')"
+                              (keydown.enter)="toggleDropdown('organizaciones')"
+                              (keydown.space)="toggleDropdown('organizaciones')"
+                              class="w-full flex items-center justify-between px-3 py-2 text-sm rounded-md hover:bg-slate-100 hover:text-slate-800 transition-colors cursor-pointer text-left"
+                              [class.justify-center]="isCollapsed">
+                              <div class="flex items-center" [class.justify-center]="isCollapsed">
+                                   <div class="flex-shrink-0 text-gray-500">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none"
+                                             viewBox="0 0 24 24" stroke="currentColor">
+                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                  d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                                        </svg>
+                                   </div>
+                                   <span *ngIf="!isCollapsed" class="ml-3">Organizaciones</span>
+                              </div>
+                              <svg *ngIf="!isCollapsed" xmlns="http://www.w3.org/2000/svg" fill="none"
+                                   viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"
+                                   class="w-4 h-4 transition-transform"
+                                   [class.rotate-180]="openDropdowns['organizaciones']">
+                                   <path stroke-linecap="round" stroke-linejoin="round"
+                                        d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                              </svg>
+                         </button>
+
+                         <!-- Organizaciones Submenu -->
+                         <div *ngIf="!isCollapsed && openDropdowns['organizaciones']" class="mt-1 pl-6 ml-2 border-l">
+                              <a [routerLink]="'/super-admin/organizations/admins'"
+                                   routerLinkActive="text-slate-800 font-medium"
+                                   class="flex items-center py-2 pl-3 text-xs text-gray-600 hover:text-slate-800 transition-colors">
+                                   <div class="w-1.5 h-1.5 rounded-full bg-gray-400 mr-2"></div>
+                                   Administradores
+                              </a>
+                              <a [routerLink]="'/super-admin/organizations/branches'"
+                                   routerLinkActive="text-slate-800 font-medium"
+                                   class="flex items-center py-2 pl-3 text-xs text-gray-600 hover:text-slate-800 transition-colors">
+                                   <div class="w-1.5 h-1.5 rounded-full bg-gray-400 mr-2"></div>
+                                   Sedes
+                              </a>
+                         </div>
+                    </li>
+
+                    <!-- Reportes generales -->
+                    <li *ngIf="false">
+                         <a [routerLink]="'/super-admin/reports'"
+                              routerLinkActive="bg-slate-100 text-slate-800 font-medium"
+                              class="flex items-center px-3 py-2 text-sm rounded-md hover:bg-slate-100 hover:text-slate-800 transition-colors"
+                              [class.justify-center]="isCollapsed">
+                              <div class="flex-shrink-0 text-gray-500">
+                                   <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none"
+                                        viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                             d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                   </svg>
+                              </div>
+                              <span *ngIf="!isCollapsed" class="ml-3">Reportes generales</span>
+                         </a>
+                    </li>
+
+                    <!-- Configuraciones -->
+                    <li *ngIf="false">
+                         <a [routerLink]="'/super-admin/settings'"
+                              routerLinkActive="bg-slate-100 text-slate-800 font-medium"
+                              class="flex items-center px-3 py-2 text-sm rounded-md hover:bg-slate-100 hover:text-slate-800 transition-colors"
+                              [class.justify-center]="isCollapsed">
+                              <div class="flex-shrink-0 text-gray-500">
+                                   <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none"
+                                        viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                             d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                             d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                   </svg>
+                              </div>
+                              <span *ngIf="!isCollapsed" class="ml-3">Configuraciones</span>
+                         </a>
+                    </li>
+
+                    <!-- Global Analytics -->
+                    <li>
+                         <a [routerLink]="'/super-admin/global-analytics'"
+                              routerLinkActive="bg-slate-100 text-slate-800 font-medium"
+                              class="flex items-center px-3 py-2 text-sm rounded-md hover:bg-slate-100 hover:text-slate-800 transition-colors"
+                              [class.justify-center]="isCollapsed">
+                              <div class="flex-shrink-0 text-gray-500">
+                                   <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none"
+                                        viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                             d="M16 8v8m-4-5v5m-4-2v2m-2 4h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                   </svg>
+                              </div>
+                              <span *ngIf="!isCollapsed" class="ml-3">Analytics Global</span>
+                         </a>
+                    </li>
+
+                    <!-- System Config -->
+                    <li *ngIf="false">
+                         <a [routerLink]="'/super-admin/system-config'"
+                              routerLinkActive="bg-slate-100 text-slate-800 font-medium"
+                              class="flex items-center px-3 py-2 text-sm rounded-md hover:bg-slate-100 hover:text-slate-800 transition-colors"
+                              [class.justify-center]="isCollapsed">
+                              <div class="flex-shrink-0 text-gray-500">
+                                   <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none"
+                                        viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                             d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4" />
+                                   </svg>
+                              </div>
+                              <span *ngIf="!isCollapsed" class="ml-3">Config Sistema</span>
+                         </a>
+                    </li>
+
+                    <!-- Backup & Restore -->
+                    <li *ngIf="false">
+                         <a [routerLink]="'/super-admin/backup-restore'"
+                              routerLinkActive="bg-slate-100 text-slate-800 font-medium"
+                              class="flex items-center px-3 py-2 text-sm rounded-md hover:bg-slate-100 hover:text-slate-800 transition-colors"
+                              [class.justify-center]="isCollapsed">
+                              <div class="flex-shrink-0 text-gray-500">
+                                   <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none"
+                                        viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                             d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                                   </svg>
+                              </div>
+                              <span *ngIf="!isCollapsed" class="ml-3">Backup & Restore</span>
+                         </a>
+                    </li>
+               </ng-container>
+
+               <!-- CLIENT MENU ITEMS -->
+               <ng-container *ngIf="currentRole === 'CLIENT'">
+                    <!-- Dashboard -->
+                    <li>
+                         <a [routerLink]="'/client/dashboard'"
+                              routerLinkActive="bg-slate-100 text-slate-800 font-medium"
+                              class="flex items-center px-3 py-2 text-sm rounded-md hover:bg-slate-100 hover:text-slate-800 transition-colors"
+                              [class.justify-center]="isCollapsed">
+                              <div class="flex-shrink-0 text-gray-500">
+                                   <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none"
+                                        viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                             d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                                   </svg>
+                              </div>
+                              <span *ngIf="!isCollapsed" class="ml-3">Dashboard</span>
+                         </a>
+                    </li>
+
+                    <!-- Mis Pagos -->
+                    <li>
+                         <a [routerLink]="'/client/payments'" routerLinkActive="bg-slate-100 text-slate-800 font-medium"
+                              class="flex items-center px-3 py-2 text-sm rounded-md hover:bg-slate-100 hover:text-slate-800 transition-colors"
+                              [class.justify-center]="isCollapsed">
+                              <div class="flex-shrink-0 text-gray-500">
+                                   <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none"
+                                        viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                             d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
+                                   </svg>
+                              </div>
+                              <span *ngIf="!isCollapsed" class="ml-3">Mis pagos</span>
+                         </a>
+                    </li>
+
+                    <!-- Información Personal -->
+                    <li>
+                         <a [routerLink]="'/client/profile'" routerLinkActive="bg-slate-100 text-slate-800 font-medium"
+                              class="flex items-center px-3 py-2 text-sm rounded-md hover:bg-slate-100 hover:text-slate-800 transition-colors"
+                              [class.justify-center]="isCollapsed">
+                              <div class="flex-shrink-0 text-gray-500">
+                                   <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none"
+                                        viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                             d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                   </svg>
+                              </div>
+                              <span *ngIf="!isCollapsed" class="ml-3">Información Personal</span>
+                         </a>
+                    </li>
+
+                    <!-- Historial de Facturas -->
+                    <li>
+                         <a [routerLink]="'/client/bill-history'"
+                              routerLinkActive="bg-slate-100 text-slate-800 font-medium"
+                              class="flex items-center px-3 py-2 text-sm rounded-md hover:bg-slate-100 hover:text-slate-800 transition-colors"
+                              [class.justify-center]="isCollapsed">
+                              <div class="flex-shrink-0 text-gray-500">
+                                   <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none"
+                                        viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                             d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                   </svg>
+                              </div>
+                              <span *ngIf="!isCollapsed" class="ml-3">Historial de Facturas</span>
+                         </a>
+                    </li>
+
+                    <!-- Solicitudes de Servicio -->
+                    <li>
+                         <a [routerLink]="'/client/service-requests'"
+                              routerLinkActive="bg-slate-100 text-slate-800 font-medium"
+                              class="flex items-center px-3 py-2 text-sm rounded-md hover:bg-slate-100 hover:text-slate-800 transition-colors"
+                              [class.justify-center]="isCollapsed">
+                              <div class="flex-shrink-0 text-gray-500">
+                                   <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none"
+                                        viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                             d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                                   </svg>
+                              </div>
+                              <span *ngIf="!isCollapsed" class="ml-3">Solicitudes de Servicio</span>
+                         </a>
+                    </li>
+
+                    <!-- Configuración de Cuenta -->
+                    <li>
+                         <a [routerLink]="'/client/account-settings'"
+                              routerLinkActive="bg-slate-100 text-slate-800 font-medium"
+                              class="flex items-center px-3 py-2 text-sm rounded-md hover:bg-slate-100 hover:text-slate-800 transition-colors"
+                              [class.justify-center]="isCollapsed">
+                              <div class="flex-shrink-0 text-gray-500">
+                                   <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none"
+                                        viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                             d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                             d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                   </svg>
+                              </div>
+                              <span *ngIf="!isCollapsed" class="ml-3">Configuración</span>
+                         </a>
+                    </li>
+               </ng-container>
+          </ul>
+     </nav>
+
+     <!-- Footer del Sidebar -->
+     <div class="p-4 border-t border-zinc-200">
+          <div [class]="'flex items-center space-x-3 ' + (isCollapsed ? 'justify-center' : '')">
+               <div class="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center p-1">
+                    <img src="assets/images/Gotita.png" alt="Usuario" class="w-full h-full object-contain">
+               </div>
+               <div *ngIf="!isCollapsed" class="flex-1 min-w-0">
+                    <p class="text-sm font-medium text-gray-800 truncate">{{ userProfile?.name || 'Usuario' }}</p>
+                    <p class="text-xs text-gray-500 truncate">{{ getRoleDisplayName(currentRole) }}</p>
+               </div>
+          </div>
+     </div>
+</aside>
+
+<!-- Overlay para móvil (solo visible cuando el sidebar está abierto) -->
+<button *ngIf="isMobile && !isCollapsed" (click)="toggleSidebar()" type="button" aria-label="Cerrar menú lateral"
+     class="fixed inset-0 bg-white/10 backdrop-blur-xs z-10 lg:hidden w-full h-full border-0">
+</button>

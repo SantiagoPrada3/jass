@@ -1,0 +1,246 @@
+<!-- Header Corporate -->
+<header class="fixed top-0 left-0 right-0 z-[100] h-16 bg-white border-b border-gray-200 shadow-sm backdrop-blur-sm">
+     <div class="flex items-center justify-between h-16 px-4 lg:px-6">
+
+          <!-- Left Section -->
+          <div class="flex items-center space-x-4">
+               <!-- Sidebar Toggle (Always Visible) -->
+               <button (click)="onToggleSidebar()"
+                    class="flex p-2.5 bg-sky-100 rounded-xl transition-colors hover:bg-sky-200 duration-200 items-center justify-center">
+                    <svg class="w-5 h-5 text-sky-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M4 6h16M4 12h16M4 18h16" />
+                    </svg>
+                    <span class="ml-2 text-sm font-medium text-sky-700 hidden sm:block">Menú</span>
+               </button>
+
+               <!-- Date & Time Info -->
+               <div
+                    class="items-center hidden px-4 py-2 space-x-4 border border-gray-200 bg-gray-50 rounded-xl xl:flex">
+                    <div class="flex items-center space-x-2 text-sm text-gray-700">
+                         <div class="flex items-center justify-center w-8 h-8 rounded-lg bg-sky-100">
+                              <svg class="w-4 h-4 text-sky-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                              </svg>
+                         </div>
+                         <span class="font-medium">{{ getFormattedDate() }}</span>
+                    </div>
+                    <div class="w-px h-4 bg-gray-300"></div>
+                    <div class="flex items-center space-x-2 text-sm text-gray-700">
+                         <div class="flex items-center justify-center w-8 h-8 rounded-lg bg-emerald-100">
+                              <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor"
+                                   viewBox="0 0 24 24">
+                                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                              </svg>
+                         </div>
+                         <span class="font-mono font-semibold tracking-wide">{{ getFormattedTime() }}</span>
+                    </div>
+               </div>
+          </div>
+
+          <!-- Right Section -->
+          <div class="flex items-center space-x-3">
+               <!-- Notifications -->
+               <div class="relative">
+                    <button (click)="toggleNotifications()"
+                         class="relative p-2.5 rounded-xl transition-all hover:bg-gray-100 duration-200">
+                         <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                   d="M15 17h5l-3.5-3.5a6.9 6.9 0 01-1.5-4.5V9a7 7 0 00-14 0v2c0 1.7-.6 3.3-1.5 4.5L0 17h5m10 0v1a3 3 0 01-6 0v-1m6 0H9" />
+                         </svg>
+                         <span *ngIf="unreadNotificationsCount > 0"
+                              class="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center font-bold">
+                              {{ unreadNotificationsCount }}
+                         </span>
+                    </button>
+
+                    <!-- Notifications Dropdown -->
+                    <div *ngIf="isNotificationsOpen"
+                         class="absolute right-0 top-full mt-2 w-80 bg-white rounded-xl shadow-lg border border-gray-200 backdrop-blur-sm z-[110] animate-in fade-in slide-in-from-top-5 duration-200">
+
+                         <!-- Header -->
+                         <div class="flex items-center justify-between p-4 border-b border-gray-200">
+                              <h3 class="font-semibold text-slate-800">Notificaciones</h3>
+                              <button (click)="markAllAsRead()"
+                                   class="text-xs text-blue-600 hover:text-blue-800 font-medium">
+                                   Marcar todas como leídas
+                              </button>
+                         </div>
+
+                         <!-- Notifications List -->
+                         <div class="max-h-96 overflow-y-auto">
+                              <button *ngFor="let notification of notifications"
+                                   class="w-full text-left p-4 border-b border-gray-100 last:border-b-0 hover:bg-gray-50 transition-colors duration-200"
+                                   (click)="markNotificationAsRead(notification.id)" type="button">
+                                   <div class="flex items-start space-x-3">
+                                        <!-- Type Icon -->
+                                        <div [ngClass]="{
+                                             'bg-yellow-100 text-yellow-600': notification.type === 'warning',
+                                             'bg-blue-100 text-blue-600': notification.type === 'info',
+                                             'bg-green-100 text-green-600': notification.type === 'success'
+                                        }" class="flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center">
+                                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                  <path *ngIf="notification.type === 'warning'" stroke-linecap="round"
+                                                       stroke-linejoin="round" stroke-width="2"
+                                                       d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                                                  <path *ngIf="notification.type === 'info'" stroke-linecap="round"
+                                                       stroke-linejoin="round" stroke-width="2"
+                                                       d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                                  <path *ngIf="notification.type === 'success'" stroke-linecap="round"
+                                                       stroke-linejoin="round" stroke-width="2"
+                                                       d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                             </svg>
+                                        </div>
+
+                                        <!-- Content -->
+                                        <div class="flex-1 min-w-0">
+                                             <p class="text-sm font-medium text-slate-800">{{ notification.title }}</p>
+                                             <p class="text-xs text-slate-600 mt-1">{{ notification.message }}</p>
+                                             <p class="text-xs text-slate-400 mt-1">{{ notification.time }}</p>
+                                        </div>
+
+                                        <!-- Read indicator -->
+                                        <div *ngIf="!notification.read"
+                                             class="flex-shrink-0 w-2 h-2 bg-blue-600 rounded-full"></div>
+                                   </div>
+                              </button>
+                         </div>
+
+                         <!-- Footer -->
+                         <div class="p-3 border-t border-gray-200 bg-gray-50 rounded-b-xl">
+                              <button class="w-full text-center text-sm text-blue-600 hover:text-blue-800 font-medium">
+                                   Ver todas las notificaciones
+                              </button>
+                         </div>
+                    </div>
+               </div>
+
+               <!-- Profile Dropdown -->
+               <div class="relative">
+                    <button (click)="toggleProfileMenu()" data-user-menu-button
+                         class="flex items-center p-2 space-x-3 transition-all duration-200 border border-transparent rounded-xl hover:bg-gray-50 group hover:border-gray-200">
+                         <div
+                              class="flex items-center justify-center w-10 h-10 shadow-lg bg-gradient-to-br from-sky-500 to-sky-600 rounded-xl ring-2 ring-sky-500/20">
+                              <span class="text-sm font-bold text-white">{{ getInitials(userProfile.name) }}</span>
+                         </div>
+                         <div class="hidden text-left md:block">
+                              <div class="text-sm font-semibold text-gray-900">{{ userProfile.name
+                                   }}</div>
+                              <div class="text-xs font-medium text-gray-500">{{
+                                   getRoleDisplayName(userProfile.currentRole) }}</div>
+                         </div>
+                         <svg class="w-4 h-4 text-gray-400 transition-transform duration-200 group-hover:text-gray-600"
+                              [class.rotate-180]="isProfileMenuOpen" fill="none" stroke="currentColor"
+                              viewBox="0 0 24 24">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                   d="M19 9l-7 7-7-7" />
+                         </svg>
+                    </button>
+
+                    <!-- Profile Dropdown Menu -->
+                    <div *ngIf="isProfileMenuOpen" data-user-menu-dropdown
+                         class="absolute right-0 z-[110] w-56 py-2 mt-2 bg-white border border-gray-200 shadow-xl rounded-xl top-full backdrop-blur-sm"
+                         style="transform-origin: top right; animation: dropdownSlideIn 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);">
+
+                         <!-- User Info Header -->
+                         <div class="px-4 py-3 border-b border-gray-100">
+                              <div class="flex items-center space-x-3">
+                                   <div
+                                        class="flex items-center justify-center w-8 h-8 rounded-lg bg-gradient-to-br from-sky-500 to-sky-600">
+                                        <span class="text-xs font-bold text-white">{{ getInitials(userProfile.name)
+                                             }}</span>
+                                   </div>
+                                   <div>
+                                        <div class="text-sm font-semibold text-gray-900">{{
+                                             userProfile.name }}</div>
+                                        <div class="text-xs text-gray-500">{{
+                                             getRoleDisplayName(userProfile.currentRole) }}</div>
+                                   </div>
+                              </div>
+                         </div>
+
+                         <!-- Menu Options -->
+                         <div class="py-2">
+                              <!-- Mi Perfil -->
+                              <button (click)="navigateToProfile(); closeProfileMenu()"
+                                   class="w-full flex items-center space-x-3 px-6 py-3 text-gray-700 hover:bg-gray-50 transition-colors duration-200">
+                                   <div class="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center">
+                                        <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor"
+                                             viewBox="0 0 24 24">
+                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                  d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                        </svg>
+                                   </div>
+                                   <span class="font-medium">Mi Perfil</span>
+                              </button>
+
+                              <!-- Cambiar Rol (General) -->
+                              <button (click)="switchRole()" *ngIf="hasMultipleRoles()"
+                                   class="w-full flex items-center space-x-3 px-6 py-3 text-gray-700 hover:bg-gray-50 transition-colors duration-200">
+                                   <div class="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
+                                        <svg class="w-5 h-5 text-purple-600" fill="none" stroke="currentColor"
+                                             viewBox="0 0 24 24">
+                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                  d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+                                        </svg>
+                                   </div>
+                                   <span class="font-medium">Cambiar Rol</span>
+                              </button>
+
+                              <!-- Configuración -->
+                              <button (click)="navigateToSettings(); closeProfileMenu()"
+                                   class="w-full flex items-center space-x-3 px-6 py-3 text-gray-700 hover:bg-gray-50 transition-colors duration-200">
+                                   <div class="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center">
+                                        <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor"
+                                             viewBox="0 0 24 24">
+                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                  d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                  d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                        </svg>
+                                   </div>
+                                   <span class="font-medium">Configuración</span>
+                              </button>
+
+                              <!-- Ayuda -->
+                              <button
+                                   class="w-full flex items-center space-x-3 px-6 py-3 text-gray-700 hover:bg-gray-50 transition-colors duration-200">
+                                   <div class="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center">
+                                        <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor"
+                                             viewBox="0 0 24 24">
+                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                  d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                        </svg>
+                                   </div>
+                                   <span class="font-medium">Ayuda</span>
+                              </button>
+                         </div>
+
+                         <!-- Cerrar Sesión -->
+                         <div class="border-t border-gray-100 p-2">
+                              <button (click)="onLogout()"
+                                   class="w-full flex items-center space-x-3 px-6 py-3 text-red-600 hover:bg-red-50 transition-colors duration-200 rounded-xl">
+                                   <div class="w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center">
+                                        <svg class="w-5 h-5 text-red-600" fill="none" stroke="currentColor"
+                                             viewBox="0 0 24 24">
+                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                  d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                                        </svg>
+                                   </div>
+                                   <span class="font-medium">Cerrar Sesión</span>
+                              </button>
+                         </div>
+                    </div>
+               </div>
+          </div>
+     </div>
+</header>
+
+<!-- Overlay for mobile menu -->
+<div *ngIf="isProfileMenuOpen || isNotificationsOpen" class="fixed inset-0 z-20 lg:hidden bg-opacity-25"
+     (click)="isProfileMenuOpen = false; isNotificationsOpen = false"
+     (keydown.enter)="isProfileMenuOpen = false; isNotificationsOpen = false"
+     (keydown.space)="isProfileMenuOpen = false; isNotificationsOpen = false">
+</div>

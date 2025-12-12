@@ -1,0 +1,50 @@
+
+/* Modal panel lateral - unificado con user-management */
+
+/* Animación suave para la entrada del modal (panel lateral) */
+.modal-enter {
+	transform: translateX(100%);
+}
+
+.modal-enter-active {
+	transform: translateX(0);
+	transition: transform 0.3s ease-in-out;
+}
+
+.modal-exit {
+	transform: translateX(0);
+}
+
+.modal-exit-active {
+	transform: translateX(100%);
+	transition: transform 0.3s ease-in-out;
+}
+
+/* Z-index del modal menor que las notificaciones */
+.modal-overlay {
+	z-index: 8000;
+}
+
+/* Forzar modo claro en este componente (anula clases "dark"/slate añadidas en la plantilla) */
+:host ::ng-deep .container {
+	background-color: #f8fafc !important; /* bg-gray-50 */
+}
+:host ::ng-deep .max-w-2xl {
+	background-color: #ffffff !important;
+	color: #0f172a !important;
+}
+:host ::ng-deep .border-slate-800 {
+	border-color: #e5e7eb !important; /* gray-200 */
+}
+:host ::ng-deep .bg-slate-900 {
+	background-color: #ffffff !important;
+}
+:host ::ng-deep .bg-slate-100 {
+	background-color: #f1f5f9 !important; /* gray-100 */
+}
+:host ::ng-deep .text-slate-300,
+:host ::ng-deep .text-slate-200,
+:host ::ng-deep .text-slate-100 {
+	color: #475569 !important; /* gray-600 */
+}
+

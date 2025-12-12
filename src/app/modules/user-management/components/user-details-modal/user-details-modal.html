@@ -1,0 +1,344 @@
+<!-- Modal FUNCIONAL y LIMPIO -->
+<div *ngIf="isOpen" class="fixed inset-0 z-[8000] overflow-hidden" (keydown.escape)="onClose()"
+     (keyup.escape)="onClose()" tabindex="0">
+
+     <!-- Background overlay - CLIC PARA CERRAR -->
+     <div class="absolute inset-0 bg-gray-900/50" (click)="onClose()"></div>
+     <div class="absolute right-0 top-0 h-full w-full max-w-2xl bg-slate-900 shadow-xl transform transition-transform duration-300 ease-out"
+          [class.translate-x-full]="!isOpen" [class.translate-x-0]="isOpen" (click)="$event.stopPropagation()">
+
+          <!-- Header -->
+          <div class="flex items-center justify-between px-6 py-4 bg-slate-900 border-b border-slate-800">
+               <div class="flex items-center space-x-3">
+                    <div *ngIf="userDetails"
+                         class="w-12 h-12 rounded-full flex items-center justify-center text-slate-600 font-semibold bg-slate-100">
+                         {{userDetails.firstName.charAt(0)}}{{userDetails.lastName.charAt(0)}}
+                    </div>
+                    <div>
+                         <h2 class="text-xl font-semibold text-slate-100">
+                              <span *ngIf="userDetails && !isEditing">{{userDetails.firstName}}
+                                   {{userDetails.lastName}}</span>
+                              <span *ngIf="userDetails && isEditing">Editando Usuario</span>
+                              <span *ngIf="!userDetails && !isLoading">Detalles del Usuario</span>
+                         </h2>
+                         <p *ngIf="userDetails" class="text-slate-300 text-sm">{{userDetails.email}}</p>
+                    </div>
+               </div>
+
+               <!-- Botones Header -->
+               <div class="flex items-center space-x-2">
+                    <button *ngIf="userDetails && !isLoading && canEdit() && !isEditing" (click)="onEdit()"
+                         class="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-lg transition-colors text-sm font-medium border-white border-2">
+                         Editar
+                    </button>
+
+                    <button *ngIf="isEditing" (click)="onSaveChanges()" [disabled]="isSaving || !editForm.valid"
+                         class="px-4 py-2 bg-slate-900 hover:bg-slate-800 disabled:bg-slate-400 text-white rounded-lg transition-colors text-sm font-medium border-2 border-white">
+                         {{ isSaving ? 'Guardando...' : 'Guardar' }}
+                    </button>
+
+                    <button *ngIf="isEditing" (click)="onCancelEdit()" [disabled]="isSaving"
+                         class="px-4 py-2 bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 rounded-lg transition-colors text-sm font-medium">
+                         Cancelar
+                    </button>
+
+                    <!-- Botón cerrar SIMPLE -->
+                    <button (click)="forceClose()" type="button"
+                         class="ml-4 inline-flex items-center justify-center w-8 h-8 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-lg transition-all">
+                         <span class="sr-only">Cerrar</span>
+                         <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                   d="M6 18L18 6M6 6l12 12" />
+                         </svg>
+                    </button>
+               </div>
+          </div>
+
+          <!-- Contenido -->
+          <div class="h-full bg-gray-50 overflow-y-auto" style="height: calc(100% - 76px);">
+
+               <!-- Loading -->
+               <div *ngIf="isLoading" class="flex items-center justify-center h-64">
+                    <div class="text-center">
+                         <div
+                              class="w-12 h-12 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin mx-auto mb-4">
+                         </div>
+                         <p class="text-gray-600">Cargando información del usuario...</p>
+                    </div>
+               </div>
+
+               <!-- Error -->
+               <div *ngIf="error && !isLoading" class="m-6">
+                    <div class="bg-red-50 border border-red-200 rounded-lg p-4">
+                         <div class="flex items-start">
+                              <svg class="w-5 h-5 text-red-600 mt-0.5 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                                   <path fill-rule="evenodd"
+                                        d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                                        clip-rule="evenodd"></path>
+                              </svg>
+                              <div>
+                                   <h3 class="text-red-800 font-medium">Error al cargar los datos</h3>
+                                   <p class="text-red-700 text-sm mt-1">{{error}}</p>
+                              </div>
+                         </div>
+                    </div>
+               </div>
+
+               <!-- Contenido principal -->
+               <div *ngIf="userDetails && !isLoading" class="p-6 space-y-6">
+
+                    <!-- Información Personal -->
+                    <div class="bg-white rounded-lg border border-slate-200">
+                         <div class="px-6 py-4 border-b border-slate-200">
+                              <h3 class="text-lg font-semibold text-slate-900">Información Personal</h3>
+                         </div>
+
+                         <div class="p-6">
+                              <!-- Formulario de edición -->
+                              <form *ngIf="isEditing" [formGroup]="editForm" class="space-y-4">
+                                   <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <!-- Campos no editables -->
+                                        <div>
+                                             <div class="block text-xs font-medium text-slate-500 mb-2">Código de
+                                                  Usuario
+                                                  <span class="text-slate-400">(No editable)</span>
+                                             </div>
+                                             <div class="bg-slate-50 px-4 py-3 rounded-lg">
+                                                  <p class="text-slate-700 font-medium">{{userDetails.userCode}}</p>
+                                             </div>
+                                        </div>
+
+                                        <div>
+                                             <div class="block text-xs font-medium text-slate-500 mb-2">Estado
+                                                  <span class="text-slate-400">(No editable)</span>
+                                             </div>
+                                             <div class="pt-2">
+                                                  <span [class]="getStatusBadgeClass(userDetails.status)">
+                                                       {{getStatusLabel(userDetails.status)}}
+                                                  </span>
+                                             </div>
+                                        </div>
+
+                                        <div class="md:col-span-2">
+                                             <div class="block text-xs font-medium text-slate-500 mb-2">Nombre Completo
+                                                  <span class="text-slate-400">(No editable)</span>
+                                             </div>
+                                             <div class="bg-slate-50 px-4 py-3 rounded-lg">
+                                                  <p class="text-slate-700 font-medium">{{userDetails.firstName}}
+                                                       {{userDetails.lastName}}</p>
+                                             </div>
+                                        </div>
+
+                                        <!-- Campos editables -->
+                                        <div class="md:col-span-2">
+                                             <label class="block text-sm font-medium text-slate-700 mb-2">
+                                                  Correo Electrónico <span class="text-red-500">*</span>
+                                             </label>
+                                             <input type="email" formControlName="email" id="email-input"
+                                                  class="w-full px-4 py-3 bg-white rounded-lg text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 border border-slate-200 hover:border-slate-300 focus:border-blue-500 transition-colors"
+                                                  [class.border-red-300]="hasFieldError('email')"
+                                                  [class.focus:border-red-500]="hasFieldError('email')"
+                                                  [class.focus:ring-red-500/20]="hasFieldError('email')"
+                                                  placeholder="usuario@empresa.com" autocomplete="email"
+                                                  (input)="validateFormRealTime()">
+                                             <p *ngIf="hasFieldError('email')" class="mt-2 text-sm text-red-600">
+                                                  {{getFieldError('email')}}
+                                             </p>
+                                        </div>
+
+                                        <div>
+                                             <label for="phone-input"
+                                                  class="block text-sm font-medium text-slate-700 mb-2">
+                                                  Teléfono <span class="text-xs text-slate-500">(Solo números, debe
+                                                       empezar con 9)</span>
+                                             </label>
+                                             <input type="tel" formControlName="phone" id="phone-input"
+                                                  class="w-full px-4 py-3 bg-white rounded-lg text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 border border-slate-200 hover:border-slate-300 focus:border-blue-500 transition-colors"
+                                                  [class.border-red-300]="hasFieldError('phone')"
+                                                  [class.focus:border-red-500]="hasFieldError('phone')"
+                                                  [class.focus:ring-red-500/20]="hasFieldError('phone')"
+                                                  placeholder="987654321" maxlength="9" (input)="onPhoneInput($event)"
+                                                  (keydown)="onPhoneKeyDown($event)" autocomplete="tel">
+                                             <p *ngIf="hasFieldError('phone')" class="mt-2 text-sm text-red-600">
+                                                  {{getFieldError('phone')}}
+                                             </p>
+                                        </div>
+
+                                        <div class="md:col-span-2">
+                                             <label for="address-input"
+                                                  class="block text-sm font-medium text-slate-700 mb-2">Dirección</label>
+                                             <textarea formControlName="address" id="address-input"
+                                                  class="w-full px-4 py-3 bg-white rounded-lg text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 border border-slate-200 hover:border-slate-300 focus:border-blue-500 transition-colors resize-none"
+                                                  [class.border-red-300]="hasFieldError('address')"
+                                                  [class.focus:border-red-500]="hasFieldError('address')"
+                                                  [class.focus:ring-red-500/20]="hasFieldError('address')" rows="3"
+                                                  placeholder="Ejemplo: Av. Los Pinos 123, Distrito Lima"
+                                                  (input)="validateFormRealTime()"></textarea>
+                                             <p *ngIf="hasFieldError('address')" class="mt-2 text-sm text-red-600">
+                                                  {{getFieldError('address')}}
+                                             </p>
+                                        </div>
+                                   </div>
+                              </form>
+
+                              <!-- Vista de solo lectura -->
+                              <div *ngIf="!isEditing" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                   <div>
+                                        <div class="block text-sm font-medium text-gray-500 mb-1">Código de Usuario
+                                        </div>
+                                        <p class="text-gray-900 font-medium">{{userDetails.userCode}}</p>
+                                   </div>
+                                   <div>
+                                        <div class="block text-sm font-medium text-gray-500 mb-1">Estado</div>
+                                        <span [class]="getStatusBadgeClass(userDetails.status)">
+                                             {{getStatusLabel(userDetails.status)}}
+                                        </span>
+                                   </div>
+                                   <div>
+                                        <div class="block text-sm font-medium text-gray-500 mb-1">Nombre Completo</div>
+                                        <p class="text-gray-900 font-medium">{{userDetails.firstName}}
+                                             {{userDetails.lastName}}</p>
+                                   </div>
+                                   <div>
+                                        <div class="block text-sm font-medium text-gray-500 mb-1">Tipo de Documento
+                                        </div>
+                                        <p class="text-gray-900">{{userDetails.documentType}}</p>
+                                   </div>
+                                   <div>
+                                        <div class="block text-sm font-medium text-gray-500 mb-1">Número de Documento
+                                        </div>
+                                        <p class="text-gray-900 font-medium">{{userDetails.documentNumber}}</p>
+                                   </div>
+                                   <div>
+                                        <div class="block text-sm font-medium text-gray-500 mb-1">Email</div>
+                                        <p class="text-gray-900">{{userDetails.email}}</p>
+                                   </div>
+                                   <div>
+                                        <div class="block text-sm font-medium text-gray-500 mb-1">Teléfono</div>
+                                        <p class="text-gray-900">{{userDetails.phone}}</p>
+                                   </div>
+                                   <div>
+                                        <div class="block text-sm font-medium text-gray-500 mb-1">Roles</div>
+                                        <span *ngFor="let role of userDetails.roles; let last = last"
+                                             [class]="getRoleBadgeClass(role)">
+                                             {{getRoleLabel(role)}}
+                                        </span>
+                                   </div>
+
+                                   <div *ngIf="userDetails.address" class="md:col-span-2 pt-4 border-t">
+                                        <div class="block text-sm font-medium text-gray-500 mb-1">Dirección</div>
+                                        <p class="text-gray-900">{{userDetails.address}}</p>
+                                   </div>
+                              </div>
+                         </div>
+                    </div>
+
+                    <!-- Información de la Organización -->
+                    <div *ngIf="userDetails.organization" class="bg-white rounded-lg border border-slate-200">
+                         <div class="px-6 py-4 border-b border-slate-200">
+                              <h3 class="text-lg font-semibold text-slate-900">Información de la Organización</h3>
+                         </div>
+
+                         <div class="p-6">
+                              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                   <div>
+                                        <div class="block text-sm font-medium text-gray-500 mb-1">Código</div>
+                                        <p class="text-gray-900 font-medium">
+                                             {{userDetails.organization.organizationCode}}</p>
+                                   </div>
+                                   <div>
+                                        <div class="block text-sm font-medium text-gray-500 mb-1">Estado</div>
+                                        <span [class]="getStatusBadgeClass(userDetails.organization.status)">
+                                             {{getStatusLabel(userDetails.organization.status)}}
+                                        </span>
+                                   </div>
+                                   <div class="md:col-span-2">
+                                        <div class="block text-sm font-medium text-gray-500 mb-1">Nombre</div>
+                                        <p class="text-gray-900 font-medium">
+                                             {{userDetails.organization.organizationName}}</p>
+                                   </div>
+                                   <div>
+                                        <div class="block text-sm font-medium text-gray-500 mb-1">Representante Legal
+                                        </div>
+                                        <p class="text-gray-900">{{userDetails.organization.legalRepresentative}}</p>
+                                   </div>
+                                   <div>
+                                        <div class="block text-sm font-medium text-gray-500 mb-1">Teléfono</div>
+                                        <p class="text-gray-900">{{userDetails.organization.phone}}</p>
+                                   </div>
+                                   <div class="md:col-span-2">
+                                        <div class="block text-sm font-medium text-gray-500 mb-1">Dirección</div>
+                                        <p class="text-gray-900">{{userDetails.organization.address}}</p>
+                                   </div>
+                              </div>
+                         </div>
+                    </div>
+
+                    <!-- Información de Ubicación - SOLO LECTURA -->
+                    <div class="bg-white rounded-lg border border-slate-200">
+                         <div class="px-6 py-4 border-b border-slate-200">
+                              <h3 class="text-lg font-semibold text-slate-900">Información de Ubicación</h3>
+                         </div>
+
+                         <div class="p-6">
+                              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                   <div *ngIf="userDetails.zone"
+                                        class="bg-slate-50 border border-slate-200 rounded-lg p-4">
+                                        <div class="block text-sm font-medium text-slate-700 mb-1">Zona</div>
+                                        <p class="text-slate-900 font-medium">{{userDetails.zone.zoneName}}
+                                             ({{userDetails.zone.zoneCode}})</p>
+                                        <p *ngIf="userDetails.zone.description" class="text-slate-600 text-sm mt-1">
+                                             {{userDetails.zone.description}}
+                                        </p>
+                                        <span [class]="getStatusBadgeClass(userDetails.zone.status)"
+                                             class="mt-2 inline-block">
+                                             {{getStatusLabel(userDetails.zone.status)}}
+                                        </span>
+                                   </div>
+
+                                   <div *ngIf="userDetails.street"
+                                        class="bg-slate-50 border border-slate-200 rounded-lg p-4">
+                                        <div class="block text-sm font-medium text-slate-700 mb-1">Calle/Avenida</div>
+                                        <p class="text-slate-900 font-medium">{{userDetails.street.streetType}}
+                                             {{userDetails.street.streetName}}</p>
+                                        <p class="text-slate-700 text-sm">Código: {{userDetails.street.streetCode}}</p>
+                                        <span [class]="getStatusBadgeClass(userDetails.street.status)"
+                                             class="mt-2 inline-block">
+                                             {{getStatusLabel(userDetails.street.status)}}
+                                        </span>
+                                   </div>
+
+                                   <div *ngIf="!userDetails.zone && !userDetails.street"
+                                        class="md:col-span-2 text-center py-8">
+                                        <p class="text-gray-500">No hay información de ubicación registrada</p>
+                                   </div>
+                              </div>
+                         </div>
+                    </div>
+
+                    <!-- Información de Fechas -->
+                    <div class="bg-white rounded-lg border border-slate-200">
+                         <div class="px-6 py-4 border-b border-slate-200">
+                              <h3 class="text-lg font-semibold text-slate-900">Información de Fechas</h3>
+                         </div>
+
+                         <div class="p-6">
+                              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                   <div>
+                                        <div class="block text-sm font-medium text-gray-500 mb-1">Fecha de Creación
+                                        </div>
+                                        <p class="text-gray-900 font-medium">{{formatDate(userDetails.createdAt)}}</p>
+                                   </div>
+                                   <div>
+                                        <div class="block text-sm font-medium text-gray-500 mb-1">Última Actualización
+                                        </div>
+                                        <p class="text-gray-900 font-medium">{{formatDate(userDetails.updatedAt)}}</p>
+                                   </div>
+                              </div>
+                         </div>
+                    </div>
+
+               </div>
+          </div>
+     </div>
+</div>

@@ -1,0 +1,548 @@
+<div class="w-full px-8 py-6 scroll-smooth">
+     <app-breadcrumb [items]="breadcrumbItems"></app-breadcrumb>
+
+     <div class="mb-6">
+          <h1 class="text-3xl font-bold text-gray-900 mb-2">Usuarios</h1>
+          <p class="text-lg text-gray-600">Gestión completa de usuarios del sistema, roles y permisos de acceso</p>
+     </div>
+
+     <!-- Estadísticas en la parte superior -->
+     <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+          <div
+               class="bg-gradient-to-r from-blue-50 to-blue-100 border border-blue-200 rounded-xl p-6 shadow-sm transition-all duration-200 hover:shadow-md hover:-translate-y-1">
+               <div class="flex items-center">
+                    <div class="p-3 bg-blue-500 rounded-lg">
+                         <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                   d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z">
+                              </path>
+                         </svg>
+                    </div>
+                    <div class="ml-4">
+                         <div class="text-3xl font-bold text-blue-600">{{totalUsers}}</div>
+                         <div class="text-sm font-medium text-blue-700">Total Usuarios</div>
+                    </div>
+               </div>
+          </div>
+
+          <div
+               class="bg-gradient-to-r from-green-50 to-green-100 border border-green-200 rounded-xl p-6 shadow-sm transition-all duration-200 hover:shadow-md hover:-translate-y-1">
+               <div class="flex items-center">
+                    <div class="p-3 bg-green-500 rounded-lg">
+                         <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                   d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                         </svg>
+                    </div>
+                    <div class="ml-4">
+                         <div class="text-3xl font-bold text-green-600">{{activeUsers}}</div>
+                         <div class="text-sm font-medium text-green-700">Usuarios Activos</div>
+                    </div>
+               </div>
+          </div>
+
+          <div
+               class="bg-gradient-to-r from-red-50 to-red-100 border border-red-200 rounded-xl p-6 shadow-sm transition-all duration-200 hover:shadow-md hover:-translate-y-1">
+               <div class="flex items-center">
+                    <div class="p-3 bg-red-500 rounded-lg">
+                         <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                   d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728L5.636 5.636"></path>
+                         </svg>
+                    </div>
+                    <div class="ml-4">
+                         <div class="text-3xl font-bold text-red-600">{{inactiveUsers}}</div>
+                         <div class="text-sm font-medium text-red-700">Usuarios Inactivos</div>
+                    </div>
+               </div>
+          </div>
+
+          <div
+               class="bg-gradient-to-r from-purple-50 to-purple-100 border border-purple-200 rounded-xl p-6 shadow-sm transition-all duration-200 hover:shadow-md hover:-translate-y-1">
+               <div class="flex items-center">
+                    <div class="p-3 bg-purple-500 rounded-lg">
+                         <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                   d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                   d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z">
+                              </path>
+                         </svg>
+                    </div>
+                    <div class="ml-4">
+                         <div class="text-3xl font-bold text-purple-600">{{filteredUsers.length}}</div>
+                         <div class="text-sm font-medium text-purple-700">Mostrando</div>
+                    </div>
+               </div>
+          </div>
+     </div>
+
+     <!-- Filtros y Controles -->
+     <div class="bg-white rounded-xl shadow-lg border border-gray-100 p-4 sm:p-6 mb-6">
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 sm:gap-6 mb-4">
+               <!-- Buscador -->
+               <div class="relative">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                         <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                   d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                         </svg>
+                    </div>
+                    <input type="text" placeholder="Buscar usuarios..." [(ngModel)]="searchTerm" (input)="onSearch()"
+                         class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 hover:border-gray-400 text-sm sm:text-base">
+               </div>
+
+               <!-- Filtro por zonas - Dropdown Custom -->
+               <div class="relative dropdown-container">
+                    <button (click)="toggleZoneDropdown()"
+                         class="w-full px-4 py-3 pr-10 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 hover:border-gray-400 bg-white text-sm font-medium text-gray-700 cursor-pointer hover:bg-gray-50 flex items-center justify-between">
+                         <span [class.text-gray-500]="!selectedZone" [class.text-gray-700]="selectedZone">
+                              {{getZoneDisplayText()}}
+                         </span>
+                         <svg class="w-4 h-4 transition-transform duration-200" [class.rotate-180]="isZoneDropdownOpen"
+                              fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m6 9 6 6 6-6">
+                              </path>
+                         </svg>
+                    </button>
+
+                    <!-- Dropdown Menu -->
+                    <div *ngIf="isZoneDropdownOpen"
+                         class="absolute z-50 w-full mt-2 bg-white border border-gray-200 rounded-xl shadow-lg max-h-60 overflow-y-auto scrollbar-styled scroll-smooth">
+                         <div class="py-2">
+                              <button (click)="selectZone('')" [class.bg-blue-50]="!selectedZone"
+                                   [class.text-blue-600]="!selectedZone"
+                                   class="w-full px-4 py-3 text-left text-sm text-gray-700 hover:bg-gray-50 transition-colors duration-150 flex items-center">
+                                   <svg *ngIf="!selectedZone" class="w-4 h-4 mr-3 text-blue-500" fill="none"
+                                        stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                             d="M5 13l4 4L19 7"></path>
+                                   </svg>
+                                   <span class="ml-7" *ngIf="selectedZone">Todas las zonas</span>
+                                   <span *ngIf="!selectedZone">Todas las zonas</span>
+                              </button>
+                              <button *ngFor="let zone of availableZones" (click)="selectZone(zone)"
+                                   [class.bg-blue-50]="selectedZone === zone"
+                                   [class.text-blue-600]="selectedZone === zone"
+                                   class="w-full px-4 py-3 text-left text-sm text-gray-700 hover:bg-gray-50 transition-colors duration-150 flex items-center">
+                                   <svg *ngIf="selectedZone === zone" class="w-4 h-4 mr-3 text-blue-500" fill="none"
+                                        stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                             d="M5 13l4 4L19 7"></path>
+                                   </svg>
+                                   <span class="ml-7" *ngIf="selectedZone !== zone">{{zone}}</span>
+                                   <span *ngIf="selectedZone === zone">{{zone}}</span>
+                              </button>
+                         </div>
+                    </div>
+               </div>
+
+               <!-- Toggle Activos/Inactivos - Dropdown Custom -->
+               <div class="relative dropdown-container">
+                    <button (click)="toggleStatusDropdown()"
+                         class="w-full px-4 py-3 pr-10 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 hover:border-gray-400 bg-white text-sm font-medium text-gray-700 cursor-pointer hover:bg-gray-50 flex items-center justify-between">
+                         <span class="text-gray-700">
+                              {{getStatusDisplayText()}}
+                         </span>
+                         <svg class="w-4 h-4 transition-transform duration-200"
+                              [class.rotate-180]="isStatusDropdownOpen" fill="none" stroke="currentColor"
+                              viewBox="0 0 24 24">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m6 9 6 6 6-6">
+                              </path>
+                         </svg>
+                    </button>
+
+                    <!-- Dropdown Menu -->
+                    <div *ngIf="isStatusDropdownOpen"
+                         class="absolute z-50 w-full mt-2 bg-white border border-gray-200 rounded-xl shadow-lg">
+                         <div class="py-2">
+                              <button (click)="selectStatus('all')" [class.bg-blue-50]="statusFilter === 'all'"
+                                   [class.text-blue-600]="statusFilter === 'all'"
+                                   class="w-full px-4 py-3 text-left text-sm text-gray-700 hover:bg-gray-50 transition-colors duration-150 flex items-center">
+                                   <svg *ngIf="statusFilter === 'all'" class="w-4 h-4 mr-3 text-blue-500" fill="none"
+                                        stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                             d="M5 13l4 4L19 7"></path>
+                                   </svg>
+                                   <span class="ml-7" *ngIf="statusFilter !== 'all'">Todos los usuarios</span>
+                                   <span *ngIf="statusFilter === 'all'">Todos los usuarios</span>
+                              </button>
+                              <button (click)="selectStatus('active')" [class.bg-blue-50]="statusFilter === 'active'"
+                                   [class.text-blue-600]="statusFilter === 'active'"
+                                   class="w-full px-4 py-3 text-left text-sm text-gray-700 hover:bg-gray-50 transition-colors duration-150 flex items-center">
+                                   <svg *ngIf="statusFilter === 'active'" class="w-4 h-4 mr-3 text-green-500"
+                                        fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                             d="M5 13l4 4L19 7"></path>
+                                   </svg>
+                                   <span class="ml-7" *ngIf="statusFilter !== 'active'">Solo activos</span>
+                                   <span *ngIf="statusFilter === 'active'">Solo activos</span>
+                              </button>
+                              <button (click)="selectStatus('inactive')"
+                                   [class.bg-blue-50]="statusFilter === 'inactive'"
+                                   [class.text-blue-600]="statusFilter === 'inactive'"
+                                   class="w-full px-4 py-3 text-left text-sm text-gray-700 hover:bg-gray-50 transition-colors duration-150 flex items-center">
+                                   <svg *ngIf="statusFilter === 'inactive'" class="w-4 h-4 mr-3 text-red-500"
+                                        fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                             d="M5 13l4 4L19 7"></path>
+                                   </svg>
+                                   <span class="ml-7" *ngIf="statusFilter !== 'inactive'">Solo inactivos</span>
+                                   <span *ngIf="statusFilter === 'inactive'">Solo inactivos</span>
+                              </button>
+                         </div>
+                    </div>
+               </div>
+
+               <!-- Botón Generar Reporte -->
+               <div class="col-span-1">
+                    <button (click)="generateUserReport()"
+                         class="w-full bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-medium py-3 px-6 rounded-xl transition-all duration-200 shadow-md hover:shadow-lg transform hover:-translate-y-0.5 text-sm sm:text-base">
+                         <div class="flex items-center justify-center">
+                              <svg class="w-4 h-4 sm:w-5 sm:h-5 mr-2" fill="none" stroke="currentColor"
+                                   viewBox="0 0 24 24">
+                                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
+                                   </path>
+                              </svg>
+                              <span class="hidden sm:inline">Generar Reporte</span>
+                              <span class="sm:hidden">Reporte</span>
+                         </div>
+                    </button>
+               </div>
+
+               <!-- Nuevo Usuario -->
+               <div class="col-span-1">
+                    <button (click)="openCreateUserModal()"
+                         class="w-full bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-medium py-3 px-6 rounded-xl transition-all duration-200 shadow-md hover:shadow-lg transform hover:-translate-y-0.5 text-sm sm:text-base">
+                         <div class="flex items-center justify-center">
+                              <svg class="w-4 h-4 sm:w-5 sm:h-5 mr-2" fill="none" stroke="currentColor"
+                                   viewBox="0 0 24 24">
+                                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                              </svg>
+                              <span class="hidden sm:inline">Nuevo Usuario</span>
+                              <span class="sm:hidden">Nuevo</span>
+                         </div>
+                    </button>
+               </div>
+          </div>
+     </div>
+
+     <!-- Vista de Tabla para Desktop -->
+     <div class="hidden lg:block bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden scroll-container">
+          <div class="overflow-x-auto scrollbar-thin scroll-smooth">
+               <table class="min-w-full table-auto">
+                    <thead class="bg-gradient-to-r p-2 from-gray-50 to-gray-100">
+                         <tr>
+                              <th
+                                   class="px-6 py-4 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                   Código</th>
+                              <th
+                                   class="px-6 py-4 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                   Usuario</th>
+                              <th
+                                   class="px-6 py-4 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                   Información</th>
+                              <th
+                                   class="px-6 py-4 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                   Contacto</th>
+                              <th
+                                   class="px-6 py-4 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                   Zona</th>
+                              <th
+                                   class="px-6 py-4 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                   Estado</th>
+                              <th
+                                   class="px-6 py-4 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                   Acciones</th>
+                         </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-100">
+                         <tr *ngFor="let user of paginatedUsers; trackBy: trackByUserId"
+                              class="hover:bg-gray-50 transition-colors duration-150">
+
+                              <!-- Código -->
+                              <td class="px-6 py-4">
+                                   <div
+                                        class="text-sm font-bold text-gray-900 bg-gray-100 px-3 py-1 rounded-full text-center">
+                                        {{user.userCode}}
+                                   </div>
+                              </td>
+
+                              <!-- Usuario -->
+                              <td class="px-6 py-4">
+                                   <div class="flex items-center">
+                                        <div
+                                             class="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold text-sm bg-slate-900">
+                                             {{user.firstName.charAt(0)}}{{user.lastName.charAt(0)}}
+                                        </div>
+                                        <div class="ml-3">
+                                             <div class="text-sm font-semibold text-gray-900">{{user.firstName}}
+                                                  {{user.lastName}}</div>
+                                             <div class="text-xs text-blue-600 font-medium">{{user.email}}</div>
+                                        </div>
+                                   </div>
+                              </td>
+
+                              <!-- Información -->
+                              <td class="px-6 py-4">
+                                   <div class="text-sm text-gray-900 font-medium">{{user.documentType}}</div>
+                                   <div class="text-xs text-gray-600">{{user.documentNumber}}</div>
+                              </td>
+
+                              <!-- Contacto -->
+                              <td class="px-6 py-4">
+                                   <div class="text-sm text-gray-900">{{user.address || 'No especificada'}}</div>
+                                   <div class="text-xs text-gray-600" *ngIf="user.phone">📱 {{user.phone}}</div>
+                              </td>
+
+                              <!-- Zona -->
+                              <td class="px-6 py-4">
+                                   <span
+                                        class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+                                        {{user.zone?.zoneName || 'Sin zona'}}
+                                   </span>
+                              </td>
+
+                              <!-- Estado -->
+                              <td class="px-6 py-4">
+                                   <span [class]="getStatusBadgeClass(user.status)">
+                                        {{getStatusLabel(user.status)}}
+                                   </span>
+                              </td>
+
+                              <!-- Acciones -->
+                              <td class="px-2 py-2">
+                                   <div class="flex flex-wrap gap-2">
+                                        <!-- Botón Ver Detalles con icono + texto -->
+                                        <button (click)="viewUserDetails(user)"
+                                             class="flex items-center px-3 py-2 text-blue-600 hover:text-blue-700 hover:bg-blue-50 rounded-lg transition-all duration-150 text-xs font-medium border border-blue-200 hover:border-blue-300">
+                                             <svg class="w-3.5 h-3.5 mr-1.5" fill="none" stroke="currentColor"
+                                                  viewBox="0 0 24 24">
+                                                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                       d="M15 12a3 3 0 11-6 0 3 3 0 016 0z">
+                                                  </path>
+                                                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                       d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z">
+                                                  </path>
+                                             </svg>
+                                             <span>Ver Detalles</span>
+                                        </button>
+
+
+
+                                        <!-- Botón Eliminar con icono + texto -->
+                                        <button *ngIf="user.status === 'ACTIVE'" (click)="prepareDeleteUser(user)"
+                                             class="flex items-center px-3 py-2 text-red-600 hover:text-red-700 hover:bg-red-50 rounded-lg transition-all duration-150 text-xs font-medium border border-red-200 hover:border-red-300">
+                                             <svg class="w-3.5 h-3.5 mr-1.5" fill="none" stroke="currentColor"
+                                                  viewBox="0 0 24 24">
+                                                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                       d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16">
+                                                  </path>
+                                             </svg>
+                                             <span>Eliminar</span>
+                                        </button>
+
+                                        <!-- Botón Restaurar (solo para usuarios INACTIVE) -->
+                                        <button *ngIf="user.status === 'INACTIVE'" (click)="prepareRestoreUser(user)"
+                                             class="flex items-center px-3 py-2 text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50 rounded-lg transition-all duration-150 text-xs font-medium border border-emerald-200 hover:border-emerald-300">
+                                             <svg class="w-3.5 h-3.5 mr-1.5" fill="none" stroke="currentColor"
+                                                  viewBox="0 0 24 24">
+                                                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                       d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15">
+                                                  </path>
+                                             </svg>
+                                             <span>Restaurar</span>
+                                        </button>
+                                   </div>
+                              </td>
+                         </tr>
+                    </tbody>
+               </table>
+          </div>
+     </div>
+
+     <!-- Vista de Cards para Móvil y Tablet -->
+     <div class="lg:hidden space-y-4 scroll-container scrollbar-styled scroll-smooth">
+          <div *ngFor="let user of paginatedUsers; trackBy: trackByUserId"
+               class="bg-white rounded-xl shadow-lg border border-gray-100 p-4 hover:shadow-xl transition-all duration-200">
+
+               <!-- Header del Card -->
+               <div class="flex items-center justify-between mb-3">
+                    <div class="flex items-center">
+                         <div
+                              class="w-12 h-12 rounded-full flex items-center justify-center text-white font-bold bg-gradient-to-br from-blue-500 to-blue-700">
+                              {{user.firstName.charAt(0)}}{{user.lastName.charAt(0)}}
+                         </div>
+                         <div class="ml-3">
+                              <h3 class="font-semibold text-gray-900">{{user.firstName}} {{user.lastName}}</h3>
+                              <p class="text-sm text-blue-600">{{user.email}}</p>
+                         </div>
+                    </div>
+                    <div class="text-right">
+                         <div class="text-xs font-bold text-gray-900 bg-gray-100 px-2 py-1 rounded-full">
+                              {{user.userCode}}
+                         </div>
+                    </div>
+               </div>
+
+               <!-- Información del Card -->
+               <div class="grid grid-cols-2 gap-3 mb-4 text-sm">
+                    <div>
+                         <p class="text-gray-500 font-medium">Documento:</p>
+                         <p class="text-gray-900">{{user.documentType}}: {{user.documentNumber}}</p>
+                    </div>
+                    <div>
+                         <p class="text-gray-500 font-medium">Zona:</p>
+                         <span
+                              class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+                              {{user.zone?.zoneName || 'Sin zona'}}
+                         </span>
+                    </div>
+                    <div class="col-span-2" *ngIf="user.address">
+                         <p class="text-gray-500 font-medium">Dirección:</p>
+                         <p class="text-gray-900">{{user.address}}</p>
+                    </div>
+                    <div *ngIf="user.phone">
+                         <p class="text-gray-500 font-medium">Teléfono:</p>
+                         <p class="text-gray-900">{{user.phone}}</p>
+                    </div>
+               </div>
+
+               <!-- Footer del Card -->
+               <div class="flex items-center justify-between pt-3 border-t border-gray-100">
+                    <span [class]="getStatusBadgeClass(user.status)">
+                         {{getStatusLabel(user.status)}}
+                    </span>
+
+                    <div class="flex space-x-2">
+                         <button (click)="viewUserDetails(user)" title="Ver detalles del usuario"
+                              class="p-2 text-blue-500 hover:text-blue-700 hover:bg-blue-50 rounded-lg transition-all duration-150">
+                              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z">
+                                   </path>
+                                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z">
+                                   </path>
+                              </svg>
+                         </button>
+
+
+
+                         <!-- Botón Eliminar (solo usuarios ACTIVE) -->
+                         <button *ngIf="user.status === 'ACTIVE'" (click)="prepareDeleteUser(user)"
+                              class="p-2 text-red-500 hover:text-red-700 hover:bg-red-50 rounded-lg transition-all duration-150">
+                              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16">
+                                   </path>
+                              </svg>
+                         </button>
+
+                         <!-- Botón Restaurar (solo usuarios INACTIVE) -->
+                         <button *ngIf="user.status === 'INACTIVE'" (click)="prepareRestoreUser(user)"
+                              class="p-2 text-emerald-500 hover:text-emerald-700 hover:bg-emerald-50 rounded-lg transition-all duration-150">
+                              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15">
+                                   </path>
+                              </svg>
+                         </button>
+                    </div>
+               </div>
+          </div>
+     </div>
+
+     <!-- Estados vacío y carga -->
+     <div *ngIf="paginatedUsers.length === 0 && !isLoading"
+          class="bg-white rounded-xl shadow-lg border border-gray-100 py-16">
+          <div class="text-center text-gray-500">
+               <svg class="mx-auto h-16 w-16 text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                         d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z">
+                    </path>
+               </svg>
+               <h3 class="text-xl font-semibold text-gray-900 mb-2">No se encontraron usuarios</h3>
+               <p class="text-gray-500 mb-4">Ajusta los filtros o crea un nuevo usuario para comenzar.</p>
+               <button (click)="openCreateModal()"
+                    class="bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-150">
+                    Crear primer usuario
+               </button>
+          </div>
+     </div>
+
+     <div *ngIf="isLoading" class="bg-white rounded-xl shadow-lg border border-gray-100 py-16">
+          <div class="flex justify-center items-center">
+               <svg class="animate-spin -ml-1 mr-3 h-6 w-6 text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none"
+                    viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor"
+                         d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                    </path>
+               </svg>
+               <span class="text-gray-600 font-medium">Cargando usuarios...</span>
+          </div>
+     </div>
+
+
+     <!-- Paginación -->
+     <div class="bg-white rounded-xl shadow-lg border border-gray-100 p-4 mt-6" *ngIf="totalPages > 1">
+          <div class="flex flex-col sm:flex-row items-center justify-between space-y-3 sm:space-y-0">
+               <!-- Información de resultados -->
+               <div class="text-sm text-gray-600 text-center sm:text-left">
+                    Mostrando <span class="font-semibold text-gray-900">{{(currentPage - 1) * pageSize + 1}}</span>
+                    a <span class="font-semibold text-gray-900">{{Math.min(currentPage * pageSize,
+                         filteredUsers.length)}}</span>
+                    de <span class="font-semibold text-gray-900">{{filteredUsers.length}}</span> resultados
+               </div>
+
+               <!-- Controles de paginación -->
+               <div class="flex items-center space-x-2">
+                    <!-- Botón Anterior -->
+                    <button (click)="previousPage()" [disabled]="currentPage === 1"
+                         class="px-3 py-2 text-sm font-medium text-gray-600 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 hover:text-gray-800 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-150 shadow-sm hover:shadow-md">
+                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7">
+                              </path>
+                         </svg>
+                    </button>
+
+                    <!-- Números de página - Solo mostrar algunos en móvil -->
+                    <div class="flex space-x-1">
+                         <button *ngFor="let page of getPages()" (click)="goToPage(page)"
+                              [class]="page === currentPage ?
+                                   'px-3 py-2 text-sm font-medium text-white bg-blue-500 border border-blue-500 rounded-lg shadow-md' :
+                                   'px-3 py-2 text-sm font-medium text-gray-600 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 hover:text-gray-800 transition-all duration-150 shadow-sm hover:shadow-md'">
+                              {{page}}
+                         </button>
+                    </div>
+
+                    <!-- Botón Siguiente -->
+                    <button (click)="nextPage()" [disabled]="currentPage === totalPages"
+                         class="px-3 py-2 text-sm font-medium text-gray-600 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 hover:text-gray-800 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-150 shadow-sm hover:shadow-md">
+                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7">
+                              </path>
+                         </svg>
+                    </button>
+               </div>
+          </div>
+     </div>
+</div>
+
+<!-- Modal de Detalles del Usuario -->
+<app-user-details-modal [isOpen]="isUserDetailsModalOpen" [userId]="selectedUserId" (close)="closeUserDetailsModal()"
+     (editUser)="editUserFromModal($event)">
+</app-user-details-modal>
+
+<!-- Modal de Crear Usuario -->
+<app-create-user-modal [isOpen]="isCreateUserModalOpen" [organizationId]="currentOrganizationId"
+     (close)="closeCreateUserModal()" (userCreated)="onUserCreated($event)">
+</app-create-user-modal>
+
+<!-- Modal de Confirmación -->
+<app-confirmation-modal [isOpen]="isConfirmationModalOpen" [data]="confirmationData" (confirm)="onConfirmAction()"
+     (cancel)="onCancelAction()">
+</app-confirmation-modal>

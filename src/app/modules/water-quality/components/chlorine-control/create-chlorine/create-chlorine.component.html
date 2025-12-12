@@ -1,0 +1,226 @@
+<div *ngIf="isOpen" class="fixed inset-0 z-[8000]" (keydown.escape)="onClose()" tabindex="0">
+  <!-- Background overlay - CLIC PARA CERRAR -->
+  <div class="absolute inset-0 bg-transparent transition-opacity duration-300" (click)="onClose()"></div>
+
+  <!-- Modal Panel -->
+  <div class="absolute right-0 top-0 h-full w-full max-w-3xl bg-white shadow-xl transform transition-transform duration-300 ease-out flex flex-col"
+       [class.translate-x-full]="!isOpen" [class.translate-x-0]="isOpen" (click)="$event.stopPropagation()">
+
+    <!-- Header -->
+    <div class="flex items-center justify-between px-6 py-4 bg-slate-900 text-white flex-shrink-0">
+      <div class="flex items-center space-x-3">
+        <div class="w-10 h-10 rounded-lg flex items-center justify-center bg-slate-700 text-white">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01">
+            </path>
+          </svg>
+        </div>
+        <div>
+          <h2 class="text-lg font-semibold">{{ modalTitle }}</h2>
+          <p class="text-sm text-slate-400">Complete los datos para registrar un nuevo análisis de cloro</p>
+        </div>
+      </div>
+      <button (click)="onClose()"
+              class="p-2 hover:bg-slate-800 rounded-lg transition-colors text-slate-400 hover:text-white"
+              [disabled]="isSaving">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
+          </path>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Contenido del Modal -->
+    <div class="flex-1 overflow-y-auto min-h-0">
+      <form [formGroup]="recordForm" (ngSubmit)="onSubmit()" class="p-6 space-y-6">
+
+        <!-- Sección: Información del Registro -->
+        <div class="bg-white rounded-xl border border-gray-200 shadow-sm">
+          <div class="px-6 py-4 border-b border-gray-200 bg-gray-50 rounded-t-xl">
+            <div class="flex items-center space-x-2">
+              <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+              </svg>
+              <h3 class="text-lg font-semibold text-gray-800">Información del Registro</h3>
+            </div>
+          </div>
+          <div class="p-6 space-y-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <label for="recordDate" class="block text-sm font-medium text-gray-700 mb-2 flex items-center">
+                  <svg class="w-4 h-4 mr-2 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                  </svg>
+                  Fecha y Hora del Registro <span class="text-red-500">*</span>
+                </label>
+                <input type="datetime-local" id="recordDate" formControlName="recordDate"
+                       class="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent shadow-sm transition-all"
+                       [class.border-red-500]="recordForm.get('recordDate')?.invalid && recordForm.get('recordDate')?.touched" />
+                <div *ngIf="recordForm.get('recordDate')?.invalid && recordForm.get('recordDate')?.touched" class="text-red-500 text-sm mt-2">Fecha y hora son requeridas.</div>
+              </div>
+              
+              <div>
+                <label for="recordType" class="block text-sm font-medium text-gray-700 mb-2 flex items-center">
+                  <svg class="w-4 h-4 mr-2 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"></path>
+                  </svg>
+                  Tipo de Registro <span class="text-red-500">*</span>
+                </label>
+                <select id="recordType" formControlName="recordType"
+                        class="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent shadow-sm transition-all appearance-none bg-white bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9ImN1cnJlbnRDb2xvciIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiPjxwb2x5bGluZSBwb2ludHM9IjYgOSAxMiAxNSAxOCA5Ij48L3BvbHlsaW5lPjwvc3ZnPg==')] bg-no-repeat bg-right-4 bg-[length:20px_20px]"
+                        [class.border-red-500]="recordForm.get('recordType')?.invalid && recordForm.get('recordType')?.touched">
+                  <option value="" disabled selected>Seleccione un tipo</option>
+                  <option *ngFor="let type of recordTypes" [value]="type.value">{{ type.label }}</option>
+                </select>
+                <div *ngIf="recordForm.get('recordType')?.invalid && recordForm.get('recordType')?.touched" class="text-red-500 text-sm mt-2">Tipo de registro es requerido.</div>
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2 flex items-center">
+                <svg class="w-4 h-4 mr-2 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                </svg>
+                Punto de Prueba <span class="text-red-500">*</span>
+              </label>
+              <app-multi-select-dropdown
+                [label]="''"
+                [options]="availableTestingPoints"
+                [displayProperty]="'pointName'"
+                formControlName="testingPointId">
+              </app-multi-select-dropdown>
+              <div *ngIf="recordForm.get('testingPointId')?.invalid && recordForm.get('testingPointId')?.touched" class="text-red-500 text-sm mt-2">Punto de prueba es requerido.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sección: Medidas y Resultados -->
+        <div class="bg-white rounded-xl border border-gray-200 shadow-sm">
+          <div class="px-6 py-4 border-b border-gray-200 bg-gray-50 rounded-t-xl">
+            <div class="flex items-center space-x-2">
+              <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+              </svg>
+              <h3 class="text-lg font-semibold text-gray-800">Medidas y Resultados</h3>
+            </div>
+          </div>
+          <div class="p-6 space-y-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <label for="level" class="block text-sm font-medium text-gray-700 mb-2 flex items-center">
+                  <svg class="w-4 h-4 mr-2 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3"></path>
+                  </svg>
+                  Nivel (mg/L) <span class="text-red-500">*</span>
+                </label>
+                <div class="relative">
+                  <input type="number" id="level" formControlName="level" step="0.01" min="0"
+                         class="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent shadow-sm transition-all pr-12"
+                         [class.border-red-500]="recordForm.get('level')?.invalid && recordForm.get('level')?.touched" />
+                  <div class="absolute inset-y-0 right-0 flex items-center pr-4 pointer-events-none">
+                    <span class="text-gray-500 text-base">mg/L</span>
+                  </div>
+                </div>
+                <div *ngIf="recordForm.get('level')?.invalid && recordForm.get('level')?.touched" class="text-red-500 text-sm mt-2">Nivel es requerido y debe ser un número positivo.</div>
+              </div>
+              
+              <div>
+                <label for="amount" class="block text-sm font-medium text-gray-700 mb-2 flex items-center">
+                  <svg class="w-4 h-4 mr-2 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3"></path>
+                  </svg>
+                  Cantidad <span class="text-red-500">*</span>
+                </label>
+                <div class="relative">
+                  <input type="number" id="amount" formControlName="amount" step="0.01" min="0"
+                         class="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent shadow-sm transition-all pr-10"
+                         [class.border-red-500]="recordForm.get('amount')?.invalid && recordForm.get('amount')?.touched" />
+                  <div class="absolute inset-y-0 right-0 flex items-center pr-4 pointer-events-none">
+                    <span class="text-gray-500 text-base">L</span>
+                  </div>
+                </div>
+                <div *ngIf="recordForm.get('amount')?.invalid && recordForm.get('amount')?.touched" class="text-red-500 text-sm mt-2">Cantidad es requerida y debe ser un número positivo.</div>
+              </div>
+            </div>
+
+            <div class="bg-gray-50 rounded-lg p-4">
+              <h4 class="text-sm font-medium text-gray-700 mb-3 flex items-center">
+                <svg class="w-4 h-4 mr-2 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                Estado del Análisis
+              </h4>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="flex items-center">
+                  <input id="acceptable" type="checkbox" formControlName="acceptable"
+                         class="h-5 w-5 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                  <label for="acceptable" class="ml-3 block text-base text-gray-700 flex items-center">
+                    <svg class="w-4 h-4 mr-2 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    Aceptable
+                  </label>
+                </div>
+                
+                <div class="flex items-center">
+                  <input id="actionRequired" type="checkbox" formControlName="actionRequired"
+                         class="h-5 w-5 text-red-600 focus:ring-red-500 border-gray-300 rounded">
+                  <label for="actionRequired" class="ml-3 block text-base text-gray-700 flex items-center">
+                    <svg class="w-4 h-4 mr-2 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                    </svg>
+                    Acción Requerida
+                  </label>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sección: Observaciones -->
+        <div class="bg-white rounded-xl border border-gray-200 shadow-sm">
+          <div class="px-6 py-4 border-b border-gray-200 bg-gray-50 rounded-t-xl">
+            <div class="flex items-center space-x-2">
+              <svg class="w-5 h-5 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"></path>
+              </svg>
+              <h3 class="text-lg font-semibold text-gray-800">Observaciones</h3>
+            </div>
+          </div>
+          <div class="p-6">
+            <div>
+              <label for="observations" class="block text-sm font-medium text-gray-700 mb-2 flex items-center">
+                <svg class="w-4 h-4 mr-2 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"></path>
+                </svg>
+                Comentarios Adicionales
+              </label>
+              <textarea id="observations" formControlName="observations" rows="4"
+                        class="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent shadow-sm transition-all"
+                        placeholder="Ingrese observaciones adicionales..."></textarea>
+            </div>
+          </div>
+        </div>
+
+        <!-- Botones de Acción -->
+        <div class="flex justify-end gap-4 pt-4">
+          <button type="button" (click)="onClose()" [disabled]="isSaving"
+                  class="px-6 py-3 text-base font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 shadow-sm transition-all">
+            Cancelar
+          </button>
+
+          <button type="submit" [disabled]="isSaving || recordForm.invalid"
+                  class="px-6 py-3 text-base font-medium text-white bg-blue-600 border border-transparent rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 shadow-sm transition-all">
+            <div *ngIf="isSaving"
+                 class="inline-block animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2">
+            </div>
+            {{ submitButtonText }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<app-toast></app-toast>

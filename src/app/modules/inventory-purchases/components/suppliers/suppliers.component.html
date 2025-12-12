@@ -1,0 +1,469 @@
+<!-- Breadcrumb -->
+<app-breadcrumb [items]="breadcrumbItems"></app-breadcrumb>
+
+<!-- Header de la página -->
+<div class="p-4">
+     <h1 class="text-3xl font-bold text-gray-900 mb-2">Lista de Proveedores</h1>
+     <p class="text-lg text-gray-600">Gestión y administración de proveedores del sistema</p>
+</div>
+
+
+<!-- Filtros y Acciones -->
+<div class="bg-white rounded-lg shadow-sm border border-gray-200 p-4 mb-6">
+     <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+          <!-- Búsqueda -->
+          <div class="flex-1 max-w-md">
+               <div class="relative">
+                    <input type="text" [(ngModel)]="searchTerm" (input)="onSearch()"
+                         placeholder="Buscar por código, nombre, contacto, email o teléfono..."
+                         class="w-full pl-10 pr-4 py-2 bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent" />
+                    <svg class="absolute left-3 top-2.5 h-5 w-5 text-gray-400" fill="none" stroke="currentColor"
+                         viewBox="0 0 24 24">
+                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
+               </div>
+          </div>
+
+          <!-- Filtros de Estado -->
+          <div class="flex gap-2">
+               <button (click)="changeStatusFilter('all')" [class]="statusFilter === 'all'
+            ? 'bg-blue-600 text-white'
+            : 'bg-white text-gray-700 border border-gray-200 hover:bg-gray-50'"
+                    class="px-4 py-2 rounded-lg font-medium transition-colors">
+                    Todos
+               </button>
+               <button (click)="changeStatusFilter('ACTIVO')" [class]="statusFilter === 'ACTIVO'
+            ? 'bg-green-600 text-white'
+            : 'bg-white text-gray-700 border border-gray-200 hover:bg-gray-50'"
+                    class="px-4 py-2 rounded-lg font-medium transition-colors">
+                    Activos
+               </button>
+               <button (click)="changeStatusFilter('INACTIVO')" [class]="statusFilter === 'INACTIVO'
+            ? 'bg-red-600 text-white'
+            : 'bg-white text-gray-700 border border-gray-200 hover:bg-gray-50'"
+                    class="px-4 py-2 rounded-lg font-medium transition-colors">
+                    Inactivos
+               </button>
+          </div>
+
+          <!-- Botón Nuevo Proveedor -->
+          <button (click)="openCreateModal()"
+               class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-medium transition-colors flex items-center gap-2">
+               <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+               </svg>
+               Nuevo Proveedor
+          </button>
+     </div>
+</div>
+
+<!-- Tabla de Proveedores -->
+<div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+     <div class="overflow-x-auto">
+          <table class="min-w-full divide-y divide-gray-200">
+               <thead class="bg-gray-50">
+                    <tr>
+                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                              Código</th>
+                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                              Proveedor</th>
+                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                              Contacto</th>
+                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                              Teléfono</th>
+                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                              Email</th>
+                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                              Estado</th>
+                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                              Acciones</th>
+                    </tr>
+               </thead>
+               <tbody class="bg-white divide-y divide-gray-200">
+                    <!-- Loading -->
+                    <tr *ngIf="isLoading">
+                         <td colspan="7" class="px-6 py-12 text-center">
+                              <div class="flex justify-center items-center">
+                                   <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                                   <span class="ml-3 text-gray-600">Cargando proveedores...</span>
+                              </div>
+                         </td>
+                    </tr>
+
+                    <!-- Sin resultados -->
+                    <tr *ngIf="!isLoading && filteredSuppliers.length === 0">
+                         <td colspan="7" class="px-6 py-12 text-center text-gray-500">
+                              <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor"
+                                   viewBox="0 0 24 24">
+                                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
+                              </svg>
+                              <p class="mt-2">No se encontraron proveedores</p>
+                         </td>
+                    </tr>
+
+                    <!-- Lista de proveedores -->
+                    <tr *ngFor="let supplier of filteredSuppliers" class="hover:bg-gray-50 transition-colors">
+                         <td class="px-6 py-4 whitespace-nowrap">
+                              <div class="text-sm font-medium text-gray-900">{{ supplier.supplierCode }}</div>
+                         </td>
+                         <td class="px-6 py-4">
+                              <div class="text-sm font-medium text-gray-900">{{ supplier.supplierName }}</div>
+                              <div class="text-sm text-gray-500">{{ supplier.address }}</div>
+                         </td>
+                         <td class="px-6 py-4 whitespace-nowrap">
+                              <div class="text-sm text-gray-900">{{ supplier.contactPerson }}</div>
+                         </td>
+                         <td class="px-6 py-4 whitespace-nowrap">
+                              <div class="text-sm text-gray-900">{{ supplier.phone }}</div>
+                         </td>
+                         <td class="px-6 py-4 whitespace-nowrap">
+                              <div class="text-sm text-gray-900">{{ supplier.email }}</div>
+                         </td>
+                         <td class="px-6 py-4 whitespace-nowrap">
+                              <span [class]="getStatusBadgeClass(supplier.status)"
+                                   class="px-2 py-1 text-xs font-semibold rounded-full">
+                                   {{ supplier.status }}
+                              </span>
+                         </td>
+                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                              <div class="flex items-center gap-2">
+                                   <!-- Botón Ver Detalles (Activos) -->
+                                   <button *ngIf="supplier.status === 'ACTIVO'" (click)="openEditModal(supplier)"
+                                        class="inline-flex items-center gap-1 px-3 py-1.5 bg-white border border-blue-600 text-blue-600 rounded hover:bg-blue-50 transition-colors text-sm font-medium">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                  d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                  d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                        </svg>
+                                        Editar
+                                   </button>
+
+                                   <!-- Botón Eliminar (Activos) -->
+                                   <button *ngIf="supplier.status === 'ACTIVO'" (click)="openDeleteModal(supplier)"
+                                        class="inline-flex items-center gap-1 px-3 py-1.5 bg-white border border-red-600 text-red-600 rounded hover:bg-red-50 transition-colors text-sm font-medium">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                  d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                        </svg>
+                                        Eliminar
+                                   </button>
+
+                                   <!-- Botón Restaurar (Inactivos) -->
+                                   <button *ngIf="supplier.status === 'INACTIVO'" (click)="openRestoreModal(supplier)"
+                                        class="inline-flex items-center gap-1 px-3 py-1.5 bg-white border border-green-600 text-green-600 rounded hover:bg-green-50 transition-colors text-sm font-medium">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                  d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                                        </svg>
+                                        Restaurar
+                                   </button>
+                              </div>
+                         </td>
+                    </tr>
+               </tbody>
+          </table>
+     </div>
+</div>
+
+<!-- Contador de resultados -->
+<div class="mt-4 text-sm text-gray-600">
+     Mostrando {{ filteredSuppliers.length }} de {{ suppliers.length }} proveedores
+</div>
+
+<!-- Modal de Creación/Edición (Slide-in desde la derecha) -->
+<div *ngIf="isFormModalOpen" [@fadeIn] class="fixed inset-0 z-[999] overflow-hidden">
+     <!-- Overlay -->
+     <div class="absolute inset-0 bg-gray-900/50 transition-opacity" (click)="closeFormModal()"></div>
+
+     <!-- Panel Slide-in -->
+     <div [@slideIn] class="absolute inset-y-0 right-0 max-w-2xl w-full bg-white shadow-xl flex flex-col">
+          <!-- Header -->
+          <div class="bg-slate-900 px-6 py-4">
+               <div class="flex items-center justify-between">
+                    <h2 class="text-xl font-semibold text-white">
+                         {{ isEditMode ? 'Editar Proveedor' : 'Nuevo Proveedor' }}
+                    </h2>
+                    <button (click)="closeFormModal()" class="text-white hover:text-gray-200 transition-colors">
+                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                   d="M6 18L18 6M6 6l12 12" />
+                         </svg>
+                    </button>
+               </div>
+          </div>
+
+          <!-- Form Content -->
+          <div class="flex-1 overflow-y-auto p-6 bg-gray-50">
+               <form class="space-y-6">
+                    <!-- Sección: Información del Proveedor -->
+                    <div class="bg-white rounded-lg border border-gray-200 p-5">
+                         <h3 class="text-base font-semibold text-gray-900 mb-4">Información del Proveedor</h3>
+
+                         <div class="space-y-4">
+                              <!-- Código del Proveedor -->
+                              <div>
+                                   <label for="supplierCode" class="block text-sm font-medium text-gray-700 mb-1.5">
+                                        Código <span class="text-red-500">*</span>
+                                   </label>
+                                   <div class="relative">
+                                        <input type="text" id="supplierCode" [(ngModel)]="supplierForm.supplierCode"
+                                             name="supplierCode" readonly
+                                             class="w-full px-3 py-2 border border-gray-200 rounded-md focus:outline-none text-sm bg-gray-100 cursor-not-allowed text-gray-600 font-medium"
+                                             [class.border-red-500]="formErrors['supplierCode']" />
+                                        <svg class="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400"
+                                             fill="currentColor" viewBox="0 0 20 20">
+                                             <path fill-rule="evenodd"
+                                                  d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z"
+                                                  clip-rule="evenodd" />
+                                        </svg>
+                                   </div>
+                                   <p *ngIf="formErrors['supplierCode']"
+                                        class="mt-1.5 text-xs text-red-600 flex items-start gap-1">
+                                        <svg class="w-4 h-4 mt-0.5 flex-shrink-0" fill="currentColor"
+                                             viewBox="0 0 20 20">
+                                             <path fill-rule="evenodd"
+                                                  d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+                                                  clip-rule="evenodd" />
+                                        </svg>
+                                        {{ formErrors['supplierCode'] }}
+                                   </p>
+                                   <p class="mt-1.5 text-xs text-gray-500 flex items-center gap-1">
+                                        <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
+                                             <path fill-rule="evenodd"
+                                                  d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
+                                                  clip-rule="evenodd" />
+                                        </svg>
+                                        🔒 Código generado automáticamente y bloqueado
+                                   </p>
+                              </div>
+
+                              <!-- Nombre del Proveedor -->
+                              <div>
+                                   <label for="supplierName" class="block text-sm font-medium text-gray-700 mb-1.5">
+                                        Nombre del Proveedor <span class="text-red-500">*</span>
+                                   </label>
+                                   <input type="text" id="supplierName" [(ngModel)]="supplierForm.supplierName"
+                                        name="supplierName" placeholder="Nombre o razón social de la empresa"
+                                        class="w-full px-3 py-2 bg-white border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm placeholder-gray-400 placeholder-opacity-50 "
+                                        [class.border-red-500]="formErrors['supplierName']"
+                                        [class.focus:ring-red-500]="formErrors['supplierName']" />
+                                   <p *ngIf="formErrors['supplierName']"
+                                        class="mt-1.5 text-xs text-red-600 flex items-start gap-1">
+                                        <svg class="w-4 h-4 mt-0.5 flex-shrink-0" fill="currentColor"
+                                             viewBox="0 0 20 20">
+                                             <path fill-rule="evenodd"
+                                                  d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+                                                  clip-rule="evenodd" />
+                                        </svg>
+                                        {{ formErrors['supplierName'] }}
+                                   </p>
+                              </div>
+
+                              <!-- Dirección -->
+                              <div>
+                                   <label for="address" class="block text-sm font-medium text-gray-700 mb-1.5">
+                                        Dirección <span class="text-red-500">*</span>
+                                   </label>
+                                   <textarea id="address" [(ngModel)]="supplierForm.address" name="address" rows="3"
+                                        placeholder="Calle, número, distrito, ciudad, país"
+                                        class="w-full px-3 py-2 bg-white border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none text-sm placeholder-gray-400 placeholder-opacity-50"
+                                        [class.border-red-500]="formErrors['address']"
+                                        [class.focus:ring-red-500]="formErrors['address']"></textarea>
+                                   <p *ngIf="formErrors['address']"
+                                        class="mt-1.5 text-xs text-red-600 flex items-start gap-1">
+                                        <svg class="w-4 h-4 mt-0.5 flex-shrink-0" fill="currentColor"
+                                             viewBox="0 0 20 20">
+                                             <path fill-rule="evenodd"
+                                                  d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+                                                  clip-rule="evenodd" />
+                                        </svg>
+                                        {{ formErrors['address'] }}
+                                   </p>
+                              </div>
+                         </div>
+                    </div>
+
+                    <!-- Sección: Datos de Contacto -->
+                    <div class="bg-white rounded-lg border border-gray-200 p-5">
+                         <h3 class="text-base font-semibold text-gray-900 mb-4">Datos de Contacto</h3>
+
+                         <div class="space-y-4">
+                              <!-- Persona de Contacto -->
+                              <div>
+                                   <label for="contactPerson" class="block text-sm font-medium text-gray-700 mb-1.5">
+                                        Persona de Contacto <span class="text-red-500">*</span>
+                                   </label>
+                                   <input type="text" id="contactPerson" [(ngModel)]="supplierForm.contactPerson"
+                                        name="contactPerson" placeholder="Nombres y apellidos completos"
+                                        class="w-full px-3 py-2 bg-white border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm placeholder-gray-400 placeholder-opacity-50"
+                                        [class.border-red-500]="formErrors['contactPerson']"
+                                        [class.focus:ring-red-500]="formErrors['contactPerson']" />
+                                   <p *ngIf="formErrors['contactPerson']"
+                                        class="mt-1.5 text-xs text-red-600 flex items-start gap-1">
+                                        <svg class="w-4 h-4 mt-0.5 flex-shrink-0" fill="currentColor"
+                                             viewBox="0 0 20 20">
+                                             <path fill-rule="evenodd"
+                                                  d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+                                                  clip-rule="evenodd" />
+                                        </svg>
+                                        {{ formErrors['contactPerson'] }}
+                                   </p>
+                              </div>
+
+                              <!-- Teléfono -->
+                              <div>
+                                   <label for="phone" class="block text-sm font-medium text-gray-700 mb-1.5">
+                                        Teléfono <span class="text-red-500">*</span>
+                                   </label>
+                                   <input type="tel" id="phone" [(ngModel)]="supplierForm.phone" name="phone"
+                                        placeholder="Celular: 987654321 / Fijo: 014567890" maxlength="10"
+                                        (input)="onPhoneInput($event)"
+                                        class="w-full px-3 py-2 bg-white border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm placeholder-gray-400 placeholder-opacity-50"
+                                        [class.border-red-500]="formErrors['phone']"
+                                        [class.focus:ring-red-500]="formErrors['phone']" />
+                                   <p *ngIf="formErrors['phone']"
+                                        class="mt-1.5 text-xs text-red-600 flex items-start gap-1">
+                                        <svg class="w-4 h-4 mt-0.5 flex-shrink-0" fill="currentColor"
+                                             viewBox="0 0 20 20">
+                                             <path fill-rule="evenodd"
+                                                  d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+                                                  clip-rule="evenodd" />
+                                        </svg>
+                                        {{ formErrors['phone'] }}
+                                   </p>
+                                   <p class="mt-1.5 text-xs text-gray-500">📱 Celular: 9 dígitos (inicia con 9) | ☎️
+                                        Fijo: 9-10 dígitos (inicia con 01)</p>
+                              </div>
+
+                              <!-- Email -->
+                              <div>
+                                   <label for="email" class="block text-sm font-medium text-gray-700 mb-1.5">
+                                        Correo Electrónico <span class="text-red-500">*</span>
+                                   </label>
+                                   <input type="email" id="email" [(ngModel)]="supplierForm.email" name="email"
+                                        placeholder="ejemplo@empresa.com"
+                                        class="w-full px-3 py-2 bg-white border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm placeholder-gray-400 placeholder-opacity-50"
+                                        [class.border-red-500]="formErrors['email']"
+                                        [class.focus:ring-red-500]="formErrors['email']" />
+                                   <p *ngIf="formErrors['email']"
+                                        class="mt-1.5 text-xs text-red-600 flex items-start gap-1">
+                                        <svg class="w-4 h-4 mt-0.5 flex-shrink-0" fill="currentColor"
+                                             viewBox="0 0 20 20">
+                                             <path fill-rule="evenodd"
+                                                  d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+                                                  clip-rule="evenodd" />
+                                        </svg>
+                                        {{ formErrors['email'] }}
+                                   </p>
+                                   <p class="mt-1.5 text-xs text-gray-500">📧 Formato válido de correo electrónico</p>
+                              </div>
+                         </div>
+                    </div>
+
+               </form>
+          </div>
+
+          <!-- Footer con botones -->
+          <div class="border-t border-gray-200 px-6 py-4 bg-gray-50">
+               <div class="flex justify-end gap-3">
+                    <button type="button" (click)="closeFormModal()"
+                         class="px-6 py-2 bg-white border border-gray-200 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-medium">
+                         Cancelar
+                    </button>
+                    <button type="button" (click)="saveSupplier()" [disabled]="isLoading"
+                         class="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed">
+                         {{ isLoading ? 'Guardando...' : (isEditMode ? 'Actualizar' : 'Crear') }}
+                    </button>
+               </div>
+          </div>
+     </div>
+</div>
+
+<!-- Modal de Confirmación de Eliminación -->
+<div *ngIf="isDeleteModalOpen" [@fadeIn] class="fixed inset-0 z-50 overflow-y-auto">
+     <div class="flex items-center justify-center min-h-screen px-4">
+          <!-- Overlay -->
+          <div class="fixed inset-0 bg-gray-900/50 transition-opacity" (click)="closeDeleteModal()"></div>
+
+          <!-- Modal Content -->
+          <div class="relative bg-white rounded-lg shadow-xl max-w-md w-full p-6">
+               <div class="text-center">
+                    <!-- Icono -->
+                    <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100">
+                         <svg class="h-6 w-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                   d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                         </svg>
+                    </div>
+
+                    <!-- Título -->
+                    <h3 class="mt-4 text-lg font-semibold text-gray-900">Eliminar Proveedor</h3>
+
+                    <!-- Mensaje -->
+                    <p class="mt-2 text-sm text-gray-600">
+                         ¿Está seguro que desea eliminar al proveedor <strong>{{ supplierToDelete?.supplierName
+                              }}</strong>?
+                         Esta acción cambiará su estado a INACTIVO.
+                    </p>
+
+                    <!-- Botones -->
+                    <div class="mt-6 flex gap-3 justify-center">
+                         <button type="button" (click)="closeDeleteModal()"
+                              class="px-6 py-2 bg-white border border-gray-200 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-medium">
+                              Cancelar
+                         </button>
+                         <button type="button" (click)="confirmDelete()" [disabled]="isLoading"
+                              class="px-6 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed">
+                              {{ isLoading ? 'Eliminando...' : 'Eliminar' }}
+                         </button>
+                    </div>
+               </div>
+          </div>
+     </div>
+</div>
+
+<!-- Modal de Confirmación de Restauración -->
+<div *ngIf="isRestoreModalOpen" [@fadeIn] class="fixed inset-0 z-50 overflow-y-auto">
+     <div class="flex items-center justify-center min-h-screen px-4">
+          <!-- Overlay -->
+          <div class="fixed inset-0 bg-gray-900/50 " (click)="closeRestoreModal()"></div>
+
+          <!-- Modal Content -->
+          <div class="relative bg-white rounded-lg shadow-xl max-w-md w-full p-6">
+               <div class="text-center">
+                    <!-- Icono -->
+                    <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-green-100">
+                         <svg class="h-6 w-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                   d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                         </svg>
+                    </div>
+
+                    <!-- Título -->
+                    <h3 class="mt-4 text-lg font-semibold text-gray-900">Restaurar Proveedor</h3>
+
+                    <!-- Mensaje -->
+                    <p class="mt-2 text-sm text-gray-600">
+                         ¿Está seguro que desea restaurar al proveedor <strong>{{ supplierToRestore?.supplierName
+                              }}</strong>?
+                         Esta acción cambiará su estado a ACTIVO.
+                    </p>
+
+                    <!-- Botones -->
+                    <div class="mt-6 flex gap-3 justify-center">
+                         <button type="button" (click)="closeRestoreModal()"
+                              class="px-6 py-2 bg-white border border-gray-200 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-medium">
+                              Cancelar
+                         </button>
+                         <button type="button" (click)="confirmRestore()" [disabled]="isLoading"
+                              class="px-6 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed">
+                              {{ isLoading ? 'Restaurando...' : 'Restaurar' }}
+                         </button>
+                    </div>
+               </div>
+          </div>
+     </div>
+</div>

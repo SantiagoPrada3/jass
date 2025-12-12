@@ -1,0 +1,393 @@
+<!-- Breadcrumb -->
+<app-breadcrumb [items]="breadcrumbItems"></app-breadcrumb>
+
+<!-- Header de la página -->
+<div class="p-4">
+     <h1 class="text-3xl font-bold text-gray-900 mb-2">Lista de Categorías</h1>
+     <p class="text-lg text-gray-600">Organización y clasificación de productos</p>
+</div>
+
+<!-- Filtros y búsqueda -->
+<div class="bg-white rounded-lg shadow-sm border border-gray-200 mb-6 p-6">
+     <div class="flex flex-col lg:flex-row gap-4 items-center justify-between">
+          <!-- Búsqueda -->
+          <div class="relative flex-1 max-w-md">
+               <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
+               </div>
+               <input type="text" [(ngModel)]="searchTerm" (input)="onSearch()"
+                    placeholder="Buscar por código, nombre o descripción..."
+                    class="block w-full pl-10 pr-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+          </div>
+
+          <!-- Filtros de estado -->
+          <div class="flex gap-2">
+               <button (click)="statusFilter = 'all'; applyFilters()" [class.bg-blue-100]="statusFilter === 'all'"
+                    [class.text-blue-700]="statusFilter === 'all'" [class.border-blue-300]="statusFilter === 'all'"
+                    class="px-4 py-2 text-sm font-medium border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+                    Todos
+               </button>
+               <button (click)="statusFilter = 'ACTIVO'; applyFilters()"
+                    [class.bg-green-100]="statusFilter === 'ACTIVO'" [class.text-green-700]="statusFilter === 'ACTIVO'"
+                    [class.border-green-300]="statusFilter === 'ACTIVO'"
+                    class="px-4 py-2 text-sm font-medium border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+                    Activos
+               </button>
+               <button (click)="statusFilter = 'INACTIVO'; applyFilters()"
+                    [class.bg-red-100]="statusFilter === 'INACTIVO'" [class.text-red-700]="statusFilter === 'INACTIVO'"
+                    [class.border-red-300]="statusFilter === 'INACTIVO'"
+                    class="px-4 py-2 text-sm font-medium border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+                    Inactivos
+               </button>
+          </div>
+
+          <!-- Botón nueva categoría -->
+          <button (click)="openCreateModal()"
+               class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-medium transition-colors flex items-center gap-2">
+               <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                         d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+               </svg>
+               Nueva Categoría
+          </button>
+     </div>
+</div>
+
+<!-- Tabla de categorías -->
+<div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+     <!-- Loading spinner -->
+     <div *ngIf="isLoading" class="flex justify-center items-center py-12">
+          <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+     </div>
+
+     <!-- Tabla -->
+     <div *ngIf="!isLoading" class="overflow-x-auto">
+          <table class="min-w-full divide-y divide-gray-200">
+               <thead class="bg-gray-50">
+                    <tr>
+                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                              Código</th>
+                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                              Categoría</th>
+                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                              Descripción</th>
+                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                              Estado</th>
+                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                              Acciones</th>
+                    </tr>
+               </thead>
+               <tbody class="bg-white divide-y divide-gray-200">
+                    <!-- Filas de categorías -->
+                    <tr *ngFor="let category of filteredCategories" class="hover:bg-gray-50 transition-colors">
+                         <!-- Código -->
+                         <td class="px-6 py-4 whitespace-nowrap">
+                              <div class="text-sm font-medium text-gray-900">{{ category.categoryCode }}</div>
+                         </td>
+
+                         <!-- Nombre de categoría -->
+                         <td class="px-6 py-4 whitespace-nowrap">
+                              <div class="text-sm font-medium text-gray-900">{{ category.categoryName }}</div>
+                         </td>
+
+                         <!-- Descripción -->
+                         <td class="px-6 py-4">
+                              <div class="text-sm text-gray-600 max-w-xs truncate" [title]="category.description">
+                                   {{ category.description }}
+                              </div>
+                         </td>
+
+                         <!-- Estado -->
+                         <td class="px-6 py-4 whitespace-nowrap">
+                              <span [class]="category.status === 'ACTIVO'
+              ? 'inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800'
+              : 'inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-red-100 text-red-800'">
+                                   {{ category.status }}
+                              </span>
+                         </td>
+
+                         <!-- Acciones -->
+                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                              <div class="flex items-center gap-2">
+                                   <!-- Ver detalles -->
+                                   <button (click)="openEditModal(category)"
+                                        class="inline-flex items-center gap-1 px-3 py-1.5 bg-white border border-blue-600 text-blue-600 rounded hover:bg-blue-50 transition-colors text-xs font-medium">
+                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                  d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                  d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                        </svg>
+                                        Editar
+                                   </button>
+
+                                   <!-- Eliminar -->
+                                   <button *ngIf="category.status === 'ACTIVO'" (click)="openDeleteModal(category)"
+                                        class="inline-flex items-center gap-1 px-3 py-1.5 bg-white border border-red-600 text-red-600 rounded hover:bg-red-50 transition-colors text-xs font-medium">
+                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                  d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                        </svg>
+                                        Eliminar
+                                   </button>
+
+                                   <!-- Restaurar -->
+                                   <button *ngIf="category.status === 'INACTIVO'" (click)="openRestoreModal(category)"
+                                        class="inline-flex items-center gap-1 px-3 py-1.5 bg-white border border-green-600 text-green-600 rounded hover:bg-green-50 transition-colors text-xs font-medium">
+                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                  d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                                        </svg>
+                                        Restaurar
+                                   </button>
+                              </div>
+                         </td>
+                    </tr>
+
+                    <!-- Empty state -->
+                    <tr *ngIf="filteredCategories.length === 0 && !isLoading">
+                         <td colspan="5" class="px-6 py-12 text-center text-gray-500">
+                              <div class="flex flex-col items-center justify-center">
+                                   <svg class="w-12 h-12 text-gray-400 mb-4" fill="none" stroke="currentColor"
+                                        viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1"
+                                             d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
+                                   </svg>
+                                   <p class="text-lg font-medium text-gray-900 mb-1">No hay categorías</p>
+                                   <p class="text-gray-500">No se encontraron categorías con los filtros aplicados</p>
+                              </div>
+                         </td>
+                    </tr>
+               </tbody>
+          </table>
+     </div>
+</div>
+
+<!-- Modal de Formulario (Crear/Editar) -->
+<div *ngIf="isFormModalOpen" [@fadeIn] class="fixed inset-0 z-[999] overflow-y-auto">
+     <div class="flex min-h-screen">
+          <!-- Overlay -->
+          <div class="fixed inset-0 bg-gray-900/50 transition-opacity" (click)="closeFormModal()"></div>
+
+          <!-- Modal content -->
+          <div [@slideIn] class="relative ml-auto bg-white w-full max-w-md shadow-xl">
+               <!-- Header -->
+               <div class="bg-slate-900 px-6 py-4">
+                    <div class="flex items-center justify-between">
+                         <h2 class="text-xl font-semibold text-white">
+                              {{ isEditMode ? 'Editar Categoría' : 'Nueva Categoría' }}
+                         </h2>
+                         <button (click)="closeFormModal()" class="text-white hover:text-gray-200 transition-colors">
+                              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M6 18L18 6M6 6l12 12" />
+                              </svg>
+                         </button>
+                    </div>
+               </div>
+
+               <!-- Form Content -->
+               <div class="flex-1 overflow-y-auto p-6 bg-gray-50">
+                    <form class="space-y-6">
+                         <!-- Sección: Información de la Categoría -->
+                         <div class="bg-white rounded-lg border border-gray-200 p-5">
+                              <h3 class="text-base font-semibold text-gray-900 mb-4">Información de la Categoría</h3>
+
+                              <div class="space-y-4">
+                                   <!-- Código de Categoría -->
+                                   <div>
+                                        <label for="categoryCode"
+                                             class="block text-sm font-medium text-gray-700 mb-1.5">
+                                             Código <span class="text-red-500">*</span>
+                                        </label>
+                                        <div class="relative">
+                                             <input type="text" id="categoryCode"
+                                                  [(ngModel)]="categoryForm.categoryCode" name="categoryCode" readonly
+                                                  class="w-full px-3 py-2 border border-gray-200 rounded-md focus:outline-none text-sm bg-gray-100 cursor-not-allowed text-gray-600 font-medium"
+                                                  [class.border-red-500]="formErrors['categoryCode']" />
+                                             <svg class="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400"
+                                                  fill="currentColor" viewBox="0 0 20 20">
+                                                  <path fill-rule="evenodd"
+                                                       d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z"
+                                                       clip-rule="evenodd" />
+                                             </svg>
+                                        </div>
+                                        <p *ngIf="formErrors['categoryCode']"
+                                             class="mt-1.5 text-xs text-red-600 flex items-start gap-1">
+                                             <svg class="w-4 h-4 mt-0.5 flex-shrink-0" fill="currentColor"
+                                                  viewBox="0 0 20 20">
+                                                  <path fill-rule="evenodd"
+                                                       d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+                                                       clip-rule="evenodd" />
+                                             </svg>
+                                             {{ formErrors['categoryCode'] }}
+                                        </p>
+                                        <p class="mt-1.5 text-xs text-gray-500 flex items-center gap-1">
+                                             <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
+                                                  <path fill-rule="evenodd"
+                                                       d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
+                                                       clip-rule="evenodd" />
+                                             </svg>
+                                             🔒 Código generado automáticamente y bloqueado
+                                        </p>
+                                   </div>
+
+                                   <!-- Nombre de Categoría -->
+                                   <div>
+                                        <label for="categoryName"
+                                             class="block text-sm font-medium text-gray-700 mb-1.5">
+                                             Nombre de la Categoría <span class="text-red-500">*</span>
+                                        </label>
+                                        <input type="text" id="categoryName" [(ngModel)]="categoryForm.categoryName"
+                                             name="categoryName" placeholder="Nombre descriptivo de la categoría"
+                                             class="w-full px-3 py-2 bg-white border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+                                             [class.border-red-500]="formErrors['categoryName']"
+                                             [class.focus:ring-red-500]="formErrors['categoryName']" />
+                                        <p *ngIf="formErrors['categoryName']"
+                                             class="mt-1.5 text-xs text-red-600 flex items-start gap-1">
+                                             <svg class="w-4 h-4 mt-0.5 flex-shrink-0" fill="currentColor"
+                                                  viewBox="0 0 20 20">
+                                                  <path fill-rule="evenodd"
+                                                       d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+                                                       clip-rule="evenodd" />
+                                             </svg>
+                                             {{ formErrors['categoryName'] }}
+                                        </p>
+                                   </div>
+
+                                   <!-- Descripción -->
+                                   <div>
+                                        <label for="description" class="block text-sm font-medium text-gray-700 mb-1.5">
+                                             Descripción <span class="text-red-500">*</span>
+                                        </label>
+                                        <textarea id="description" [(ngModel)]="categoryForm.description"
+                                             name="description" rows="3"
+                                             placeholder="Descripción detallada de la categoría"
+                                             class="w-full px-3 py-2 bg-white border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none text-sm"
+                                             [class.border-red-500]="formErrors['description']"
+                                             [class.focus:ring-red-500]="formErrors['description']"></textarea>
+                                        <p *ngIf="formErrors['description']"
+                                             class="mt-1.5 text-xs text-red-600 flex items-start gap-1">
+                                             <svg class="w-4 h-4 mt-0.5 flex-shrink-0" fill="currentColor"
+                                                  viewBox="0 0 20 20">
+                                                  <path fill-rule="evenodd"
+                                                       d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+                                                       clip-rule="evenodd" />
+                                             </svg>
+                                             {{ formErrors['description'] }}
+                                        </p>
+                                   </div>
+                              </div>
+                         </div>
+                    </form>
+               </div>
+
+               <!-- Footer con botones -->
+               <div class="border-t border-gray-200 px-6 py-4 bg-gray-50">
+                    <div class="flex justify-end gap-3">
+                         <button type="button" (click)="closeFormModal()"
+                              class="px-6 py-2 bg-white border border-gray-200 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-medium">
+                              Cancelar
+                         </button>
+                         <button type="button" (click)="saveCategory()" [disabled]="isLoading"
+                              class="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed">
+                              {{ isLoading ? 'Guardando...' : (isEditMode ? 'Actualizar' : 'Crear') }}
+                         </button>
+                    </div>
+               </div>
+          </div>
+     </div>
+</div>
+
+<!-- Modal de Confirmación de Eliminación -->
+<div *ngIf="isDeleteModalOpen" [@fadeIn] class="fixed inset-0 z-50 overflow-y-auto">
+     <div class="flex items-center justify-center min-h-screen px-4">
+          <!-- Overlay -->
+          <div class="fixed inset-0 bg-gray-900/50 transition-opacity" (click)="closeDeleteModal()"></div>
+
+          <!-- Modal Content -->
+          <div class="relative bg-white rounded-lg shadow-xl max-w-md w-full p-6">
+               <div class="text-center">
+                    <!-- Icono -->
+                    <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100">
+                         <svg class="h-6 w-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                   d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                         </svg>
+                    </div>
+
+                    <!-- Título -->
+                    <h3 class="mt-4 text-lg font-semibold text-gray-900">Confirmar Eliminación</h3>
+
+                    <!-- Mensaje -->
+                    <div class="mt-2">
+                         <p class="text-gray-600">
+                              ¿Estás seguro de que deseas eliminar la categoría
+                              <span class="font-semibold text-gray-900">{{ categoryToDelete?.categoryName }}</span>?
+                         </p>
+                         <p class="text-sm text-gray-500 mt-1">Esta acción cambiará el estado a INACTIVO.</p>
+                    </div>
+
+                    <!-- Botones -->
+                    <div class="mt-6 flex gap-3 justify-center">
+                         <button (click)="closeDeleteModal()"
+                              class="px-4 py-2 bg-white border border-gray-200 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors">
+                              Cancelar
+                         </button>
+                         <button (click)="confirmDelete()" [disabled]="isLoading"
+                              class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors disabled:opacity-50">
+                              {{ isLoading ? 'Eliminando...' : 'Eliminar' }}
+                         </button>
+                    </div>
+               </div>
+          </div>
+     </div>
+</div>
+
+<!-- Modal de Confirmación de Restauración -->
+<div *ngIf="isRestoreModalOpen" [@fadeIn] class="fixed inset-0 z-50 overflow-y-auto">
+     <div class="flex items-center justify-center min-h-screen px-4">
+          <!-- Overlay -->
+          <div class="fixed inset-0 bg-gray-900/50 " (click)="closeRestoreModal()"></div>
+
+          <!-- Modal Content -->
+          <div class="relative bg-white rounded-lg shadow-xl max-w-md w-full p-6">
+               <div class="text-center">
+                    <!-- Icono -->
+                    <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-green-100">
+                         <svg class="h-6 w-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                   d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                         </svg>
+                    </div>
+
+                    <!-- Título -->
+                    <h3 class="mt-4 text-lg font-semibold text-gray-900">Confirmar Restauración</h3>
+
+                    <!-- Mensaje -->
+                    <div class="mt-2">
+                         <p class="text-gray-600">
+                              ¿Estás seguro de que deseas restaurar la categoría
+                              <span class="font-semibold text-gray-900">{{ categoryToRestore?.categoryName }}</span>?
+                         </p>
+                         <p class="text-sm text-gray-500 mt-1">Esta acción cambiará el estado a ACTIVO.</p>
+                    </div>
+
+                    <!-- Botones -->
+                    <div class="mt-6 flex gap-3 justify-center">
+                         <button (click)="closeRestoreModal()"
+                              class="px-4 py-2 bg-white border border-gray-200 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors">
+                              Cancelar
+                         </button>
+                         <button (click)="confirmRestore()" [disabled]="isLoading"
+                              class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors disabled:opacity-50">
+                              {{ isLoading ? 'Restaurando...' : 'Restaurar' }}
+                         </button>
+                    </div>
+               </div>
+          </div>
+     </div>
+</div>

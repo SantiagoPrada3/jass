@@ -1,0 +1,718 @@
+<app-breadcrumb [items]="breadcrumbItems"></app-breadcrumb>
+
+<!-- Notificación Toast Mejorada -->
+<div *ngIf="showNotification()" 
+     [ngClass]="{
+       'toast-success': notificationType() === 'success',
+       'toast-error': notificationType() === 'error',
+       'toast-info': notificationType() === 'info'
+     }"
+     class="toast-notification">
+  
+  <!-- Barra de progreso IZQUIERDA -->
+  <div class="toast-progress-bar-left"></div>
+  
+  <div class="toast-content">
+    <!-- Icono -->
+    <div class="toast-icon-wrapper">
+      <svg *ngIf="notificationType() === 'success'" class="toast-icon" fill="none" stroke="white" stroke-width="2.5" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path>
+      </svg>
+      <svg *ngIf="notificationType() === 'error'" class="toast-icon" fill="white" viewBox="0 0 20 20">
+        <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414z" clip-rule="evenodd"></path>
+      </svg>
+      <svg *ngIf="notificationType() === 'info'" class="toast-icon" fill="white" viewBox="0 0 20 20">
+        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
+      </svg>
+    </div>
+    
+    <!-- Mensaje -->
+    <div class="toast-message">
+      <p class="toast-title">{{ notificationTitle() }}</p>
+      <p class="toast-description">{{ notificationMessage() }}</p>
+    </div>
+    
+    <!-- Botón cerrar -->
+    <button 
+      (click)="closeNotification()"
+      class="toast-close-btn"
+      aria-label="Cerrar notificación">
+      <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+        <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414z" clip-rule="evenodd"></path>
+      </svg>
+    </button>
+  </div>
+  
+  <!-- Barra de progreso INFERIOR -->
+  <div class="toast-progress-bar-bottom"></div>
+</div>
+
+<!-- Header de la página -->
+<div class="p-4">
+  <h1 class="text-3xl font-bold text-gray-900 mb-2">Tipos de Incidencias</h1>
+  <p class="text-lg text-gray-600">Gestión completa de usuarios del sistema, roles y permisos de acceso</p>
+</div>
+
+<!-- Tarjetas de estadísticas -->
+<div class="px-4 pb-4">
+  <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+    <!-- Total de Tipos -->
+    <div class="bg-blue-50 rounded-lg p-6 border-2 border-blue-200">
+      <div class="flex items-center">
+        <div class="flex-shrink-0">
+          <div class="w-14 h-14 bg-blue-500 rounded-lg flex items-center justify-center">
+            <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+            </svg>
+          </div>
+        </div>
+        <div class="ml-4">
+          <p class="text-3xl font-bold text-blue-700">{{ incidentTypes().length }}</p>
+          <p class="text-sm font-medium text-blue-600">Total Tipos</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tipos Activos -->
+    <div class="bg-green-50 rounded-lg p-6 border-2 border-green-200">
+      <div class="flex items-center">
+        <div class="flex-shrink-0">
+          <div class="w-14 h-14 bg-green-500 rounded-lg flex items-center justify-center">
+            <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+          </div>
+        </div>
+        <div class="ml-4">
+          <p class="text-3xl font-bold text-green-700">{{ getActiveCount() }}</p>
+          <p class="text-sm font-medium text-green-600">Tipos Activos</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tipos Inactivos -->
+    <div class="bg-red-50 rounded-lg p-6 border-2 border-red-200">
+      <div class="flex items-center">
+        <div class="flex-shrink-0">
+          <div class="w-14 h-14 bg-red-500 rounded-lg flex items-center justify-center">
+            <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"></path>
+            </svg>
+          </div>
+        </div>
+        <div class="ml-4">
+          <p class="text-3xl font-bold text-red-700">{{ getInactiveCount() }}</p>
+          <p class="text-sm font-medium text-red-600">Tipos Inactivos</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Críticos -->
+    <div class="bg-purple-50 rounded-lg p-6 border-2 border-purple-200">
+      <div class="flex items-center">
+        <div class="flex-shrink-0">
+          <div class="w-14 h-14 bg-purple-500 rounded-lg flex items-center justify-center">
+            <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+            </svg>
+          </div>
+        </div>
+        <div class="ml-4">
+          <p class="text-3xl font-bold text-purple-700">{{ getCriticalCount() }}</p>
+          <p class="text-sm font-medium text-purple-600">Mostrando</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Barra de búsqueda y filtros -->
+<div class="px-4 pb-4">
+  <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+    <div class="flex items-center gap-4">
+      <!-- Búsqueda -->
+      <div class="flex-1">
+        <div class="relative">
+          <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+            <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+            </svg>
+          </div>
+          <input 
+            type="text" 
+            placeholder="Buscar tipos de incidencias..."
+            class="w-full pl-12 pr-4 py-3.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm">
+        </div>
+      </div>
+
+      <!-- Filtro de estado -->
+      <div class="relative">
+        <button 
+          (click)="toggleDropdown()"
+          class="flex items-center justify-between bg-white border border-gray-300 text-gray-700 px-10 py-3.5 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 cursor-pointer min-w-[350px] text-sm font-medium">
+          <span>{{ getStatusDisplayText() }}</span>
+          <svg class="w-4 h-4 ml-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+          </svg>
+        </button>
+        
+        <!-- Dropdown menu -->
+        <div *ngIf="dropdownOpen" class="absolute z-10 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg">
+          <div class="py-1">
+            <button 
+              *ngFor="let option of statusOptions"
+              (click)="selectStatus(option.value)"
+              [class]="'w-full text-left px-4 py-3 text-gray-700 hover:bg-gray-50 flex items-center text-sm font-medium transition-colors duration-150 ' + (selectedStatus === option.value ? 'bg-green-50' : '')">
+              <svg *ngIf="selectedStatus === option.value" class="w-4 h-4 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+              </svg>
+              <span [class]="selectedStatus === option.value ? 'ml-0' : 'ml-6'">{{ option.label }}</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Botón Nuevo Tipo -->
+      <button 
+        (click)="openCreateModal()"
+        class="inline-flex items-center px-12 py-3.5 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-colors duration-200 text-sm shadow-sm whitespace-nowrap">
+        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+        </svg>
+        Nuevo Tipo
+      </button>
+      
+      <!-- Botón Descargar Reporte General -->
+      <button 
+        (click)="downloadIncidentTypesReport()"
+        class="inline-flex items-center px-12 py-3.5 bg-green-600 text-white font-semibold rounded-lg hover:bg-green-700 transition-colors duration-200 text-sm shadow-sm whitespace-nowrap">
+        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+        </svg>
+        Descargar Reporte
+      </button>
+    </div>
+  </div>
+</div>
+
+<div class="px-4">
+
+  <!-- Estado de carga -->
+  <div *ngIf="loading()" class="flex justify-center items-center py-12">
+    <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+    <span class="ml-3 text-gray-600">Cargando tipos de incidentes...</span>
+  </div>
+
+  <!-- Estado de error -->
+  <div *ngIf="error()" class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-6">
+    <div class="flex items-center">
+      <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path>
+      </svg>
+      {{ error() }}
+    </div>
+  </div>
+
+  <!-- Tabla de tipos de incidentes -->
+  <div *ngIf="!loading() && !error()" class="bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden">
+    <div class="overflow-x-auto">
+      <table class="min-w-full">
+        <thead class="bg-gray-100 border-b border-gray-200">
+          <tr>
+            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">CÓDIGO</th>
+            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">TIPO DE INCIDENTE</th>
+            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">DESCRIPCIÓN</th>
+            <th class="px-6 py-4 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">PRIORIDAD</th>
+            <th class="px-6 py-4 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">TIEMPO EST.</th>
+            <th class="px-6 py-4 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">SERV. EXTERNO</th>
+            <th class="px-6 py-4 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">ESTADO</th>
+            <th class="px-6 py-4 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">ACCIONES</th>
+          </tr>
+        </thead>
+        <tbody class="bg-white">
+          <tr *ngFor="let type of filteredIncidentTypes(); trackBy: trackByIncidentType" 
+              class="border-b border-gray-100 hover:bg-blue-50 transition-colors duration-150">
+            <!-- Código con círculo inicial -->
+            <td class="px-6 py-4 whitespace-nowrap">
+              <div class="flex items-center">
+                <div class="flex-shrink-0 h-10 w-10">
+                  <div class="h-10 w-10 rounded-full bg-gradient-to-br from-slate-700 to-slate-900 flex items-center justify-center text-white font-bold text-sm">
+                    {{ type?.typeCode?.substring(0, 2) || 'N/A' }}
+                  </div>
+                </div>
+                <div class="ml-4">
+                  <div class="text-sm font-semibold text-gray-900">{{ type?.typeCode || 'N/A' }}</div>
+                </div>
+              </div>
+            </td>
+
+            <!-- Nombre del tipo -->
+            <td class="px-6 py-4">
+              <div class="text-sm font-medium text-gray-900">{{ type?.typeName || 'N/A' }}</div>
+            </td>
+
+            <!-- Descripción -->
+            <td class="px-6 py-4">
+              <div class="text-sm text-gray-600 max-w-xs">
+                <div class="truncate" [title]="type?.description || ''">
+                  {{ type?.description || 'N/A' }}
+                </div>
+              </div>
+            </td>
+
+            <!-- Prioridad -->
+            <td class="px-6 py-4 text-center">
+              <span [class]="'inline-flex px-3 py-1 text-xs font-medium rounded-full ' + getPriorityColor(type?.priorityLevel || 'MEDIUM')">
+                {{ getPriorityLabel(type?.priorityLevel || 'MEDIUM') }}
+              </span>
+            </td>
+
+            <!-- Tiempo estimado -->
+            <td class="px-6 py-4 text-center">
+              <div class="flex items-center justify-center">
+                <svg class="w-4 h-4 text-gray-400 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                <span class="text-sm text-gray-900 font-medium">{{ type?.estimatedResolutionTime || 0 }}h</span>
+              </div>
+            </td>
+
+            <!-- Servicio externo -->
+            <td class="px-6 py-4 text-center">
+              <span [class]="'inline-flex px-3 py-1 text-xs font-medium rounded-full ' + (type?.requiresExternalService ? 'bg-orange-100 text-orange-700 border border-orange-200' : 'bg-gray-100 text-gray-700 border border-gray-200')">
+                {{ type?.requiresExternalService ? 'Requerido' : 'No requerido' }}
+              </span>
+            </td>
+
+            <!-- Estado -->
+            <td class="px-6 py-4 text-center">
+              <span [class]="'inline-flex px-3 py-1 text-xs font-medium rounded-full border ' + getStatusColor(type?.status || 'INACTIVE')">
+                {{ getStatusLabel(type?.status || 'INACTIVE') }}
+              </span>
+            </td>
+
+            <!-- Acciones -->
+            <td class="px-6 py-4">
+              <div class="flex flex-col gap-1.5">
+                <button 
+                  (click)="openViewDetailsModal(type)"
+                  class="inline-flex items-center justify-center px-3 py-1.5 text-blue-600 bg-white border border-blue-300 rounded-md hover:bg-blue-50 transition-colors duration-200 text-xs font-medium w-full" 
+                  title="Ver detalles">
+                  <svg class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                  </svg>
+                  Ver Detalles
+                </button>
+                <button 
+                  (click)="downloadIncidentTypeReport(type)"
+                  class="inline-flex items-center justify-center px-3 py-1.5 text-green-600 bg-white border border-green-300 rounded-md hover:bg-green-50 transition-colors duration-200 text-xs font-medium w-full" 
+                  title="Descargar reporte">
+                  <svg class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                  </svg>
+                  Descargar
+                </button>
+                <button 
+                  *ngIf="type?.status === 'ACTIVE'"
+                  (click)="onDelete(type)"
+                  class="inline-flex items-center justify-center px-3 py-1.5 text-red-600 bg-white border border-red-300 rounded-md hover:bg-red-50 transition-colors duration-200 text-xs font-medium w-full" 
+                  title="Eliminar">
+                  <svg class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                  </svg>
+                  Eliminar
+                </button>
+                <button 
+                  *ngIf="type?.status === 'INACTIVE'"
+                  (click)="onRestore(type)"
+                  class="inline-flex items-center justify-center px-3 py-1.5 text-green-600 bg-white border border-green-300 rounded-md hover:bg-green-50 transition-colors duration-200 text-xs font-medium w-full" 
+                  title="Restaurar">
+                  <svg class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                  </svg>
+                  Restaurar
+                </button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Paginación -->
+    <div *ngIf="filteredIncidentTypes().length > 0" class="px-6 py-4 bg-white border-t border-gray-100">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center text-sm text-gray-700">
+          <span>Mostrando <span class="font-medium">1</span> a <span class="font-medium">{{ Math.min(10, filteredIncidentTypes().length) }}</span> de <span class="font-medium">{{ filteredIncidentTypes().length }}</span> resultados</span>
+        </div>
+        <div class="flex items-center space-x-2">
+          <button class="relative inline-flex items-center px-2 py-2 text-gray-400 bg-white border border-gray-300 rounded-l-md hover:bg-gray-50 hover:text-gray-500 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500" disabled>
+            <span class="sr-only">Anterior</span>
+            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+            </svg>
+          </button>
+          
+          <button class="relative inline-flex items-center px-3 py-2 text-sm font-medium text-white bg-blue-600 border border-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-1 focus:ring-blue-500">
+            1
+          </button>
+          
+          <button class="relative inline-flex items-center px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 hover:bg-gray-50 hover:text-gray-500 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500">
+            2
+          </button>
+          
+          <button class="relative inline-flex items-center px-2 py-2 text-gray-500 bg-white border border-gray-300 rounded-r-md hover:bg-gray-50 hover:text-gray-700 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500">
+            <span class="sr-only">Siguiente</span>
+            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Estado vacío -->
+    <div *ngIf="filteredIncidentTypes().length === 0" class="text-center py-16">
+      <div class="mx-auto w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mb-6">
+        <svg class="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+        </svg>
+      </div>
+      <h3 class="text-xl font-semibold text-gray-900 mb-2">
+        {{ incidentTypes().length === 0 ? 'No hay tipos de incidentes' : 'No se encontraron resultados' }}
+      </h3>
+      <p class="text-gray-500 mb-6 max-w-sm mx-auto">
+        {{ incidentTypes().length === 0 
+          ? 'Aún no se han configurado tipos de incidentes. Crea el primer tipo para comenzar.' 
+          : 'No hay tipos de incidentes que coincidan con el filtro seleccionado.' }}
+      </p>
+      <button class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white font-medium rounded-lg hover:from-blue-700 hover:to-blue-800 transition-all duration-200 shadow-lg hover:shadow-xl">
+        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+        </svg>
+        Crear Primer Tipo
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal lateral para crear/ver/editar tipo de incidencia -->
+<div *ngIf="showCreateModal" style="position: fixed; top: 0; right: 0; height: 100vh; width: 600px; background: white; z-index: 9999; box-shadow: -4px 0 24px rgba(0,0,0,0.15); border-left: 1px solid #e5e7eb; display: flex; flex-direction: column;">
+  
+  <!-- Header con estilos inline -->
+  <div style="background-color: #1e293b; color: white; padding: 16px; display: flex; align-items: center; justify-content: space-between; min-height: 70px; flex-shrink: 0;">
+    <div style="display: flex; align-items: center; flex: 1;">
+      <div style="width: 28px; height: 28px; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 12px; flex-shrink: 0;">
+        <span style="color: #1e293b; font-weight: bold; font-size: 14px;">{{ isEditMode ? '✏' : (editingIncidentType ? '👁' : '+') }}</span>
+      </div>
+      <div style="flex: 1;">
+        <h2 style="font-size: 14px; font-weight: 500; color: white; margin: 0; line-height: 1.4;">
+          {{ isEditMode ? 'Editar Tipo de Incidente' : (editingIncidentType ? editingIncidentType.typeName : 'Crear Nuevo Tipo de Incidente') }}
+        </h2>
+        <p style="font-size: 12px; color: #cbd5e1; margin: 4px 0 0 0; line-height: 1.3;">
+          {{ isEditMode ? 'Modifica la información del tipo de incidente' : (editingIncidentType ? editingIncidentType.typeCode : 'Completa la información para crear un nuevo tipo') }}
+        </p>
+      </div>
+    </div>
+    
+    <!-- Botones en el encabezado -->
+    <div style="display: flex; gap: 8px; align-items: center;">
+      <!-- Botón Editar (solo visible en modo visualización) -->
+      <button 
+        *ngIf="!isEditMode && editingIncidentType"
+        (click)="enableEditMode()"
+        style="padding: 6px 16px; background: transparent; color: white; border: 1.5px solid white; border-radius: 6px; font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.2s;"
+        onmouseover="this.style.background='rgba(255,255,255,0.1)'" 
+        onmouseout="this.style.background='transparent'">
+        Editar
+      </button>
+      
+      <!-- Botones Guardar y Cancelar (solo visibles en modo edición) -->
+      <button 
+        *ngIf="isEditMode && editingIncidentType"
+        (click)="onSubmitCreate()"
+        [disabled]="createForm?.invalid"
+        type="submit"
+        style="padding: 6px 16px; background: white; color: #1e293b; border: none; border-radius: 6px; font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.2s;"
+        [style.opacity]="createForm?.invalid ? '0.5' : '1'"
+        [style.cursor]="createForm?.invalid ? 'not-allowed' : 'pointer'"
+        onmouseover="if(!this.disabled) this.style.background='#f1f5f9'" 
+        onmouseout="this.style.background='white'">
+        Guardar
+      </button>
+      
+      <button 
+        *ngIf="isEditMode && editingIncidentType"
+        (click)="cancelEdit()"
+        type="button"
+        style="padding: 6px 16px; background: transparent; color: white; border: 1.5px solid white; border-radius: 6px; font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.2s;"
+        onmouseover="this.style.background='rgba(255,255,255,0.1)'" 
+        onmouseout="this.style.background='transparent'">
+        Cancelar
+      </button>
+      
+      <!-- Botón cerrar X -->
+      <button 
+        (click)="closeCreateModal()" 
+        style="color: #cbd5e1; background: none; border: none; padding: 4px; cursor: pointer; flex-shrink: 0; margin-left: 4px;"
+        onmouseover="this.style.color='white'" 
+        onmouseout="this.style.color='#cbd5e1'">
+        <span style="font-size: 20px; line-height: 1;">×</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Form -->
+  <div style="flex: 1; overflow-y: auto; background-color: #f9fafb;">
+    <form (ngSubmit)="onSubmitCreate()" #createForm="ngForm">
+        
+        <!-- Sección: Información del Tipo -->
+        <div class="bg-white mx-4 mt-4 rounded-lg shadow-sm border border-gray-200">
+          <div class="px-4 py-3 border-b border-gray-200">
+            <h3 class="text-sm font-semibold text-gray-800">Información del Tipo</h3>
+          </div>
+          <div class="p-4 space-y-4">
+            <!-- Código y Nombre en fila -->
+            <div class="grid grid-cols-2 gap-4">
+              <div>
+                <label class="block text-xs font-medium text-gray-600 mb-1">Código *</label>
+                <input 
+                  type="text" 
+                  [(ngModel)]="newIncidentType.typeCode"
+                  name="typeCode"
+                  required
+                  [readonly]="!isEditMode"
+                  placeholder="INC007"
+                  [class]="'w-full px-3 py-2 text-sm border border-gray-300 rounded focus:outline-none placeholder:opacity-40 ' + (isEditMode ? 'focus:ring-1 focus:ring-blue-500 focus:border-blue-500' : 'bg-gray-100 cursor-not-allowed')">
+                <p class="text-xs text-gray-500 mt-1">
+                  {{ isEditMode ? 'Puedes modificar el código del tipo' : 'El código se genera automáticamente' }}
+                </p>
+              </div>
+              <div>
+                <label class="block text-xs font-medium text-gray-600 mb-1">Nombre *</label>
+                <input 
+                  type="text" 
+                  [(ngModel)]="newIncidentType.typeName"
+                  name="typeName"
+                  required
+                  [readonly]="!isEditMode && editingIncidentType"
+                  placeholder="Falta de presión de agua"
+                  [class]="'w-full px-3 py-2 text-sm border border-gray-300 rounded focus:outline-none placeholder:opacity-40 ' + (isEditMode || !editingIncidentType ? 'focus:ring-1 focus:ring-blue-500 focus:border-blue-500' : 'bg-gray-100 cursor-not-allowed')">
+              </div>
+            </div>
+            
+            <!-- Descripción -->
+            <div>
+              <label class="block text-xs font-medium text-gray-600 mb-1">Descripción *</label>
+              <textarea 
+                [(ngModel)]="newIncidentType.description"
+                name="description"
+                required
+                [readonly]="!isEditMode && editingIncidentType"
+                rows="3"
+                placeholder="Describe detalladamente el tipo de incidente..."
+                [class]="'w-full px-3 py-2 text-sm border border-gray-300 rounded focus:outline-none resize-none placeholder:opacity-40 ' + (isEditMode || !editingIncidentType ? 'focus:ring-1 focus:ring-blue-500 focus:border-blue-500' : 'bg-gray-100 cursor-not-allowed')"></textarea>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sección: Configuración -->
+        <div class="bg-white mx-4 mt-4 rounded-lg shadow-sm border border-gray-200">
+          <div class="px-4 py-3 border-b border-gray-200">
+            <h3 class="text-sm font-semibold text-gray-800">Configuración</h3>
+          </div>
+          <div class="p-4 space-y-4">
+            <!-- Prioridad y Tiempo en fila -->
+            <div class="grid grid-cols-2 gap-4">
+              <div>
+                <label class="block text-xs font-medium text-gray-600 mb-1">Nivel de Prioridad *</label>
+                <select 
+                  [(ngModel)]="newIncidentType.priorityLevel"
+                  (ngModelChange)="onPriorityChange($event)"
+                  name="priorityLevel"
+                  required
+                  [disabled]="!isEditMode && !!editingIncidentType"
+                  [class]="'w-full px-3 py-2 text-sm border border-gray-300 rounded focus:outline-none ' + (isEditMode || !editingIncidentType ? 'focus:ring-1 focus:ring-blue-500 focus:border-blue-500' : 'bg-gray-100 cursor-not-allowed')">
+                  <option value="">Seleccionar</option>
+                  <option value="LOW">Baja (72h)</option>
+                  <option value="MEDIUM">Media (48h)</option>
+                  <option value="HIGH">Alta (24h)</option>
+                  <option value="CRITICAL">Crítica (6h)</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-xs font-medium text-gray-600 mb-1">Tiempo de Resolución (hrs) *</label>
+                <input 
+                  type="text" 
+                  [value]="newIncidentType.estimatedResolutionTime + 'h'"
+                  name="estimatedResolutionTime"
+                  required
+                  readonly
+                  placeholder="24h"
+                  class="w-full px-3 py-2 text-sm border border-gray-300 rounded bg-gray-100 cursor-not-allowed focus:outline-none placeholder:opacity-40">
+                <p class="text-xs text-gray-500 mt-1">Se asigna automáticamente según la prioridad</p>
+              </div>
+            </div>
+            
+            <!-- Servicio Externo -->
+            <div class="flex items-start space-x-3">
+              <input 
+                type="checkbox"
+                [(ngModel)]="newIncidentType.requiresExternalService"
+                name="requiresExternalService"
+                id="externalService"
+                [disabled]="!isEditMode && !!editingIncidentType"
+                [class]="'mt-1 h-4 w-4 text-blue-600 border-gray-300 rounded ' + (isEditMode || !editingIncidentType ? 'focus:ring-blue-500' : 'cursor-not-allowed')">
+              <div>
+                <label for="externalService" [class]="'text-sm font-medium text-gray-700 ' + (isEditMode || !editingIncidentType ? 'cursor-pointer' : 'cursor-not-allowed')">
+                  Requiere servicio externo
+                </label>
+                <p class="text-xs text-gray-500 mt-1">Marcar si el incidente necesita personal o servicios externos</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Footer con botones (solo en modo creación) -->
+        <div *ngIf="!isEditMode && !editingIncidentType" class="flex justify-end gap-3 px-4 py-4 bg-gray-50 border-t border-gray-200">
+          <button 
+            type="button"
+            (click)="closeCreateModal()"
+            class="px-6 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors">
+            Cancelar
+          </button>
+          <button 
+            type="submit"
+            [disabled]="createForm?.invalid"
+            [class.opacity-50]="createForm?.invalid"
+            [class.cursor-not-allowed]="createForm?.invalid"
+            class="px-6 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors">
+            Crear Tipo
+          </button>
+        </div>
+        
+    </form>
+  </div>
+</div>
+
+<!-- Modal de Confirmación de Eliminación -->
+<div *ngIf="showDeleteModal()" 
+     class="fixed inset-0 backdrop-blur-sm bg-white/30 flex items-center justify-center z-50"
+     (click)="cancelDelete()">
+  <div class="bg-white rounded-lg shadow-xl max-w-md w-full mx-4"
+       (click)="$event.stopPropagation()">
+    <!-- Header con ícono de advertencia -->
+    <div class="flex items-start p-6 pb-4">
+      <div class="flex-shrink-0">
+        <div class="w-12 h-12 rounded-full bg-yellow-100 flex items-center justify-center">
+          <svg class="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+          </svg>
+        </div>
+      </div>
+      <div class="ml-4 flex-1">
+        <h3 class="text-lg font-semibold text-gray-900 mb-1">Eliminar Tipo de Incidente</h3>
+        <p class="text-sm text-gray-600 mb-3">
+          ¿Está seguro de que desea eliminar este tipo? Esta acción marcará el tipo de incidente como inactivo y no podrá acceder al sistema.
+        </p>
+        <!-- Información del tipo a eliminar -->
+        <div *ngIf="typeToDelete" class="bg-gray-50 rounded-lg p-3 mt-3 border border-gray-200">
+          <div class="text-sm">
+            <div class="flex items-center mb-1">
+              <span class="font-medium text-gray-700 w-20">Nombre:</span>
+              <span class="text-gray-900">{{ typeToDelete.typeName }}</span>
+            </div>
+            <div class="flex items-center">
+              <span class="font-medium text-gray-700 w-20">Código:</span>
+              <span class="text-gray-900">{{ typeToDelete.typeCode }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Botón cerrar -->
+      <button 
+        (click)="cancelDelete()"
+        class="ml-2 text-gray-400 hover:text-gray-600 transition-colors">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+        </svg>
+      </button>
+    </div>
+    
+    <!-- Footer con botones -->
+    <div class="flex justify-end gap-3 px-6 py-4 bg-gray-50 border-t border-gray-200 rounded-b-lg">
+      <button 
+        (click)="cancelDelete()"
+        class="px-6 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-colors">
+        Cancelar
+      </button>
+      <button 
+        (click)="confirmDelete()"
+        class="px-6 py-2 text-sm font-medium text-white bg-red-600 border border-transparent rounded-lg hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors">
+        Sí, Eliminar
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal de Confirmación de Restauración -->
+<div *ngIf="showRestoreModal()" 
+     class="fixed inset-0 backdrop-blur-sm bg-white/30 flex items-center justify-center z-50"
+     (click)="cancelRestore()">
+  <div class="bg-white rounded-lg shadow-xl max-w-md w-full mx-4"
+       (click)="$event.stopPropagation()">
+    <!-- Header con ícono de información -->
+    <div class="flex items-start p-6 pb-4">
+      <div class="flex-shrink-0">
+        <div class="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center">
+          <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+          </svg>
+        </div>
+      </div>
+      <div class="ml-4 flex-1">
+        <h3 class="text-lg font-semibold text-gray-900 mb-1">Restaurar Tipo de Incidente</h3>
+        <p class="text-sm text-gray-600 mb-3">
+          ¿Está seguro de que desea restaurar este tipo? Esta acción marcará el tipo de incidente como activo y podrá ser utilizado nuevamente.
+        </p>
+        <!-- Información del tipo a restaurar -->
+        <div *ngIf="typeToRestore" class="bg-gray-50 rounded-lg p-3 mt-3 border border-gray-200">
+          <div class="text-sm">
+            <div class="flex items-center mb-1">
+              <span class="font-medium text-gray-700 w-20">Nombre:</span>
+              <span class="text-gray-900">{{ typeToRestore.typeName }}</span>
+            </div>
+            <div class="flex items-center">
+              <span class="font-medium text-gray-700 w-20">Código:</span>
+              <span class="text-gray-900">{{ typeToRestore.typeCode }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Botón cerrar -->
+      <button 
+        (click)="cancelRestore()"
+        class="ml-2 text-gray-400 hover:text-gray-600 transition-colors">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+        </svg>
+      </button>
+    </div>
+    
+    <!-- Footer con botones -->
+    <div class="flex justify-end gap-3 px-6 py-4 bg-gray-50 border-t border-gray-200 rounded-b-lg">
+      <button 
+        (click)="cancelRestore()"
+        class="px-6 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-colors">
+        Cancelar
+      </button>
+      <button 
+        (click)="confirmRestore()"
+        class="px-6 py-2 text-sm font-medium text-white bg-green-600 border border-transparent rounded-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors">
+        Sí, Restaurar
+      </button>
+    </div>
+  </div>
+</div>

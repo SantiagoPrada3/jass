@@ -1,0 +1,445 @@
+<div class="w-full px-8 py-6 scroll-smooth bg-gray-50 min-h-screen">
+  <div class="mb-6">
+    <h1 class="text-3xl font-bold text-gray-900 mb-2">Gestión de Puntos de Análisis</h1>
+    <p class="text-lg text-gray-600">Administre los puntos de análisis de agua registrados en la organización.</p>
+  </div>
+
+  <!-- Estadísticas en la parte superior -->
+  <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+    <div
+      class="bg-gradient-to-r from-blue-50 to-blue-100 border border-blue-200 rounded-xl p-6 shadow-sm transition-all duration-200 hover:shadow-md hover:-translate-y-1">
+      <div class="flex items-center">
+        <div class="p-3 bg-blue-500 rounded-lg">
+          <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z">
+            </path>
+          </svg>
+        </div>
+        <div class="ml-4">
+          <div class="text-3xl font-bold text-blue-600">{{ totalPoints }}</div>
+          <div class="text-sm font-medium text-blue-700">Total Puntos</div>
+        </div>
+      </div>
+    </div>
+
+    <div
+      class="bg-gradient-to-r from-green-50 to-green-100 border border-green-200 rounded-xl p-6 shadow-sm transition-all duration-200 hover:shadow-md hover:-translate-y-1">
+      <div class="flex items-center">
+        <div class="p-3 bg-green-500 rounded-lg">
+          <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+          </svg>
+        </div>
+        <div class="ml-4">
+          <div class="text-3xl font-bold text-green-600">{{ activePoints }}</div>
+          <div class="text-sm font-medium text-green-700">Puntos Activos</div>
+        </div>
+      </div>
+    </div>
+
+    <div
+      class="bg-gradient-to-r from-red-50 to-red-100 border border-red-200 rounded-xl p-6 shadow-sm transition-all duration-200 hover:shadow-md hover:-translate-y-1">
+      <div class="flex items-center">
+        <div class="p-3 bg-red-500 rounded-lg">
+          <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+          </svg>
+        </div>
+        <div class="ml-4">
+          <div class="text-3xl font-bold text-red-600">{{ inactivePoints }}</div>
+          <div class="text-sm font-medium text-red-700">Puntos Inactivos</div>
+        </div>
+      </div>
+    </div>
+
+    <div
+      class="bg-gradient-to-r from-purple-50 to-purple-100 border border-purple-200 rounded-xl p-6 shadow-sm transition-all duration-200 hover:shadow-md hover:-translate-y-1">
+      <div class="flex items-center">
+        <div class="p-3 bg-purple-500 rounded-lg">
+          <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z">
+            </path>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z">
+            </path>
+          </svg>
+        </div>
+        <div class="ml-4">
+          <div class="text-3xl font-bold text-purple-600">{{ showingPoints }}</div>
+          <div class="text-sm font-medium text-purple-700">Mostrando</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Filtros y Controles -->
+  <div class="bg-white rounded-xl shadow-lg border border-gray-100 p-4 sm:p-6 mb-6">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 sm:gap-6 mb-4">
+      <!-- Buscador -->
+      <div class="relative">
+        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+          <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+          </svg>
+        </div>
+        <input type="text" placeholder="Buscar por código, nombre..." [(ngModel)]="searchTerm" (input)="onSearch()"
+          class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 hover:border-gray-400 text-sm sm:text-base">
+      </div>
+
+      <!-- Filtro por Zona -->
+      <div class="relative">
+        <select
+          class="w-full px-4 py-3 pr-10 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 hover:border-gray-400 bg-white text-sm font-medium text-gray-700 cursor-pointer hover:bg-gray-50 flex items-center justify-between appearance-none bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9ImN1cnJlbnRDb2xvciIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiPjxwb2x5bGluZSBwb2ludHM9IjYgOSAxMiAxNSAxOCA5Ij48L3BvbHlsaW5lPjwvc3ZnPg==')] bg-no-repeat bg-right-3 bg-[length:18px_18px]"
+          [(ngModel)]="selectedZone" (change)="onSearch()">
+          <option value="">Todas las zonas</option>
+          <option *ngFor="let zone of availableZones" [value]="zone">{{ zone }}</option>
+        </select>
+      </div>
+
+      <!-- Filtro por Estado -->
+      <div class="relative">
+        <select
+          class="w-full px-4 py-3 pr-10 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 hover:border-gray-400 bg-white text-sm font-medium text-gray-700 cursor-pointer hover:bg-gray-50 flex items-center justify-between appearance-none bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9ImN1cnJlbnRDb2xvciIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiPjxwb2x5bGluZSBwb2ludHM9IjYgOSAxMiAxNSAxOCA5Ij48L3BvbHlsaW5lPjwvc3ZnPg==')] bg-no-repeat bg-right-3 bg-[length:18px_18px]"
+          [(ngModel)]="statusFilter" (change)="onSearch()">
+          <option value="all">Todos</option>
+          <option value="active">Activos</option>
+          <option value="inactive">Inactivos</option>
+        </select>
+      </div>
+
+      <!-- Botón de Reporte PDF -->
+      <div class="col-span-1">
+        <button (click)="generateReport()"
+          class="w-full bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-medium py-3 px-4 rounded-xl transition-all duration-200 shadow-md hover:shadow-lg transform hover:-translate-y-0.5 text-sm">
+          <div class="flex items-center justify-center">
+            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
+              </path>
+            </svg>
+            <span class="hidden sm:inline">Reporte PDF</span>
+            <span class="sm:hidden">PDF</span>
+          </div>
+        </button>
+      </div>
+
+      <!-- Botón Nuevo Punto -->
+      <div class="col-span-1">
+        <button (click)="openCreatePointModal()"
+          class="w-full bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-medium py-3 px-4 rounded-xl transition-all duration-200 shadow-md hover:shadow-lg transform hover:-translate-y-0.5 text-sm">
+          <div class="flex items-center justify-center">
+            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6">
+              </path>
+            </svg>
+            <span class="hidden sm:inline">Nuevo Punto</span>
+            <span class="sm:hidden">+</span>
+          </div>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Vista de Tabla para Desktop -->
+  <div class="hidden lg:block bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden">
+    <div class="overflow-x-auto">
+      <table class="min-w-full table-auto">
+        <thead class="bg-gradient-to-r from-gray-50 to-gray-100">
+          <tr>
+            <th class="px-6 py-4 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">Código</th>
+            <th class="px-6 py-4 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">Nombre</th>
+            <th class="px-6 py-4 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">Tipo</th>
+            <th class="px-6 py-4 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">Zona</th>
+            <th class="px-6 py-4 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">Estado</th>
+            <th class="px-6 py-4 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">Acciones</th>
+          </tr>
+        </thead>
+        <tbody class="bg-white divide-y divide-gray-100">
+          <tr *ngFor="let point of paginatedPoints; trackBy: trackById" class="hover:bg-gray-50">
+            <td class="px-6 py-4 whitespace-nowrap text-center text-sm font-semibold text-gray-900">{{ point.pointCode
+              }}</td>
+            <td class="px-6 py-4 whitespace-nowrap text-center text-sm text-gray-700">{{ point.pointName }}</td>
+            <td class="px-6 py-4 whitespace-nowrap text-center text-sm text-gray-700">{{ point.pointType }}</td>
+            <td class="px-6 py-4 whitespace-nowrap text-center text-sm text-gray-700">{{ getZoneName(point.zoneId) }}
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-center text-sm">
+              <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full"
+                [ngClass]="point.status === 'ACTIVE' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'">
+                {{ point.status === 'ACTIVE' ? 'Activo' : 'Inactivo' }}
+              </span>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
+              <div class="flex items-center justify-center space-x-1">
+                <button (click)="viewPointDetails(point)"
+                  class="text-blue-600 hover:text-blue-900 p-2 rounded-full hover:bg-blue-50 transition-colors duration-150"
+                  title="Ver Detalles">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z">
+                    </path>
+                  </svg>
+                </button>
+                <button (click)="openEditPointModal(point)"
+                  class="text-green-600 hover:text-green-900 p-2 rounded-full hover:bg-green-50 transition-colors duration-150"
+                  title="Editar">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z">
+                    </path>
+                  </svg>
+                </button>
+                <button (click)="deletePoint(point)"
+                  class="text-red-600 hover:text-red-900 p-2 rounded-full hover:bg-red-50 transition-colors duration-150"
+                  title="Eliminar">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16">
+                    </path>
+                  </svg>
+                </button>
+              </div>
+            </td>
+          </tr>
+          <!-- Loading State -->
+          <tr *ngIf="isLoading">
+            <td colspan="6" class="px-6 py-8 text-center text-gray-500">
+              <div class="flex flex-col items-center justify-center">
+                <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mb-3"></div>
+                <p class="text-lg font-medium">Cargando puntos de análisis...</p>
+                <p class="text-sm mt-1">Por favor espere</p>
+              </div>
+            </td>
+          </tr>
+
+          <!-- Empty State -->
+          <tr *ngIf="!isLoading && paginatedPoints.length === 0">
+            <td colspan="6" class="px-6 py-8 text-center text-gray-500">
+              <div class="flex flex-col items-center justify-center">
+                <svg class="w-12 h-12 text-gray-300 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                <p class="text-lg font-medium">No se encontraron puntos de análisis</p>
+                <p class="text-sm mt-1">Intente ajustar los filtros o cree un nuevo punto</p>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Vista de Cards para Móvil y Tablet -->
+  <div class="lg:hidden space-y-4">
+    <div *ngFor="let point of paginatedPoints; trackBy: trackById"
+      class="bg-white rounded-xl shadow-lg border border-gray-100 p-4 hover:shadow-xl transition-all duration-200">
+      <div class="flex items-center justify-between mb-3">
+        <div class="flex items-center">
+          <div
+            class="w-12 h-12 rounded-full flex items-center justify-center text-white font-bold bg-gradient-to-br from-blue-500 to-blue-700">
+            {{ point.pointCode.substring(0, 2) || 'PP' }}</div>
+          <div class="ml-3">
+            <h3 class="font-semibold text-gray-900">{{ point.pointCode || 'Sin código' }}</h3>
+            <p class="text-sm text-gray-600">{{ point.pointName || 'Sin nombre' }}</p>
+          </div>
+        </div>
+        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full"
+          [ngClass]="point.status === 'ACTIVE' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'">
+          {{ point.status === 'ACTIVE' ? 'Activo' : 'Inactivo' }}
+        </span>
+      </div>
+      <div class="grid grid-cols-2 gap-3 mb-4 text-sm">
+        <div>
+          <p class="text-gray-500 font-medium">Tipo:</p>
+          <p class="text-gray-900 font-bold">{{ point.pointType || 'N/A' }}</p>
+        </div>
+        <div>
+          <p class="text-gray-500 font-medium">Zona:</p>
+          <p class="text-gray-900 font-bold">{{ getZoneName(point.zoneId) }}</p>
+        </div>
+      </div>
+      <div class="flex items-center justify-end pt-3 border-t border-gray-100">
+        <button (click)="viewPointDetails(point)"
+          class="text-blue-600 hover:text-blue-900 p-2 rounded-full hover:bg-blue-50 transition-colors duration-150"
+          title="Ver Detalles">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z">
+            </path>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z">
+            </path>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Loading State Mobile -->
+    <div *ngIf="isLoading" class="bg-white rounded-xl shadow-lg border border-gray-100 p-8 text-center">
+      <div class="flex flex-col items-center justify-center">
+        <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mb-3"></div>
+        <p class="text-lg font-medium">Cargando puntos de análisis...</p>
+        <p class="text-sm mt-1 text-gray-500">Por favor espere</p>
+      </div>
+    </div>
+
+    <!-- Empty State Mobile -->
+    <div *ngIf="!isLoading && paginatedPoints.length === 0"
+      class="bg-white rounded-xl shadow-lg border border-gray-100 p-8 text-center">
+      <div class="flex flex-col items-center justify-center">
+        <svg class="w-16 h-16 text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+        </svg>
+        <p class="text-xl font-medium text-gray-700 mb-2">No se encontraron puntos de análisis</p>
+        <p class="text-gray-500 mb-4">Intente ajustar los filtros o cree un nuevo punto</p>
+        <button (click)="openCreatePointModal()"
+          class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-colors">
+          Crear nuevo punto
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Paginación -->
+  <div class="flex flex-col sm:flex-row justify-between items-center mt-6 space-y-4 sm:space-y-0">
+    <div class="text-sm text-gray-600">
+      Mostrando <span class="font-medium">{{ ((currentPage - 1) * pageSize) + 1 }}</span> a
+      <span class="font-medium">{{ Math.min(currentPage * pageSize, showingPoints) }}</span> de
+      <span class="font-medium">{{ showingPoints }}</span> puntos
+    </div>
+
+    <div class="flex items-center space-x-2">
+      <button (click)="previousPage()" [disabled]="currentPage === 1"
+        class="px-3 py-2 rounded-lg border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors">
+        Anterior
+      </button>
+
+      <div class="flex space-x-1">
+        <button *ngFor="let page of getPages()" (click)="goToPage(page)"
+          [ngClass]="{'bg-blue-600 text-white': currentPage === page, 'bg-white text-gray-700 hover:bg-gray-50': currentPage !== page}"
+          class="px-3 py-2 rounded-lg border border-gray-300 text-sm font-medium transition-colors">
+          {{ page }}
+        </button>
+      </div>
+
+      <button (click)="nextPage()" [disabled]="currentPage === totalPages"
+        class="px-3 py-2 rounded-lg border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors">
+        Siguiente
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal de detalle -->
+<div *ngIf="isDetailsModalOpen" class="fixed inset-0 z-[8000]" (keydown.escape)="closeDetailsModal()" tabindex="0">
+  <!-- Background overlay -->
+  <div class="absolute inset-0 bg-transparent transition-opacity duration-300" (click)="closeDetailsModal()"></div>
+
+  <!-- Modal Panel -->
+  <div
+    class="absolute right-0 top-0 h-full w-full max-w-3xl bg-white shadow-xl transform transition-transform duration-300 ease-out flex flex-col"
+    [class.translate-x-full]="!isDetailsModalOpen" [class.translate-x-0]="isDetailsModalOpen"
+    (click)="$event.stopPropagation()">
+
+    <!-- Header -->
+    <div class="flex items-center justify-between px-6 py-4 bg-slate-900 text-white flex-shrink-0">
+      <div class="flex items-center space-x-3">
+        <div class="w-10 h-10 rounded-lg flex items-center justify-center bg-slate-700 text-white">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z">
+            </path>
+          </svg>
+        </div>
+        <div>
+          <h2 class="text-lg font-semibold">Detalle del Punto</h2>
+          <p class="text-sm text-slate-400">Información completa del punto de análisis</p>
+        </div>
+      </div>
+      <button (click)="closeDetailsModal()"
+        class="p-2 hover:bg-slate-800 rounded-lg transition-colors text-slate-400 hover:text-white">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Contenido del Modal -->
+    <div class="flex-1 overflow-y-auto min-h-0">
+      <div class="p-6 space-y-6">
+        <ng-container *ngIf="selectedPointId as pid">
+          <ng-container *ngFor="let point of points">
+            <div *ngIf="point.id === pid" class="bg-white rounded-xl border border-gray-200 shadow-sm">
+              <div class="px-6 py-4 border-b border-gray-200">
+                <h3 class="text-lg font-semibold text-gray-800">Información del Punto</h3>
+              </div>
+              <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label class="block text-xs font-medium text-gray-500 uppercase tracking-wider mb-1">Código</label>
+                  <p class="text-sm text-gray-900">{{ point.pointCode }}</p>
+                </div>
+                <div>
+                  <label class="block text-xs font-medium text-gray-500 uppercase tracking-wider mb-1">Nombre</label>
+                  <p class="text-sm text-gray-900">{{ point.pointName }}</p>
+                </div>
+                <div>
+                  <label class="block text-xs font-medium text-gray-500 uppercase tracking-wider mb-1">Tipo</label>
+                  <p class="text-sm text-gray-900">{{ point.pointType }}</p>
+                </div>
+                <div>
+                  <label class="block text-xs font-medium text-gray-500 uppercase tracking-wider mb-1">Zona</label>
+                  <p class="text-sm text-gray-900">{{ getZoneName(point.zoneId) }}</p>
+                </div>
+                <div>
+                  <label
+                    class="block text-xs font-medium text-gray-500 uppercase tracking-wider mb-1">Descripción</label>
+                  <p class="text-sm text-gray-900">{{ point.locationDescription || 'N/A' }}</p>
+                </div>
+                <div>
+                  <label class="block text-xs font-medium text-gray-500 uppercase tracking-wider mb-1">Estado</label>
+                  <p class="text-sm text-gray-900">
+                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full"
+                      [ngClass]="point.status === 'ACTIVE' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'">
+                      {{ point.status === 'ACTIVE' ? 'Activo' : 'Inactivo' }}
+                    </span>
+                  </p>
+                </div>
+                <div>
+                  <label
+                    class="block text-xs font-medium text-gray-500 uppercase tracking-wider mb-1">Coordenadas</label>
+                  <p class="text-sm text-gray-900">{{ point.coordinates.latitude | number:'1.6-6' }}, {{
+                    point.coordinates.longitude | number:'1.6-6' }}</p>
+                </div>
+                <div>
+                  <label class="block text-xs font-medium text-gray-500 uppercase tracking-wider mb-1">Creado</label>
+                  <p class="text-sm text-gray-900">{{ point.createdAt | date:'medium' }}</p>
+                </div>
+                <div class="md:col-span-2">
+                  <label
+                    class="block text-xs font-medium text-gray-500 uppercase tracking-wider mb-1">Actualizado</label>
+                  <p class="text-sm text-gray-900">{{ point.updatedAt | date:'medium' }}</p>
+                </div>
+              </div>
+            </div>
+          </ng-container>
+        </ng-container>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Create Point Modal -->
+<app-create-points [isOpen]="isCreating" [editingPoint]="editingPoint"
+  (close)="closeCreatePointModal()" (pointCreated)="onPointCreated($event)" (pointUpdated)="onPointUpdated($event)">
+</app-create-points>
+
+<!-- Details Point Modal -->
+<app-details-points [isOpen]="isDetailsModalOpen" [pointId]="selectedPointId" [pointData]="selectedPointData"
+  (close)="closeDetailsModal()">
+</app-details-points>

@@ -1,0 +1,285 @@
+<div class="container mx-auto p-4 sm:p-6 lg:p-8 bg-gray-50 min-h-screen">
+
+
+  <div class="bg-white p-5 rounded-lg shadow-md mb-6">
+    <div class="flex flex-col md:flex-row justify-between items-center gap-4">
+      <div>
+        <h2 class="text-2xl font-bold text-gray-800">Transferencia de Suministros</h2>
+        <p class="text-gray-500 mt-1">Gestiona las transferencias entre usuarios y cajas de agua</p>
+      </div>
+      <div>
+        <button (click)="openModal(false)"
+          class="w-full md:w-auto bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-medium py-3 px-6 rounded-xl transition-all duration-200 shadow-md hover:shadow-lg transform hover:-translate-y-0.5 flex items-center justify-center space-x-2 text-sm sm:text-base">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd"
+              d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z"
+              clip-rule="evenodd" />
+          </svg>
+          <span>Nueva Transferencia</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="loading" class="flex justify-center items-center h-64">
+    <div class="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-sky-500"></div>
+    <p class="ml-4 text-sky-700 text-lg">Cargando transferencias...</p>
+  </div>
+  <!-- (footer moved below table) -->
+  <!-- Mensaje de error general -->
+  <div *ngIf="!loading && errorMessages.general" class="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
+    <div class="flex">
+      <div class="flex-shrink-0">
+        <svg class="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+          <path fill-rule="evenodd"
+            d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+            clip-rule="evenodd" />
+        </svg>
+      </div>
+      <div class="ml-3">
+        <p class="text-sm text-red-800">{{ errorMessages.general }}</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mensaje cuando no hay transferencias -->
+  <div *ngIf="!loading && !errorMessages.general && transfers.length === 0"
+    class="bg-blue-50 border border-blue-200 rounded-lg p-8 text-center">
+    <svg class="mx-auto h-12 w-12 text-blue-400 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+        d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2v0M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2" />
+    </svg>
+    <h3 class="text-lg font-medium text-blue-900">No hay transferencias registradas</h3>
+    <p class="text-blue-600 mt-2">Comience creando una nueva transferencia haciendo clic en el botón "Nueva
+      Transferencia".</p>
+  </div>
+
+  <div *ngIf="!loading && !errorMessages.general && transfers.length > 0"
+    class="bg-transparent md:bg-white md:shadow-lg md:rounded-lg md:overflow-hidden">
+    <table class="min-w-full leading-normal responsive-table">
+      <thead class="bg-gradient-to-r p-2 from-gray-50 to-gray-100">
+        <tr class="text-left text-gray-600 uppercase text-sm">
+          <th class="py-3 px-6">Antiguo Usuario</th>
+          <th class="py-3 px-6">Nuevo Usuario</th>
+          <th class="py-3 px-6">Motivo</th>
+          <th class="py-3 px-6">Documentos</th>
+          <th class="py-3 px-6">Fecha Creación</th>
+        </tr>
+      </thead>
+      <tbody class="text-gray-700 text-sm font-light">
+        <tr *ngFor="let t of transfers; let i = index" class="border-b border-gray-200 hover:bg-gray-50">
+          <td data-label="Asig. Antigua" class="py-3 px-6">{{ t.oldAssignmentUsername || 'Usuario desconocido' }}</td>
+          <td data-label="Asig. Nueva" class="py-3 px-6">{{ t.newAssignmentUsername || 'Usuario desconocido' }}</td>
+          <td data-label="Motivo" class="py-3 px-6">{{ t.transferReason }}</td>
+          <td data-label="Documentos" class="py-3 px-6">
+            <div class="flex flex-wrap gap-2 justify-end md:justify-start">
+              <span *ngFor="let doc of t.documents"
+                class="text-xs font-semibold inline-flex items-center px-3 py-1 rounded-full" [ngClass]="{
+                  'bg-blue-100 text-blue-800': detectDocumentType(doc) === 'pdf',
+                  'bg-green-100 text-green-800': detectDocumentType(doc) === 'jpg' || detectDocumentType(doc) === 'png',
+                  'bg-purple-100 text-purple-800': detectDocumentType(doc) === 'docx',
+                  'bg-orange-100 text-orange-800': detectDocumentType(doc) === 'xlsx',
+                  'bg-gray-200 text-gray-800': detectDocumentType(doc) === 'other'
+                }">
+                <a href="{{doc}}" target="_blank" class="hover:underline">
+                  {{ doc.split('/').pop() }}
+                </a>
+              </span>
+            </div>
+          </td>
+          <td data-label="Fecha Creación" class="py-3 px-6">{{ t.createdAt | date: 'dd-MMM-yyyy' }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <!-- Paginador (estilo users-list) -->
+  <div class="bg-white rounded-xl shadow-lg border border-gray-100 p-4 mt-6" *ngIf="totalPagesTransfers > 1">
+    <div class="flex flex-col sm:flex-row items-center justify-between space-y-3 sm:space-y-0">
+      <div class="text-sm text-gray-600 text-center sm:text-left">
+        Mostrando <span class="font-semibold text-gray-900">{{ rangeStartTransfers }}</span>
+        a <span class="font-semibold text-gray-900">{{ rangeEndTransfers }}</span>
+        de <span class="font-semibold text-gray-900">{{ totalItemsTransfers }}</span> resultados
+      </div>
+
+      <div class="flex items-center space-x-2">
+        <button (click)="prevPageTransfers()" [disabled]="page === 1"
+          class="px-3 py-2 text-sm font-medium text-gray-600 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 hover:text-gray-800 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-150 shadow-sm">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+          </svg>
+        </button>
+
+        <div class="flex space-x-1">
+          <button *ngFor="let p of getPagesTransfers()" (click)="goToPageTransfers(p)"
+            [class]="p === page ? 'px-3 py-2 text-sm font-medium text-white bg-blue-500 border border-blue-500 rounded-lg shadow-md' : 'px-3 py-2 text-sm font-medium text-gray-600 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 hover:text-gray-800 transition-all duration-150 shadow-sm'">
+            {{ p }}</button>
+        </div>
+
+        <button (click)="nextPageTransfers()" [disabled]="page >= totalPagesTransfers"
+          class="px-3 py-2 text-sm font-medium text-gray-600 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 hover:text-gray-800 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-150 shadow-sm">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="showModal" class="fixed inset-0 z-[8000] overflow-hidden" (keydown.escape)="closeModal()" tabindex="0">
+
+    <!-- Background overlay - CLIC PARA CERRAR -->
+    <div class="absolute inset-0 bg-opacity-50 transition-opacity duration-300" (click)="closeModal()"></div>
+
+    <!-- Panel lateral -->
+    <div
+      class="absolute right-0 top-0 h-full w-full max-w-2xl bg-slate-900 shadow-xl transform transition-transform duration-300 ease-out"
+      [class.translate-x-full]="!showModal" [class.translate-x-0]="showModal" (click)="$event.stopPropagation()">
+
+      <!-- Header -->
+      <div class="flex items-center justify-between px-6 py-4 bg-slate-900 border-b border-slate-800">
+        <div class="flex items-center space-x-3">
+          <div
+            class="w-12 h-12 rounded-full flex items-center justify-center text-slate-600 font-semibold bg-slate-100">
+            <svg class="w-6 h-6 text-slate-600" fill="currentColor" viewBox="0 0 20 20">
+              <path d="M10 3a1 1 0 011 1v1h1a1 1 0 110 2h-1v1a1 1 0 11-2 0V7H9a1 1 0 110-2h1V4a1 1 0 011-1z" />
+            </svg>
+          </div>
+          <div>
+            <h2 class="text-xl font-semibold text-slate-100">{{ isEdit ? 'Editar Transferencia' : 'Nueva Transferencia'
+              }}</h2>
+            <p class="text-slate-300 text-sm">Complete los datos de la transferencia</p>
+          </div>
+        </div>
+
+        <div class="flex items-center space-x-2">
+          <button (click)="closeModal()" type="button"
+            class="ml-4 inline-flex items-center justify-center w-8 h-8 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-lg transition-all">
+            <span class="sr-only">Cerrar</span>
+            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="h-full bg-gray-50 overflow-y-auto" style="height: calc(100% - 76px);">
+        <div class="p-6">
+          <form [formGroup]="form" (ngSubmit)="submit()" class="space-y-4 flex flex-col h-full">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 flex-grow">
+              <label class="block">
+                <span class="text-gray-700 font-medium">N° de suministro <span class="text-red-500">*</span></span>
+                <select formControlName="waterBoxId"
+                  class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 focus:border-blue-500 focus:ring focus:ring-blue-500"
+                  [ngClass]="{'border-red-500': form.get('waterBoxId')?.invalid && form.get('waterBoxId')?.touched}">
+                  <option value="">Seleccione un suministro</option>
+                  <option *ngFor="let wb of waterBoxes" [value]="wb.id">{{ wb.boxCode }}</option>
+                </select>
+                <div *ngIf="form.get('waterBoxId')?.invalid && form.get('waterBoxId')?.touched"
+                  class="mt-1 text-sm text-red-600">
+                  El N° de suministro es requerido
+                </div>
+              </label>
+
+              <label class="block">
+                <span class="text-gray-700 font-medium">Usuario Antiguo <span class="text-red-500">*</span></span>
+                <select formControlName="oldAssignmentId"
+                  class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 focus:border-blue-500 focus:ring focus:ring-blue-500"
+                  [ngClass]="{'border-red-500': form.get('oldAssignmentId')?.invalid && form.get('oldAssignmentId')?.touched}">
+                  <option value="">Seleccione un usuario antiguo</option>
+                  <option *ngFor="let a of availableAssignments" [value]="a.id" [title]="a.tooltip">{{ a.label }}
+                  </option>
+                </select>
+                <div *ngIf="form.get('oldAssignmentId')?.invalid && form.get('oldAssignmentId')?.touched"
+                  class="mt-1 text-sm text-red-600">
+                  El usuario antiguo es requerido
+                </div>
+              </label>
+
+              <label class="block">
+                <span class="text-gray-700 font-medium">Nuevo Usuario <span class="text-red-500">*</span></span>
+                <select formControlName="newAssignmentId"
+                  class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 focus:border-blue-500 focus:ring focus:ring-blue-500"
+                  [ngClass]="{'border-red-500': form.get('newAssignmentId')?.invalid && form.get('newAssignmentId')?.touched}">
+                  <option value="">Seleccione un usuario nuevo</option>
+                  <option *ngFor="let a of availableAssignments" [value]="a.id" [title]="a.tooltip">{{ a.label }}
+                  </option>
+                </select>
+                <div *ngIf="form.get('newAssignmentId')?.invalid && form.get('newAssignmentId')?.touched"
+                  class="mt-1 text-sm text-red-600">
+                  El nuevo usuario es requerido
+                </div>
+                <div *ngIf="form.errors?.['sameAssignment'] && form.get('newAssignmentId')?.touched"
+                  class="mt-1 text-sm text-red-600">
+                  Los usuarios antiguo y nuevo no pueden ser iguales
+                </div>
+              </label>
+
+              <label class="block md:col-span-2">
+                <span class="text-gray-700 font-medium">Motivo de Transferencia <span
+                    class="text-red-500">*</span></span>
+                <textarea formControlName="transferReason" rows="4"
+                  class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 focus:border-blue-500 focus:ring focus:ring-blue-500"
+                  [ngClass]="{'border-red-500': form.get('transferReason')?.invalid && form.get('transferReason')?.touched}"
+                  placeholder="Describe el motivo de la transferencia (mínimo 10 caracteres)"></textarea>
+                <div *ngIf="form.get('transferReason')?.invalid && form.get('transferReason')?.touched"
+                  class="mt-1 text-sm text-red-600">
+                  <span *ngIf="form.get('transferReason')?.errors?.['required']">El motivo de transferencia es
+                    requerido</span>
+                  <span *ngIf="form.get('transferReason')?.errors?.['minLength']">El motivo debe tener al menos 10
+                    caracteres</span>
+                  <span *ngIf="form.get('transferReason')?.errors?.['maxLength']">El motivo no puede exceder 500
+                    caracteres</span>
+                </div>
+                <div class="mt-1 text-xs text-gray-500">
+                  {{ (form.get('transferReason')?.value?.length || 0) }}/500 caracteres
+                </div>
+              </label>
+
+              <div class="md:col-span-2">
+                <span class="text-gray-700 font-medium">Documentos (URLs) <span
+                    class="text-gray-500 text-sm">(Opcional)</span></span>
+                <div formArrayName="documents" class="mt-2 space-y-2">
+                  <div *ngFor="let docCtrl of documents.controls; let i = index" [formGroupName]="i"
+                    class="flex gap-2 items-center">
+                    <input formControlName="url" type="url" placeholder="https://..."
+                      class="flex-grow rounded-md border border-gray-300 p-2"
+                      [ngClass]="{'border-red-500': docCtrl.get('url')?.invalid && docCtrl.get('url')?.touched && docCtrl.get('url')?.value?.trim()}" />
+                    <button type="button" (click)="removeDocument(i)"
+                      class="px-3 py-2 bg-red-100 text-red-700 rounded-md">Eliminar</button>
+                  </div>
+                  <div *ngFor="let docCtrl of documents.controls; let i = index">
+                    <div
+                      *ngIf="docCtrl.get('url')?.invalid && docCtrl.get('url')?.touched && docCtrl.get('url')?.value?.trim()"
+                      class="text-sm text-red-600 ml-2">
+                      URL inválida (debe comenzar con http:// o https://)
+                    </div>
+                  </div>
+                  <div>
+                    <button type="button" (click)="addDocument()"
+                      class="px-3 py-2 bg-gray-100 hover:bg-gray-200 rounded-md">Agregar documento</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="mt-auto flex justify-end space-x-3 pt-4">
+              <button type="button" (click)="closeModal()"
+                class="px-5 py-2 bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold rounded-lg transition duration-300 ease-in-out">Cancelar</button>
+              <button type="submit" [disabled]="form.invalid || loadingAssignments || submitting"
+                class="px-5 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-white font-semibold rounded-lg shadow-md transition duration-300 ease-in-out"
+                [title]="form.invalid ? 'Complete todos los campos requeridos para continuar' : ''">
+                <span *ngIf="!submitting">{{ isEdit ? 'Actualizar' : 'Crear' }} Transferencia</span>
+                <span *ngIf="submitting">Procesando...</span>
+              </button>
+            </div>
+            <div *ngIf="form.invalid && (form.touched || form.dirty)"
+              class="mt-2 p-3 bg-red-50 border border-red-200 rounded-lg">
+              <p class="text-sm text-red-600 font-medium">⚠️ Por favor, complete todos los campos marcados con (*) para
+                continuar.</p>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

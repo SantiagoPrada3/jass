@@ -1,0 +1,1196 @@
+<!-- Breadcrumb -->
+<app-breadcrumb [items]="breadcrumbItems"></app-breadcrumb>
+
+<!-- Header de la página -->
+<div class="spacing-responsive page-header">
+  <h1 class="text-responsive-xl font-bold text-gray-900 mb-2">Pagos</h1>
+  <p class="text-sm md:text-lg text-gray-600">
+    Administración de pagos, facturación y gestión financiera del sistema
+  </p>
+</div>
+
+<!-- Tarjetas de estadísticas -->
+<div class="spacing-responsive">
+  <div class="stats-grid grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+    <!-- Total de Pago -->
+    <div class="stats-card bg-blue-50 rounded-lg p-4 md:p-6 border border-blue-200 hover:shadow-md transition-shadow">
+      <div class="flex items-center">
+        <div class="stats-icon bg-blue-500 rounded-lg p-2 md:p-3 mr-3 md:mr-4">
+          <svg class="w-4 h-4 md:w-6 md:h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1">
+            </path>
+          </svg>
+        </div>
+        <div>
+          <p class="stats-value text-lg md:text-2xl font-bold text-blue-600">
+            S/. {{ stats.totalPayments | number : '1.2-2' }}
+          </p>
+          <p class="stats-label text-xs md:text-sm text-blue-600">Total de Pago</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Pagos Activos -->
+    <div class="stats-card bg-green-50 rounded-lg p-4 md:p-6 border border-green-200 hover:shadow-md transition-shadow">
+      <div class="flex items-center">
+        <div class="stats-icon bg-green-500 rounded-lg p-2 md:p-3 mr-3 md:mr-4">
+          <svg class="w-4 h-4 md:w-6 md:h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+          </svg>
+        </div>
+        <div>
+          <p class="stats-value text-lg md:text-2xl font-bold text-green-600">{{ stats.activePayments }}</p>
+          <p class="stats-label text-xs md:text-sm text-green-600">Pagos Activos</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mostrando -->
+    <div
+      class="stats-card bg-purple-50 rounded-lg p-4 md:p-6 border border-purple-200 hover:shadow-md transition-shadow">
+      <div class="flex items-center">
+        <div class="stats-icon bg-purple-500 rounded-lg p-2 md:p-3 mr-3 md:mr-4">
+          <svg class="w-4 h-4 md:w-6 md:h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z">
+            </path>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z">
+            </path>
+          </svg>
+        </div>
+        <div>
+          <p class="stats-value text-lg md:text-2xl font-bold text-purple-600">{{ stats.showing }}</p>
+          <p class="stats-label text-xs md:text-sm text-purple-600">Mostrando</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Filtros y búsqueda -->
+  <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-3 md:p-4 mb-6">
+    <div class="filters-container flex flex-col md:flex-row gap-4 items-center justify-between">
+      <!-- Búsqueda -->
+      <div class="search-container flex-1 w-full md:max-w-md">
+        <div class="relative">
+          <svg class="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" fill="none"
+            stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+          </svg>
+          <input type="text" [(ngModel)]="searchTerm" (input)="onSearchChange()" placeholder="Buscar pagos..."
+            class="w-full pl-10 pr-4 py-2 md:py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors touch-button" />
+        </div>
+      </div>
+
+      <!-- Filtros -->
+      <div class="filters-actions flex gap-2 md:gap-4 items-center w-full md:w-auto">
+        <!-- Filtro por estado -->
+        <select [(ngModel)]="selectedPaymentStatus" (change)="onStatusFilterChange()"
+          class="px-3 md:px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors touch-button text-sm md:text-base">
+          <option *ngFor="let status of paymentStatusOptions" [value]="status">{{ status }}</option>
+        </select>
+
+        <!-- Botones de Descarga -->
+        <div class="export-buttons flex gap-2">
+          <!-- Dropdown de Exportar -->
+          <div class="relative group">
+            <button
+              class="bg-green-600 hover:bg-green-700 text-white px-3 md:px-4 py-2 rounded-lg flex items-center gap-2 transition-colors touch-button text-sm md:text-base">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
+                </path>
+              </svg>
+              <span class="hidden sm:inline">Exportar</span>
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+              </svg>
+            </button>
+
+            <!-- Dropdown Menu -->
+            <div
+              class="dropdown-menu absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg border border-gray-200 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-10">
+              <div class="py-1">
+                <button (click)="exportToPDF()"
+                  class="w-full text-left px-4 py-3 text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2 touch-button">
+                  <svg class="w-4 h-4 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z">
+                    </path>
+                  </svg>
+                  Descargar PDF
+                </button>
+                <button (click)="exportToExcel()"
+                  class="w-full text-left px-4 py-3 text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2 touch-button">
+                  <svg class="w-4 h-4 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
+                    </path>
+                  </svg>
+                  Descargar Excel
+                </button>
+                <button (click)="exportToCSV()"
+                  class="w-full text-left px-4 py-3 text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2 touch-button">
+                  <svg class="w-4 h-4 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
+                    </path>
+                  </svg>
+                  Descargar CSV
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Botón Nuevo Pago -->
+          <button (click)="openCreateModal()"
+            class="bg-blue-600 hover:bg-blue-700 text-white px-3 md:px-4 py-2 rounded-lg flex items-center gap-2 transition-colors touch-button text-sm md:text-base">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+            </svg>
+            <span class="hidden sm:inline">Nuevo Pago</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tabla de pagos -->
+  <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+    <!-- Loading state -->
+    <div *ngIf="isLoading" class="flex items-center justify-center py-12">
+      <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+      <span class="ml-2 text-gray-600">Cargando pagos...</span>
+    </div>
+
+    <!-- Tabla -->
+    <div *ngIf="!isLoading" class="table-container overflow-x-auto">
+      <!-- Vista de tabla para escritorio -->
+      <table class="payments-table min-w-full divide-y divide-gray-200 hidden md:table">
+        <thead class="bg-gray-50">
+          <tr>
+            <th
+              class="table-cell px-3 md:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              Código
+            </th>
+            <th
+              class="table-cell px-3 md:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              Usuario
+            </th>
+            <th
+              class="table-cell px-3 md:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden-mobile">
+              N° Suministro
+            </th>
+            <th
+              class="table-cell px-3 md:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden-mobile">
+              Tipo Pago
+            </th>
+            <th
+              class="table-cell px-3 md:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden-mobile">
+              Método Pago
+            </th>
+            <th
+              class="table-cell px-3 md:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              Monto Total
+            </th>
+            <th
+              class="table-cell px-3 md:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden-mobile">
+              Fecha
+            </th>
+            <th
+              class="table-cell px-3 md:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              Estado
+            </th>
+            <th
+              class="table-cell px-3 md:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              Acciones
+            </th>
+          </tr>
+        </thead>
+        <tbody class="bg-white divide-y divide-gray-200">
+          <tr *ngFor="let payment of paginatedPayments" class="hover:bg-gray-50 transition-colors">
+            <td class="table-cell px-3 md:px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+              {{ payment.paymentCode }}
+            </td>
+            <td class="table-cell px-3 md:px-6 py-4 whitespace-nowrap">
+              <div class="flex items-center">
+                <div class="flex-shrink-0 h-8 w-8 md:h-10 md:w-10">
+                  <div
+                    class="user-avatar h-8 w-8 md:h-10 md:w-10 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center text-white font-medium text-xs md:text-sm">
+                    {{ payment.userName ? payment.userName.split(' ')[0][0] : 'U'
+                    }}{{ payment.userName && payment.userName.split(' ')[1] ? payment.userName.split(' ')[1][0] : '' }}
+                  </div>
+                </div>
+                <div class="user-info ml-2 md:ml-4">
+                  <div class="user-name text-xs md:text-sm font-medium text-gray-900">{{ payment.userName }}</div>
+                  <div class="user-email text-xs text-gray-500 hidden md:block">
+                    {{ payment.email }}
+                  </div>
+                </div>
+              </div>
+            </td>
+            <td class="table-cell px-3 md:px-6 py-4 whitespace-nowrap text-sm text-gray-900 hidden-mobile">
+              {{ payment.boxCode }}
+            </td>
+            <td class="table-cell px-3 md:px-6 py-4 whitespace-nowrap text-sm text-gray-900 hidden-mobile">
+              {{ payment.paymentType }}
+            </td>
+            <td class="table-cell px-3 md:px-6 py-4 whitespace-nowrap text-sm text-gray-900 hidden-mobile">
+              {{ payment.paymentMethod }}
+            </td>
+            <td class="table-cell px-3 md:px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+              <div class="flex flex-col">
+                <span class="text-green-600 font-semibold text-xs md:text-sm">
+                  S/. {{ calculateDisplayAmount(payment) | number : '1.2-2' }}
+                </span>
+              </div>
+            </td>
+            <td class="table-cell px-3 md:px-6 py-4 whitespace-nowrap text-sm text-gray-900 hidden-mobile">
+              {{ payment.paymentDate | date : 'dd/MM/yyyy'}}
+            </td>
+            <td class="table-cell px-3 md:px-6 py-4 whitespace-nowrap">
+              <span [class]="
+                  'inline-flex px-2 py-1 text-xs font-semibold rounded-full ' +
+                  getStatusClass(payment.paymentStatus)
+                ">
+                {{ payment.paymentStatus }}
+              </span>
+            </td>
+            <td class="table-cell px-3 md:px-6 py-4 whitespace-nowrap text-sm font-medium">
+              <div class="action-buttons flex gap-1 md:gap-2">
+                <button (click)="openDetailsModal(payment)"
+                  class="action-button text-blue-600 hover:text-blue-900 text-xs bg-blue-50 hover:bg-blue-100 px-2 py-1 rounded transition-colors flex items-center gap-1 touch-button">
+                  <svg class="w-3 h-3 md:w-3.5 md:h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z">
+                    </path>
+                  </svg>
+                  <span class="hidden md:inline">Ver</span>
+                </button>
+                <button (click)="downloadPaymentPDF(payment)"
+                  class="action-button text-red-600 hover:text-red-900 text-xs bg-red-50 hover:bg-red-100 px-2 py-1 rounded transition-colors flex items-center gap-1 touch-button">
+                  <svg class="w-3 h-3 md:w-3.5 md:h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
+                    </path>
+                  </svg>
+                  <span class="hidden md:inline">PDF</span>
+                </button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- Vista de tarjetas para móviles -->
+      <div class="md:hidden grid grid-cols-1 gap-4 p-4">
+        <div *ngFor="let payment of paginatedPayments"
+             class="bg-white rounded-lg shadow-sm border border-gray-200 p-4 hover:shadow-md transition-shadow">
+          <div class="flex justify-between items-start mb-3">
+            <div>
+              <h3 class="font-medium text-gray-900">{{ payment.paymentCode }}</h3>
+              <p class="text-sm text-gray-500">{{ payment.userName }}</p>
+            </div>
+            <span [class]="
+                'inline-flex px-2 py-1 text-xs font-semibold rounded-full ' +
+                getStatusClass(payment.paymentStatus)
+              ">
+              {{ payment.paymentStatus }}
+            </span>
+          </div>
+
+          <div class="grid grid-cols-2 gap-2 mb-3">
+            <div>
+              <p class="text-xs text-gray-500">Monto</p>
+              <p class="text-sm font-medium text-green-600">
+                S/. {{ calculateDisplayAmount(payment) | number : '1.2-2' }}
+              </p>
+            </div>
+            <div>
+              <p class="text-xs text-gray-500">Fecha</p>
+              <p class="text-sm text-gray-900">
+                {{ payment.createdAt | date : 'dd/MM/yyyy'}}
+              </p>
+            </div>
+            <div>
+              <p class="text-xs text-gray-500">Tipo</p>
+              <p class="text-sm text-gray-900">{{ payment.paymentType }}</p>
+            </div>
+            <div>
+              <p class="text-xs text-gray-500">Método</p>
+              <p class="text-sm text-gray-900">{{ payment.paymentMethod }}</p>
+            </div>
+          </div>
+
+          <div class="flex justify-between items-center pt-3 border-t border-gray-100">
+            <div class="flex items-center">
+              <div class="flex-shrink-0 h-8 w-8">
+                <div
+                  class="user-avatar h-8 w-8 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center text-white font-medium text-xs">
+                  {{ payment.userName ? payment.userName.split(' ')[0][0] : 'U'
+                  }}{{ payment.userName && payment.userName.split(' ')[1] ? payment.userName.split(' ')[1][0] : '' }}
+                </div>
+              </div>
+              <div class="ml-2">
+                <p class="text-xs font-medium text-gray-900">{{ payment.boxCode }}</p>
+              </div>
+            </div>
+
+            <div class="action-buttons flex gap-1">
+              <button (click)="openDetailsModal(payment)"
+                class="action-button text-blue-600 hover:text-blue-900 text-xs bg-blue-50 hover:bg-blue-100 p-1.5 rounded transition-colors flex items-center touch-button">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z">
+                  </path>
+                </svg>
+              </button>
+              <button (click)="downloadPaymentPDF(payment)"
+                class="action-button text-red-600 hover:text-red-900 text-xs bg-red-50 hover:bg-red-100 p-1.5 rounded transition-colors flex items-center touch-button">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
+                  </path>
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Empty state -->
+      <div *ngIf="paginatedPayments.length === 0" class="text-center py-12">
+        <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
+          </path>
+        </svg>
+        <h3 class="mt-2 text-sm font-medium text-gray-900">No hay pagos</h3>
+        <p class="mt-1 text-sm text-gray-500">No se encontraron pagos con los filtros aplicados.</p>
+      </div>
+    </div>
+
+    <!-- Paginación -->
+    <div class="bg-white px-3 md:px-4 py-3 border-t border-gray-200 md:px-6">
+      <div class="pagination-container flex items-center justify-between">
+        <div class="pagination-info text-xs md:text-sm text-gray-700">
+          Mostrando <span class="font-medium">{{ (currentPage - 1) * pageSize + 1 }}</span> a
+          <span class="font-medium">{{ Math.min(currentPage * pageSize, filteredPayments.length) }}</span> de
+          <span class="font-medium">{{ filteredPayments.length }}</span> resultados
+        </div>
+        <div class="pagination-buttons flex items-center space-x-2">
+          <button (click)="previousPage()" [disabled]="currentPage === 1"
+            class="relative inline-flex items-center px-2 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-l-md hover:bg-gray-50 transition-colors touch-button disabled:opacity-50 disabled:cursor-not-allowed">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+            </svg>
+          </button>
+
+          <!-- Mostrar botones de página -->
+          <ng-container *ngFor="let page of [].constructor(totalPages); let i = index">
+            <button (click)="goToPage(i + 1)"
+              [class]="currentPage === (i + 1) ?
+                'relative inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-blue-600 hover:bg-blue-700 transition-colors touch-button' :
+                'relative inline-flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 hover:bg-gray-50 transition-colors touch-button'">
+              {{ i + 1 }}
+            </button>
+          </ng-container>
+
+          <button (click)="nextPage()" [disabled]="currentPage === totalPages"
+            class="relative inline-flex items-center px-2 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-r-md hover:bg-gray-50 transition-colors touch-button disabled:opacity-50 disabled:cursor-not-allowed">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal lateral para crear nuevo pago -->
+<div *ngIf="isCreateModalOpen" class="fixed inset-0 z-50 overflow-hidden">
+  <!-- Overlay transparente -->
+  <div class="modal-overlay absolute inset-0  bg-opacity-50" (click)="closeCreateModal()"></div>
+
+  <!-- Modal panel -->
+  <div
+    class="modal-panel absolute right-0 top-0 md:top-16 h-full md:h-[calc(100vh-4rem)] w-full max-w-full md:max-w-2xl bg-white shadow-xl modal-slide-in md:rounded-l-lg">
+    <!-- Header -->
+    <div class="modal-header bg-gray-800 text-white p-4 md:p-6 flex items-center justify-between">
+      <div class="flex items-center">
+        <div class="bg-white bg-opacity-20 rounded-full p-2 mr-3">
+          <svg class="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+          </svg>
+        </div>
+        <div>
+          <h2 class="text-lg md:text-xl font-semibold">Crear Nuevo Pago</h2>
+          <p class="text-gray-300 text-xs md:text-sm">Complete los datos para registrar un nuevo pago</p>
+        </div>
+      </div>
+      <button (click)="closeCreateModal()" class="text-gray-300 hover:text-white transition-colors touch-button">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Form content -->
+    <div class="h-full overflow-y-auto pb-24 modal-scroll">
+      <form [formGroup]="paymentForm" (ngSubmit)="onSubmit()" class="modal-content p-4 md:p-6 space-y-4 md:space-y-6">
+        <!-- Información de la Organización -->
+        <div class="form-section bg-gray-50 rounded-lg p-3 md:p-4 border border-gray-200">
+          <h3 class="text-base md:text-lg font-medium text-gray-900 mb-3 md:mb-4 flex items-center">
+            <svg class="w-4 h-4 md:w-5 md:h-5 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4">
+              </path>
+            </svg>
+            Organización
+          </h3>
+          <div class="form-grid grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
+            <div>
+              <label class="block text-xs md:text-sm font-medium text-gray-700 mb-1">Organización *</label>
+              <input type="hidden" formControlName="organizationId" />
+              <div class="form-input w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors bg-gray-50 font-medium text-gray-800">
+                <span *ngIf="currentOrganizationName && currentOrganizationName.length > 0;">
+                  {{ currentOrganizationName }}
+                </span>
+              </div>
+            </div>
+            <div>
+              <label class="block text-xs md:text-sm font-medium text-gray-700 mb-1">Código de Pago *</label>
+              <div class="flex gap-2">
+                <input type="text" formControlName="paymentCode" placeholder="Código de Pago" (blur)="onPaymentCodeChange()"
+                  class="form-input flex-1 px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                  readonly />
+                <button type="button" (click)="generateNextPaymentCode()"
+                  class="px-2 md:px-3 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-md border border-gray-300 transition-colors flex items-center gap-1 touch-button"
+                  title="Generar nuevo código correlativo">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15">
+                    </path>
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Datos del Usuario -->
+        <div class="form-section bg-gray-50 rounded-lg p-3 md:p-4 border border-gray-200">
+          <h3 class="text-base md:text-lg font-medium text-gray-900 mb-3 md:mb-4 flex items-center">
+            <svg class="w-4 h-4 md:w-5 md:h-5 mr-2 text-green-600" fill="none" stroke="currentColor"
+              viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+            </svg>
+            Datos del Usuario
+          </h3>
+          <div class="form-grid grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
+            <div>
+              <label class="block text-xs md:text-sm font-medium text-gray-700 mb-1">Usuario *</label>
+              <div class="relative">
+                <input type="text" [(ngModel)]="userSearchTerm" [ngModelOptions]="{standalone: true}"
+                  (input)="onUserSearchChange()" (focus)="showUserDropdown = true"
+                  placeholder="Buscar por código, nombre o DNI..."
+                  class="form-input w-full px-3 py-2 pr-10 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors" />
+                <svg class="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" fill="none"
+                  stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                </svg>
+
+                <!-- Dropdown de resultados -->
+                <div *ngIf="showUserDropdown && filteredUsersForSearch.length > 0"
+                  class="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-y-auto">
+                  <div *ngFor="let user of filteredUsersForSearch" (click)="selectUserFromSearch(user)"
+                    class="px-3 py-2 hover:bg-blue-50 cursor-pointer transition-colors border-b border-gray-100 last:border-b-0">
+                    <div class="flex items-center justify-between">
+                      <div>
+                        <div class="text-sm font-medium text-gray-900">
+                          {{user.userCode}} - {{user.firstName}} {{user.lastName}}
+                        </div>
+                        <div class="text-xs text-gray-500">
+                          DNI: {{user.documentNumber}} | Cuota: S/ {{user.waterBoxAssignment?.monthlyFee}}
+                        </div>
+                      </div>
+                      <div class="text-xs font-medium text-blue-600">
+                        {{user.waterBoxAssignment?.boxCode}}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <p *ngIf="isLoadingUsers" class="text-xs text-gray-500 mt-1">⏳ Cargando usuarios...</p>
+            </div>
+            <div>
+              <label class="block text-xs md:text-sm font-medium text-gray-700 mb-1">N° Suministro (Código de Caja)
+                *</label>
+              <input type="text" [value]="selectedUser?.waterBoxAssignment?.boxCode || ''"
+                placeholder="N° de Suministro" readonly
+                class="form-input w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-50 cursor-not-allowed" />
+              <p *ngIf="selectedUser?.waterBoxAssignment" class="text-xs text-gray-500 mt-1">
+                📦 Caja: {{ selectedUser?.waterBoxAssignment?.boxCode }} ({{ selectedUser?.waterBoxAssignment?.boxType
+                }})
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Datos del Pago -->
+        <div class="bg-gray-50 rounded-lg p-4 border border-gray-200">
+          <h3 class="text-lg font-medium text-gray-900 mb-4 flex items-center">
+            <svg class="w-5 h-5 mr-2 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z">
+              </path>
+            </svg>
+            Datos del Pago
+          </h3>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Tipo de Pago *</label>
+              <select formControlName="paymentType"
+                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors">
+                <option value="">Seleccionar tipo</option>
+                <option *ngFor="let type of paymentTypeOptions" [value]="type">{{ type }}</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Método de Pago *</label>
+              <select formControlName="paymentMethod"
+                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors">
+                <option value="">Seleccionar método</option>
+                <option *ngFor="let method of paymentMethodOptions" [value]="method">
+                  {{ method }}
+                </option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Monto Total *</label>
+              <div class="relative">
+                <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">S/.</span>
+                <input type="number" step="0.01" formControlName="totalAmount" placeholder="0.00"
+                  class="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors" readonly />
+              </div>
+              <!-- Desglose del monto cuando se selecciona un tipo de pago -->
+              <div *ngIf="selectedPaymentType" class="mt-1 text-xs text-gray-600">
+                {{ getTotalAmountBreakdown() }}
+              </div>
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Fecha de Pago *</label>
+              <input type="date" formControlName="paymentDate"
+                class="w-48 px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors" />
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Estado del Pago *</label>
+              <select formControlName="paymentStatus"
+                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors">
+                <option value="Pagado">Pagado</option>
+                <option value="Cancelado">Cancelado</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Referencia Externa</label>
+              <input type="text" formControlName="externalReference" placeholder="REF001"
+                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors" />
+            </div>
+          </div>
+        </div>
+
+        <!-- Detalles del Pago -->
+        <div class="bg-gray-50 rounded-lg p-4 border border-gray-200">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="text-lg font-medium text-gray-900 flex items-center">
+              <svg class="w-5 h-5 mr-2 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
+                </path>
+              </svg>
+              Detalles del Pago
+            </h3>
+            <button type="button" (click)="addPaymentDetail()"
+              class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded-md text-sm flex items-center gap-1 transition-colors">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+              </svg>
+              Agregar Detalle
+            </button>
+          </div>
+
+          <div formArrayName="details" class="space-y-4">
+            <div *ngFor="let detail of paymentDetails.controls; let i = index" [formGroupName]="i"
+              class="bg-white border border-gray-200 rounded-lg p-4 relative hover:shadow-md transition-shadow">
+              <div class="flex items-center justify-between mb-3">
+                <h4 class="font-medium text-gray-900 flex items-center">
+                  <span class="bg-blue-100 text-blue-800 text-xs font-semibold px-2 py-1 rounded-full mr-2">{{ i + 1
+                    }}</span>
+                  Detalle de Pago
+                </h4>
+                <button type="button" (click)="removePaymentDetail(i)"
+                  class="text-red-600 hover:text-red-800 hover:bg-red-50 p-1 rounded transition-colors">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16">
+                    </path>
+                  </svg>
+                </button>
+              </div>
+
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-1">Concepto *</label>
+                  <input type="text" formControlName="concept" placeholder="Servicio de agua"
+                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm transition-colors" readonly />
+                </div>
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-1">Monto *</label>
+                  <div class="relative">
+                    <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 text-sm">S/.</span>
+                    <input type="number" step="0.01" formControlName="amount" placeholder="0.00"
+                      class="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm transition-colors" readonly />
+                  </div>
+                </div>
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-1">Año *</label>
+                  <input type="number" formControlName="year" placeholder="2024"
+                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm transition-colors" readonly />
+                </div>
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-1">Mes *</label>
+                  <select formControlName="month"
+                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm transition-colors">
+                    <option value="">Seleccionar mes</option>
+                    <option value="1">Enero</option>
+                    <option value="2">Febrero</option>
+                    <option value="3">Marzo</option>
+                    <option value="4">Abril</option>
+                    <option value="5">Mayo</option>
+                    <option value="6">Junio</option>
+                    <option value="7">Julio</option>
+                    <option value="8">Agosto</option>
+                    <option value="9">Septiembre</option>
+                    <option value="10">Octubre</option>
+                    <option value="11">Noviembre</option>
+                    <option value="12">Diciembre</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-1">Inicio del Período *</label>
+                  <input type="date" formControlName="periodStart"
+                    class="w-44 px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm transition-colors"
+                    readonly />
+                </div>
+                <div *ngIf="!detail.get('hidePeriodEnd')?.value">
+                  <label class="block text-sm font-medium text-gray-700 mb-1">Fin del Período *</label>
+                  <input type="date" formControlName="periodEnd"
+                    class="w-44 px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm transition-colors"
+                    readonly />
+                </div>
+                <div class="md:col-span-2">
+                  <label class="block text-sm font-medium text-gray-700 mb-1">Descripción</label>
+                  <textarea formControlName="description" rows="2" placeholder="Descripción adicional del detalle"
+                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm transition-colors resize-none"></textarea>
+                </div>
+                <br>
+              </div>
+            </div>
+          </div>
+
+          <div *ngIf="paymentDetails.length === 0"
+            class="text-center py-8 text-gray-500 bg-white rounded-lg border-2 border-dashed border-gray-300">
+            <svg class="mx-auto h-12 w-12 text-gray-400 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
+              </path>
+            </svg>
+            <p class="text-sm font-medium text-gray-900 mb-1">No hay detalles agregados</p>
+            <p class="text-sm text-gray-500">
+              Haga clic en "Agregar Detalle" para comenzar a agregar detalles del pago.
+            </p>
+          </div>
+        </div>
+      </form>
+    </div>
+
+    <!-- Footer con botones -->
+    <div class="absolute bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-3 md:p-6 shadow-lg">
+      <div class="flex flex-col md:flex-row gap-3 justify-end">
+        <button type="button" (click)="closeCreateModal()"
+          class="w-full md:w-auto px-4 md:px-6 py-3 md:py-2 text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors touch-button">
+          Cancelar
+        </button>
+        <button type="submit" (click)="onSubmit()" [disabled]="!paymentForm.valid"
+          class="w-full md:w-auto px-4 md:px-6 py-3 md:py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors touch-button">
+          <span class="flex items-center justify-center gap-2">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+            </svg>
+            Crear Pago
+          </span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal lateral para ver/editar detalles del pago -->
+<div *ngIf="isDetailsModalOpen" class="fixed inset-0 z-50 overflow-hidden">
+  <!-- Overlay transparente -->
+  <div class="absolute inset-0" (click)="closeDetailsModal()"></div>
+
+  <!-- Modal panel -->
+  <div
+    class="absolute right-0 top-16 h-[calc(100vh-4rem)] w-full max-w-4xl bg-white shadow-xl modal-slide-in rounded-l-lg">
+    <!-- Header -->
+    <div class="bg-gray-800 text-white p-6 flex items-center justify-between">
+      <div class="flex items-center">
+        <div class="bg-white bg-opacity-20 rounded-full p-2 mr-3">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z">
+            </path>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z">
+            </path>
+          </svg>
+        </div>
+        <div class="flex-1">
+          <h2 class="text-xl font-semibold">
+            {{ isEditMode ? 'Editar Pago' : 'Detalles del Pago' }}
+          </h2>
+          <p class="text-gray-300 text-sm">{{ selectedPayment?.paymentCode || '' }}</p>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-3">
+        <!-- Botón Editar en el header -->
+        <button *ngIf="!isEditMode" (click)="enableEditMode()"
+          class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors text-sm">
+          <span class="flex items-center gap-2">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z">
+              </path>
+            </svg>
+            Editar
+          </span>
+        </button>
+
+        <!-- Botón Cerrar -->
+        <button (click)="closeDetailsModal()" class="text-gray-300 hover:text-white transition-colors">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Content -->
+    <div class="h-full overflow-y-auto pb-28 modal-scroll">
+      <div class="p-6 space-y-6">
+        <!-- Información del Usuario -->
+        <div class="bg-gray-50 rounded-lg p-4 border border-gray-200">
+          <h3 class="text-lg font-medium text-gray-900 mb-4 flex items-center">
+            <svg class="w-5 h-5 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+            </svg>
+            Información del Usuario
+          </h3>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Nombre Completo</label>
+              <div class="px-3 py-2 bg-white border border-gray-300 rounded-md text-sm">
+                {{ selectedPayment?.userName }}
+              </div>
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+              <div class="px-3 py-2 bg-white border border-gray-300 rounded-md text-sm">
+                {{ selectedPayment?.email }}
+              </div>
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Documento</label>
+              <div class="px-3 py-2 bg-white border border-gray-300 rounded-md text-sm">
+                {{ selectedPayment?.userDocument }}
+              </div>
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Dirección</label>
+              <div class="px-3 py-2 bg-white border border-gray-300 rounded-md text-sm">
+                {{ selectedPayment?.userAddress }}
+              </div>
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Organización</label>
+              <div class="px-3 py-2 bg-white border border-gray-300 rounded-md text-sm">
+                {{ selectedPayment?.organizationName }}
+              </div>
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">N° Suministro</label>
+              <div class="px-3 py-2 bg-white border border-gray-300 rounded-md text-sm">
+                {{ selectedPayment?.boxCode }}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Información del Pago -->
+        <div class="bg-gray-50 rounded-lg p-4 border border-gray-200">
+          <h3 class="text-lg font-medium text-gray-900 mb-4 flex items-center">
+            <svg class="w-5 h-5 mr-2 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z">
+              </path>
+            </svg>
+            Información del Pago
+          </h3>
+
+          <!-- Modo Vista -->
+          <div *ngIf="!isEditMode" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Código de Pago</label>
+              <div class="px-3 py-2 bg-white border border-gray-300 rounded-md text-sm">
+                {{ selectedPayment?.paymentCode }}
+              </div>
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Tipo de Pago</label>
+              <div class="px-3 py-2 bg-white border border-gray-300 rounded-md text-sm">
+                {{ selectedPayment?.paymentType }}
+              </div>
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Método de Pago</label>
+              <div class="px-3 py-2 bg-white border border-gray-300 rounded-md text-sm">
+                {{ selectedPayment?.paymentMethod }}
+              </div>
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Monto Total</label>
+              <div class="px-3 py-2 bg-white border border-gray-300 rounded-md text-sm">
+                <div class="font-semibold text-green-600">
+                  S/.
+                  {{
+                  selectedPayment
+                  ? calculateDisplayAmount(selectedPayment)
+                  : (0 | number : '1.2-2')
+                  }}
+                </div>
+                <div *ngIf="selectedPayment && hasLatePaymentSurcharge(selectedPayment)"
+                  class="text-xs text-orange-600 mt-1">
+                  Original: S/. {{ selectedPayment.totalAmount | number : '1.2-2' }} + S/. 5.00
+                  recargo por pago tardío
+                </div>
+              </div>
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Fecha de Pago</label>
+              <div class="px-3 py-2 bg-white border border-gray-300 rounded-md text-sm">
+                {{ selectedPayment?.paymentDate | date : 'dd/MM/yyyy' }}
+              </div>
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Estado</label>
+              <div class="px-3 py-2 bg-white border border-gray-300 rounded-md text-sm">
+                <span [class]="
+                    'inline-flex px-2 py-1 text-xs font-semibold rounded-full ' +
+                    getStatusClass(selectedPayment?.paymentStatus || '')
+                  ">
+                  {{ selectedPayment?.paymentStatus }}
+                </span>
+              </div>
+            </div>
+            <div class="md:col-span-2" *ngIf="selectedPayment?.externalReference">
+              <label class="block text-sm font-medium text-gray-700 mb-1">Referencia Externa</label>
+              <div class="px-3 py-2 bg-white border border-gray-300 rounded-md text-sm">
+                {{ selectedPayment?.externalReference }}
+              </div>
+            </div>
+          </div>
+
+          <!-- Modo Edición -->
+          <form *ngIf="isEditMode" [formGroup]="paymentForm" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Código de Pago *</label>
+              <input type="text" formControlName="paymentCode"
+                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors text-sm"
+                readonly />
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Tipo de Pago *</label>
+              <select formControlName="paymentType"
+                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors text-sm">
+                <option value="">Seleccionar Tipo</option>
+                <option *ngFor="let type of paymentTypeOptions" [value]="type">{{ type }}</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Método de Pago *</label>
+              <select formControlName="paymentMethod"
+                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors text-sm">
+                <option value="">Seleccionar Método</option>
+                <option *ngFor="let method of paymentMethodOptions" [value]="method">
+                  {{ method }}
+                </option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Monto Total *</label>
+              <div class="relative">
+                <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 text-sm">S/.</span>
+                <input type="number" step="0.01" formControlName="totalAmount"
+                  class="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors text-sm" readonly />
+              </div>
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Fecha de Pago *</label>
+              <input type="date" formControlName="paymentDate"
+                class="w-60 px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors text-sm" />
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Estado del Pago *</label>
+              <select formControlName="paymentStatus"
+                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors text-sm">
+                <option value="Pagado">Pagado</option>
+                <option value="Cancelado">Cancelado</option>
+              </select>
+            </div>
+            <div class="md:col-span-2">
+              <label class="block text-sm font-medium text-gray-700 mb-1">Referencia Externa</label>
+              <input type="text" formControlName="externalReference"
+                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors text-sm" />
+            </div>
+          </form>
+        </div>
+
+        <!-- Detalles del Pago -->
+        <div class="bg-gray-50 rounded-lg p-4 border border-gray-200">
+          <h3 class="text-lg font-medium text-gray-900 mb-4 flex items-center">
+            <svg class="w-5 h-5 mr-2 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
+              </path>
+            </svg>
+            Detalles del Pago
+            <span *ngIf="selectedPayment?.details?.length"
+              class="ml-2 bg-orange-100 text-orange-800 text-xs font-semibold px-2 py-1 rounded-full">
+              {{ selectedPayment?.details?.length }}
+            </span>
+          </h3>
+
+          <!-- Si tiene detalles específicos -->
+          <div *ngIf="selectedPayment?.details?.length; else noDetailsTemplate" class="space-y-3">
+            <div *ngFor="let detail of hasMixedPaymentDetails(selectedPayment?.details || []) ? (selectedPayment?.details || []) : getFirstDetailForMixedPayment(selectedPayment?.details || []); let i = index"
+              class="bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
+              <div class="flex items-center justify-between mb-3">
+                <h4 class="font-medium text-gray-900 flex items-center">
+                  <span class="bg-orange-100 text-orange-800 text-xs font-semibold px-2 py-1 rounded-full mr-2">
+                    {{ i + 1 }}
+                  </span>
+                  {{ detail.concept }}
+                </h4>
+                <div class="text-right">
+                  <div class="text-sm font-semibold text-green-600">
+                    S/.
+                    {{
+                    selectedPayment
+                    ? calculateDetailAmountWithSurcharge(detail, selectedPayment.paymentDate)
+                    : (detail.amount | number : '1.2-2')
+                    }}
+                  </div>
+                  <div *ngIf="selectedPayment && hasLatePaymentSurcharge(selectedPayment)"
+                    class="text-xs text-orange-600">
+                    (Original: S/. {{ detail.amount | number : '1.2-2' }})
+                  </div>
+                </div>
+              </div>
+              <div class="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm">
+                <div>
+                  <span class="text-gray-500 font-medium">Año:</span>
+                  <span class="ml-1 text-gray-900">{{ detail.year }}</span>
+                </div>
+                <div>
+                  <span class="text-gray-500 font-medium">Mes:</span>
+                  <span class="ml-1 text-gray-900">{{ getMonthName(detail.month) }}</span>
+                </div>
+                <div>
+                  <span class="text-gray-500 font-medium">Inicio:</span>
+                  <span class="ml-1 text-gray-900">{{
+                    detail.periodStart | date : 'dd/MM/yyyy'
+                    }}</span>
+                </div>
+                <div>
+                  <span class="text-gray-500 font-medium">Fin:</span>
+                  <span class="ml-1 text-gray-900">{{
+                    detail.periodEnd | date : 'dd/MM/yyyy'
+                    }}</span>
+                </div>
+              </div>
+              <div *ngIf="detail.description" class="mt-3 p-2 bg-gray-50 rounded text-sm">
+                <span class="text-gray-500 font-medium">Descripción:</span>
+                <span class="ml-1 text-gray-700">{{ detail.description }}</span>
+              </div>
+              <div *ngIf="detail.paymentDetailId" class="mt-2 text-xs text-gray-400">
+                ID Detalle: {{ detail.paymentDetailId }}
+              </div>
+            </div>
+          </div>
+
+          <!-- Si no tiene detalles específicos, mostrar información básica -->
+          <ng-template #noDetailsTemplate>
+            <div class="bg-white border border-gray-200 rounded-lg p-4">
+              <div class="flex items-center justify-between mb-3">
+                <h4 class="font-medium text-gray-900 flex items-center">
+                  <span class="bg-blue-100 text-blue-800 text-xs font-semibold px-2 py-1 rounded-full mr-2">
+                    1
+                  </span>
+                  {{ selectedPayment?.paymentType }} - {{ selectedPayment?.paymentMethod }}
+                </h4>
+                <div class="text-right">
+                  <div class="text-sm font-semibold text-green-600">
+                    S/.
+                    {{
+                    selectedPayment
+                    ? calculateDisplayAmount(selectedPayment)
+                    : (0 | number : '1.2-2')
+                    }}
+                  </div>
+                  <div *ngIf="selectedPayment && hasLatePaymentSurcharge(selectedPayment)"
+                    class="text-xs text-orange-600">
+                    (Original: S/. {{ selectedPayment.totalAmount | number : '1.2-2' }})
+                  </div>
+                </div>
+              </div>
+              <div class="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm">
+                <div>
+                  <span class="text-gray-500 font-medium">Año:</span>
+                  <span class="ml-1 text-gray-900">{{
+                    selectedPayment?.paymentDate | date : 'yyyy'
+                    }}</span>
+                </div>
+                <div>
+                  <span class="text-gray-500 font-medium">Mes:</span>
+                  <span class="ml-1 text-gray-900">{{
+                    (selectedPayment?.paymentDate | date : 'MMMM') || 'N/A'
+                    }}</span>
+                </div>
+                <div>
+                  <span class="text-gray-500 font-medium">Fecha:</span>
+                  <span class="ml-1 text-gray-900">{{
+                    selectedPayment?.paymentDate | date : 'dd/MM/yyyy'
+                    }}</span>
+                </div>
+                <div>
+                  <span class="text-gray-500 font-medium">Método:</span>
+                  <span class="ml-1 text-gray-900">{{ selectedPayment?.paymentMethod }}</span>
+                </div>
+              </div>
+              <div class="mt-3 p-2 bg-gray-50 rounded text-sm">
+                <span class="text-gray-500 font-medium">Concepto:</span>
+                <span class="ml-1 text-gray-700">Pago {{ selectedPayment?.paymentType }} del servicio de agua</span>
+              </div>
+            </div>
+          </ng-template>
+        </div>
+
+        <!-- Fechas de Creación y Actualización -->
+        <div class="bg-gray-50 rounded-lg p-4 border border-gray-200">
+          <h3 class="text-lg font-medium text-gray-900 mb-4 flex items-center">
+            <svg class="w-5 h-5 mr-2 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+            Información de Registro
+          </h3>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Fecha de Creación</label>
+              <div class="px-3 py-2 bg-white border border-gray-300 rounded-md text-sm">
+                <div class="flex items-center gap-2">
+                  <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                  </svg>
+                  <span class="text-gray-900">
+                    {{ formatDate(selectedPayment?.createdAt) }}
+                  </span>
+                </div>
+              </div>
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Última Actualización</label>
+              <div class="px-3 py-2 bg-white border border-gray-300 rounded-md text-sm">
+                <div class="flex items-center gap-2">
+                  <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15">
+                    </path>
+                  </svg>
+                  <span class="text-gray-900">
+                    {{ formatDate(selectedPayment?.updatedAt) }}
+                  </span>
+                </div>
+              </div>
+            </div>
+            <br><br>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer con botones -->
+    <div class="absolute bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-3 md:p-6 shadow-lg">
+      <div class="flex flex-col md:flex-row gap-3 justify-between">
+        <!-- Botón de descarga PDF -->
+        <div class="flex gap-3">
+          <button *ngIf="!isEditMode && selectedPayment" (click)="downloadPaymentPDF(selectedPayment)"
+            class="w-full md:w-auto px-4 md:px-6 py-3 md:py-2 bg-red-600 text-white rounded-md hover:bg-red-700 focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-colors touch-button">
+            <span class="flex items-center justify-center gap-2">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
+                </path>
+              </svg>
+              <span class="hidden sm:inline">Descargar Recibo PDF</span>
+              <span class="sm:hidden">PDF</span>
+            </span>
+          </button>
+        </div>
+
+        <!-- Botones del footer -->
+        <div class="flex flex-col md:flex-row gap-3 justify-end w-full md:w-auto">
+          <button *ngIf="isEditMode" (click)="cancelEdit()"
+            class="w-full md:w-auto px-4 md:px-6 py-3 md:py-2 text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors touch-button">
+            Cancelar
+          </button>
+          <button *ngIf="isEditMode" (click)="savePayment()" [disabled]="!paymentForm.valid"
+            class="w-full md:w-auto px-4 md:px-6 py-3 md:py-2 bg-green-600 text-white rounded-md hover:bg-green-700 focus:ring-2 focus:ring-green-500 focus:border-green-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors touch-button">
+            <span class="flex items-center justify-center gap-2">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+              </svg>
+              Guardar Cambios
+            </span>
+          </button>
+          <button *ngIf="!isEditMode" (click)="closeDetailsModal()"
+            class="w-full md:w-auto px-4 md:px-6 py-3 md:py-2 text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors touch-button">
+            Cerrar
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

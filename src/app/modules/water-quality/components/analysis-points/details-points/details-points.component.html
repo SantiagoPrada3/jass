@@ -1,0 +1,179 @@
+<!-- Modal de Detalles del Punto -->
+<div *ngIf="isOpen" class="fixed inset-0 z-[9000]" (keydown.escape)="onClose()" tabindex="0">
+  <!-- Background overlay -->
+  <div class="absolute inset-0 bg-transparent transition-opacity duration-300" (click)="onClose()"></div>
+
+  <!-- Modal Panel -->
+  <div class="absolute right-0 top-0 h-full w-full max-w-3xl bg-white shadow-xl transform transition-transform duration-300 ease-out flex flex-col"
+       [class.translate-x-full]="!isOpen" [class.translate-x-0]="isOpen" (click)="$event.stopPropagation()">
+
+    <!-- Header -->
+    <div class="flex items-center justify-between px-6 py-4 bg-slate-900 text-white flex-shrink-0">
+      <div class="flex items-center space-x-3">
+        <div class="w-10 h-10 rounded-lg flex items-center justify-center bg-slate-700 text-white">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+          </svg>
+        </div>
+        <div>
+          <h2 class="text-lg font-semibold">Detalles del Punto de Análisis</h2>
+          <p class="text-sm text-slate-400">Información completa del punto</p>
+        </div>
+      </div>
+      <button (click)="onClose()" class="p-2 hover:bg-slate-800 rounded-lg transition-colors text-slate-400 hover:text-white">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Contenido del Modal -->
+    <div class="flex-1 overflow-y-auto min-h-0">
+      <div class="p-6 space-y-6" *ngIf="pointData">
+        
+        <!-- Información Principal -->
+        <div class="bg-white rounded-lg border border-gray-200 shadow-sm">
+          <div class="px-6 py-4 border-b border-gray-200 bg-gray-50">
+            <h3 class="text-lg font-semibold text-gray-800 flex items-center">
+              <svg class="w-5 h-5 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+              </svg>
+              Información Principal
+            </h3>
+          </div>
+          <div class="p-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <label class="block text-sm font-medium text-gray-500 mb-1">Código del Punto</label>
+                <p class="text-lg font-semibold text-gray-900">{{ pointData.pointCode || 'N/A' }}</p>
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-500 mb-1">Estado</label>
+                <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium" 
+                      [class]="getStatusClass(pointData.status)">
+                  {{ getStatusText(pointData.status) }}
+                </span>
+              </div>
+              <div class="md:col-span-2">
+                <label class="block text-sm font-medium text-gray-500 mb-1">Nombre del Punto</label>
+                <p class="text-lg text-gray-900">{{ pointData.pointName || 'N/A' }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Ubicación y Tipo -->
+        <div class="bg-white rounded-lg border border-gray-200 shadow-sm">
+          <div class="px-6 py-4 border-b border-gray-200 bg-gray-50">
+            <h3 class="text-lg font-semibold text-gray-800 flex items-center">
+              <svg class="w-5 h-5 mr-2 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+              </svg>
+              Ubicación y Tipo
+            </h3>
+          </div>
+          <div class="p-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <label class="block text-sm font-medium text-gray-500 mb-1">Tipo de Punto</label>
+                <p class="text-lg text-gray-900">{{ getPointTypeText(pointData.pointType) }}</p>
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-500 mb-1">Zona</label>
+                <p class="text-lg text-gray-900">{{ pointData.zoneName || zoneName || 'Cargando...' }}</p>
+              </div>
+              <div class="md:col-span-2" *ngIf="pointData.locationDescription">
+                <label class="block text-sm font-medium text-gray-500 mb-1">Descripción de Ubicación</label>
+                <p class="text-gray-900">{{ pointData.locationDescription }}</p>
+              </div>
+              <div *ngIf="pointData.street">
+                <label class="block text-sm font-medium text-gray-500 mb-1">Calle</label>
+                <p class="text-gray-900">{{ streetName || 'Cargando...' }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Coordenadas -->
+        <div class="bg-white rounded-lg border border-gray-200 shadow-sm" *ngIf="pointData.coordinates">
+          <div class="px-6 py-4 border-b border-gray-200 bg-gray-50">
+            <h3 class="text-lg font-semibold text-gray-800 flex items-center">
+              <svg class="w-5 h-5 mr-2 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"></path>
+              </svg>
+              Coordenadas Geográficas
+            </h3>
+          </div>
+          <div class="p-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <label class="block text-sm font-medium text-gray-500 mb-1">Latitud</label>
+                <p class="text-lg font-mono text-gray-900">{{ pointData.coordinates.latitude || 'N/A' }}</p>
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-500 mb-1">Longitud</label>
+                <p class="text-lg font-mono text-gray-900">{{ pointData.coordinates.longitude || 'N/A' }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Información del Sistema -->
+        <div class="bg-white rounded-lg border border-gray-200 shadow-sm">
+          <div class="px-6 py-4 border-b border-gray-200 bg-gray-50">
+            <h3 class="text-lg font-semibold text-gray-800 flex items-center">
+              <svg class="w-5 h-5 mr-2 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+              </svg>
+              Información del Sistema
+            </h3>
+          </div>
+          <div class="p-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <label class="block text-sm font-medium text-gray-500 mb-1">Organización</label>
+                <p class="text-sm text-gray-900">{{ pointData.organizationName || organizationName || 'Cargando...' }}</p>
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-500 mb-1">ID del Punto</label>
+                <p class="text-sm font-mono text-gray-900">{{ pointData.id || 'N/A' }}</p>
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-500 mb-1">Fecha de Creación</label>
+                <p class="text-sm text-gray-900">{{ formatDate(pointData.createdAt) }}</p>
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-500 mb-1">Última Actualización</label>
+                <p class="text-sm text-gray-900">{{ formatDate(pointData.updatedAt) }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Estado vacío -->
+      <div class="flex-1 flex items-center justify-center p-6" *ngIf="!pointData">
+        <div class="text-center">
+          <svg class="w-16 h-16 text-gray-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+          </svg>
+          <h3 class="text-lg font-medium text-gray-900 mb-2">No hay datos disponibles</h3>
+          <p class="text-gray-500">No se pudo cargar la información del punto de análisis.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="px-6 py-4 bg-gray-50 border-t border-gray-200 flex-shrink-0">
+      <div class="flex justify-end">
+        <button (click)="onClose()" 
+                class="px-6 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors">
+          Cerrar
+        </button>
+      </div>
+    </div>
+
+  </div>
+</div>

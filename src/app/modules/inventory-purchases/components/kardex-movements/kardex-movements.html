@@ -1,0 +1,1026 @@
+<!-- Breadcrumb -->
+<app-breadcrumb [items]="breadcrumbItems"></app-breadcrumb>
+
+<div class="p-4">
+     <h1 class="text-3xl font-bold text-gray-900 mb-2">Movimientos de Kárdex</h1>
+     <p class="text-lg text-gray-600">Control completo de entradas y salidas del inventario</p>
+</div>
+<!-- Contenido Principal -->
+
+<!-- Contenido Principal -->
+<div class="p-6 bg-gray-50 min-h-screen">
+
+     <!-- Estadísticas (4 tarjetas idénticas a usuarios) -->
+     <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+
+          <!-- Total Movimientos -->
+          <div
+               class="bg-gradient-to-r from-blue-50 to-blue-100 border border-blue-200 rounded-xl p-6 shadow-sm transition-all duration-200 hover:shadow-md hover:-translate-y-1">
+               <div class="flex items-center">
+                    <div class="p-3 bg-blue-500 rounded-lg">
+                         <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                   d="M9 5H7a2 2 0 00-2 2v6a2 2 0 002 2h6a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01">
+                              </path>
+                         </svg>
+                    </div>
+                    <div class="ml-4">
+                         <div class="text-2xl font-bold text-gray-900">{{ stats.totalMovements }}</div>
+                         <div class="text-sm font-medium text-blue-600">Total Movimientos</div>
+                    </div>
+               </div>
+          </div>
+
+          <!-- Entradas -->
+          <div
+               class="bg-gradient-to-r from-green-50 to-green-100 border border-green-200 rounded-xl p-6 shadow-sm transition-all duration-200 hover:shadow-md hover:-translate-y-1">
+               <div class="flex items-center">
+                    <div class="p-3 bg-green-500 rounded-lg">
+                         <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                   d="M7 16l-4-4m0 0l4-4m-4 4h18"></path>
+                         </svg>
+                    </div>
+                    <div class="ml-4">
+                         <div class="text-2xl font-bold text-gray-900">{{ stats.totalEntries }}</div>
+                         <div class="text-sm font-medium text-green-600">Entradas</div>
+                    </div>
+               </div>
+          </div>
+
+          <!-- Salidas -->
+          <div
+               class="bg-gradient-to-r from-red-50 to-red-100 border border-red-200 rounded-xl p-6 shadow-sm transition-all duration-200 hover:shadow-md hover:-translate-y-1">
+               <div class="flex items-center">
+                    <div class="p-3 bg-red-500 rounded-lg">
+                         <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                   d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
+                         </svg>
+                    </div>
+                    <div class="ml-4">
+                         <div class="text-2xl font-bold text-gray-900">{{ stats.totalExits }}</div>
+                         <div class="text-sm font-medium text-red-600">Salidas</div>
+                    </div>
+               </div>
+          </div>
+
+          <!-- Mostrando -->
+          <div
+               class="bg-gradient-to-r from-purple-50 to-purple-100 border border-purple-200 rounded-xl p-6 shadow-sm transition-all duration-200 hover:shadow-md hover:-translate-y-1">
+               <div class="flex items-center">
+                    <div class="p-3 bg-purple-500 rounded-lg">
+                         <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                   d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                   d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z">
+                              </path>
+                         </svg>
+                    </div>
+                    <div class="ml-4">
+                         <div class="text-2xl font-bold text-gray-900">{{ showingCount }}</div>
+                         <div class="text-sm font-medium text-purple-600">Mostrando</div>
+                    </div>
+               </div>
+          </div>
+     </div>
+
+     <!-- Botones de Acción -->
+     <div class="mb-6 flex justify-between items-center">
+          <!-- Botones de Exportación -->
+          <div class="flex gap-3">
+               <button (click)="exportToExcel()"
+                    class="group inline-flex items-center px-5 py-2.5 bg-gradient-to-r from-green-500 to-green-600 text-white font-semibold rounded-lg shadow-md hover:shadow-lg hover:from-green-600 hover:to-green-700 transition-all duration-200">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                    Exportar Excel
+               </button>
+               <button (click)="generateKardexReport()"
+                    class="group inline-flex items-center px-5 py-2.5 bg-gradient-to-r from-blue-500 to-blue-600 text-white font-semibold rounded-lg shadow-md hover:shadow-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-200">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                    </svg>
+                    Reporte Kardex PDF
+               </button>
+          </div>
+
+          <!-- Botón Registrar Salida -->
+          <button (click)="openOutputModal()"
+               class="group inline-flex items-center px-6 py-3 bg-gradient-to-r from-red-500 to-red-600 text-white font-semibold rounded-lg shadow-lg hover:shadow-xl hover:from-red-600 hover:to-red-700 transition-all duration-200 transform hover:-translate-y-0.5">
+               <svg class="w-5 h-5 mr-2 group-hover:animate-pulse" fill="none" stroke="currentColor"
+                    viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                         d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+               </svg>
+               Registrar Salida
+          </button>
+     </div>
+
+     <!-- Panel de Filtros (idéntico a usuarios) -->
+     <div class="bg-white rounded-xl shadow-sm border border-gray-200 mb-6">
+          <div class="bg-gradient-to-r from-blue-50 to-indigo-50 border-b border-gray-200 px-6 py-4 rounded-t-xl">
+               <div class="flex items-center justify-between">
+                    <h2 class="text-lg font-semibold text-gray-900 flex items-center">
+                         <svg class="w-5 h-5 text-blue-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                   d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.414A1 1 0 013 6.707V4z">
+                              </path>
+                         </svg>
+                         Filtros de Búsqueda
+                    </h2>
+                    <button (click)="clearFilters()"
+                         class="text-sm text-blue-600 hover:text-blue-700 font-medium flex items-center">
+                         <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                   d="M6 18L18 6M6 6l12 12"></path>
+                         </svg>
+                         Limpiar Filtros
+                    </button>
+               </div>
+          </div>
+
+          <div class="p-6">
+               <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+                    <!-- Buscar movimientos... -->
+                    <div class="space-y-1">
+                         <label for="search-input" class="block text-sm font-medium text-gray-700">Buscar
+                              movimientos...</label>
+                         <div class="relative">
+                              <input id="search-input" type="text" [(ngModel)]="filters.searchTerm"
+                                   (ngModelChange)="onFiltersChange()"
+                                   placeholder="Buscar por producto, código, documento..."
+                                   class="w-full px-4 py-2.5 pl-10 bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-sm transition-all duration-200">
+                              <svg class="absolute left-3 top-3 w-4 h-4 text-gray-400" fill="none" stroke="currentColor"
+                                   viewBox="0 0 24 24">
+                                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                              </svg>
+                         </div>
+                    </div>
+
+                    <!-- Filtro por Tipo -->
+                    <div class="space-y-1">
+                         <label for="movement-type-dropdown" class="block text-sm font-medium text-gray-700">Tipo de
+                              Movimiento</label>
+                         <div class="relative">
+                              <button id="movement-type-dropdown" type="button" (click)="toggleMovementTypeDropdown()"
+                                   class="w-full px-4 py-2.5 bg-white border border-gray-200 rounded-lg text-left focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-sm transition-all duration-200 flex items-center justify-between hover:bg-gray-50">
+                                   <span class="block truncate"
+                                        [class]="filters.movementType ? 'text-gray-900' : 'text-gray-500'">
+                                        {{ getSelectedMovementTypeLabel() }}
+                                   </span>
+                                   <svg class="w-4 h-4 text-gray-400 transition-transform duration-200"
+                                        [class.rotate-180]="showMovementTypeDropdown" fill="none" stroke="currentColor"
+                                        viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                             d="M19 9l-7 7-7-7"></path>
+                                   </svg>
+                              </button>
+
+                              <!-- Dropdown Tipos -->
+                              <div *ngIf="showMovementTypeDropdown"
+                                   class="absolute z-50 mt-1 w-full bg-white shadow-lg rounded-lg border border-gray-200 py-1 max-h-60 overflow-auto">
+                                   <button type="button" (click)="selectMovementType(undefined)"
+                                        class="block w-full text-left px-4 py-2.5 text-sm hover:bg-blue-50 hover:text-blue-700 transition-colors duration-150"
+                                        [class]="!filters.movementType ? 'bg-blue-50 text-blue-700 font-medium' : 'text-gray-700'">
+                                        <span class="flex items-center">
+                                             <span class="w-3 h-3 rounded-full bg-gray-400 mr-3"></span>
+                                             Todos los tipos
+                                        </span>
+                                   </button>
+                                   <button type="button" (click)="selectMovementType(MovementType.ENTRADA)"
+                                        class="block w-full text-left px-4 py-2.5 text-sm hover:bg-green-50 hover:text-green-700 transition-colors duration-150"
+                                        [class]="filters.movementType === MovementType.ENTRADA ? 'bg-green-50 text-green-700 font-medium' : 'text-gray-700'">
+                                        <span class="flex items-center">
+                                             <span class="w-3 h-3 rounded-full bg-green-400 mr-3"></span>
+                                             Entrada
+                                        </span>
+                                   </button>
+                                   <button type="button" (click)="selectMovementType(MovementType.SALIDA)"
+                                        class="block w-full text-left px-4 py-2.5 text-sm hover:bg-red-50 hover:text-red-700 transition-colors duration-150"
+                                        [class]="filters.movementType === MovementType.SALIDA ? 'bg-red-50 text-red-700 font-medium' : 'text-gray-700'">
+                                        <span class="flex items-center">
+                                             <span class="w-3 h-3 rounded-full bg-red-400 mr-3"></span>
+                                             Salida
+                                        </span>
+                                   </button>
+                              </div>
+                         </div>
+                    </div>
+
+                    <!-- Filtro por Razón -->
+                    <div class="space-y-1">
+                         <label for="movement-reason-dropdown" class="block text-sm font-medium text-gray-700">Razón del
+                              Movimiento</label>
+                         <div class="relative">
+                              <button id="movement-reason-dropdown" type="button"
+                                   (click)="toggleMovementReasonDropdown()"
+                                   class="w-full px-4 py-2.5 bg-white border border-gray-200 rounded-lg text-left focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-sm transition-all duration-200 flex items-center justify-between hover:bg-gray-50">
+                                   <span class="block truncate"
+                                        [class]="filters.movementReason ? 'text-gray-900' : 'text-gray-500'">
+                                        {{ getSelectedMovementReasonLabel() }}
+                                   </span>
+                                   <svg class="w-4 h-4 text-gray-400 transition-transform duration-200"
+                                        [class.rotate-180]="showMovementReasonDropdown" fill="none"
+                                        stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                             d="M19 9l-7 7-7-7"></path>
+                                   </svg>
+                              </button>
+
+                              <!-- Dropdown Razones -->
+                              <div *ngIf="showMovementReasonDropdown"
+                                   class="absolute z-50 mt-1 w-full bg-white shadow-lg rounded-lg border border-gray-200 py-1 max-h-60 overflow-auto">
+                                   <button type="button" (click)="selectMovementReason(undefined)"
+                                        class="block w-full text-left px-4 py-2.5 text-sm hover:bg-blue-50 hover:text-blue-700 transition-colors duration-150"
+                                        [class]="!filters.movementReason ? 'bg-blue-50 text-blue-700 font-medium' : 'text-gray-700'">
+                                        <span class="flex items-center">
+                                             <svg class="w-4 h-4 text-gray-400 mr-3" fill="none" stroke="currentColor"
+                                                  viewBox="0 0 24 24">
+                                                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                       d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10">
+                                                  </path>
+                                             </svg>
+                                             Todas las razones
+                                        </span>
+                                   </button>
+                                   <button type="button" (click)="selectMovementReason(MovementReason.COMPRA)"
+                                        class="block w-full text-left px-4 py-2.5 text-sm hover:bg-blue-50 hover:text-blue-700 transition-colors duration-150"
+                                        [class]="filters.movementReason === MovementReason.COMPRA ? 'bg-blue-50 text-blue-700 font-medium' : 'text-gray-700'">
+                                        <span class="flex items-center">
+                                             <svg class="w-4 h-4 text-blue-500 mr-3" fill="none" stroke="currentColor"
+                                                  viewBox="0 0 24 24">
+                                                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                       d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-2.293 2.293c-.63.63-.184 1.707.707 1.707H19M7 13v4a2 2 0 002 2h8a2 2 0 002-2v-4">
+                                                  </path>
+                                             </svg>
+                                             Compra
+                                        </span>
+                                   </button>
+                                   <button type="button" (click)="selectMovementReason(MovementReason.USO_INTERNO)"
+                                        class="block w-full text-left px-4 py-2.5 text-sm hover:bg-purple-50 hover:text-purple-700 transition-colors duration-150"
+                                        [class]="filters.movementReason === MovementReason.USO_INTERNO ? 'bg-purple-50 text-purple-700 font-medium' : 'text-gray-700'">
+                                        <span class="flex items-center">
+                                             <svg class="w-4 h-4 text-purple-500 mr-3" fill="none" stroke="currentColor"
+                                                  viewBox="0 0 24 24">
+                                                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                       d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6">
+                                                  </path>
+                                             </svg>
+                                             Uso Interno
+                                        </span>
+                                   </button>
+                              </div>
+                         </div>
+                    </div>
+
+                    <!-- Filtros de Fecha -->
+                    <div class="space-y-1">
+                         <label class="block text-sm font-medium text-gray-700">Rango de Fechas</label>
+                         <div class="grid grid-cols-2 gap-2">
+                              <input type="date" [(ngModel)]="filters.dateFrom" (ngModelChange)="onFiltersChange()"
+                                   class="px-3 py-2 text-sm bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500">
+                              <input type="date" [(ngModel)]="filters.dateTo" (ngModelChange)="onFiltersChange()"
+                                   class="px-3 py-2 text-sm bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500">
+                         </div>
+                    </div>
+               </div>
+          </div>
+     </div>
+
+     <!-- Tabla de Movimientos -->
+     <div class="bg-white rounded-xl shadow-sm border border-gray-200">
+          <div class="px-6 py-4 border-b border-gray-200">
+               <h3 class="text-lg font-semibold text-gray-900 flex items-center">
+                    <svg class="w-5 h-5 text-blue-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M9 5H7a2 2 0 00-2 2v6a2 2 0 002 2h6a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01">
+                         </path>
+                    </svg>
+                    Movimientos de Inventario
+               </h3>
+               <p class="text-sm text-gray-600 mt-1">Mostrando {{ showingCount }} de {{ totalMovementsCount }}
+                    movimientos</p>
+          </div>
+
+          <!-- Loading State -->
+          <div *ngIf="loading" class="p-8 text-center">
+               <div class="flex flex-col items-center">
+                    <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mb-4"></div>
+                    <p class="text-gray-600">Cargando movimientos...</p>
+               </div>
+          </div>
+
+          <!-- Error State -->
+          <div *ngIf="error && !loading" class="p-8 text-center">
+               <div class="flex flex-col items-center">
+                    <svg class="w-12 h-12 text-red-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z">
+                         </path>
+                    </svg>
+                    <p class="text-gray-600">{{ error }}</p>
+                    <button (click)="refreshMovements()"
+                         class="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+                         Reintentar
+                    </button>
+               </div>
+          </div>
+
+          <!-- Tabla Responsive -->
+          <div *ngIf="!loading && !error" class="overflow-x-auto">
+               <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                         <tr>
+                              <th scope="col"
+                                   class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                   Fecha/Hora</th>
+                              <th scope="col"
+                                   class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                   Producto</th>
+                              <th scope="col"
+                                   class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                   Tipo/Razón</th>
+                              <th scope="col"
+                                   class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                   Cantidad</th>
+                              <th scope="col"
+                                   class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                   Costo Unit.</th>
+                              <th scope="col"
+                                   class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                   Stock</th>
+                              <th scope="col"
+                                   class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                   Referencia</th>
+                              <th scope="col"
+                                   class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                   Usuario</th>
+                              <th scope="col" class="relative px-6 py-3"><span class="sr-only">Acciones</span></th>
+                         </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                         <tr *ngFor="let movement of paginatedMovements; trackBy: trackMovement"
+                              class="hover:bg-gray-50 transition-colors">
+                              <!-- Fecha/Hora -->
+                              <td class="px-6 py-4 whitespace-nowrap text-sm">
+                                   <div class="text-gray-900 font-medium">{{ formatDateOnly(movement.movementDate) }}
+                                   </div>
+                                   <div class="text-gray-500 text-xs">{{ formatDate(movement.movementDate).split(',')[1]
+                                        }}</div>
+                              </td>
+
+                              <!-- Producto -->
+                              <td class="px-6 py-4">
+                                   <div class="text-sm">
+                                        <div class="text-gray-900 font-medium">{{ movement.productInfo.productName }}
+                                        </div>
+                                        <div class="text-gray-500">{{ movement.productInfo.productCode }}</div>
+                                   </div>
+                              </td>
+
+                              <!-- Tipo/Razón -->
+                              <td class="px-6 py-4 whitespace-nowrap">
+                                   <div class="space-y-1">
+                                        <span
+                                             [class]="'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ' + getMovementTypeBadgeClass(movement.movementType)">
+                                             {{ getMovementTypeLabel(movement.movementType) }}
+                                        </span>
+                                        <div>
+                                             <span
+                                                  [class]="'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ' + getMovementReasonBadgeClass(movement.movementReason)">
+                                                  {{ getMovementReasonLabel(movement.movementReason) }}
+                                             </span>
+                                        </div>
+                                   </div>
+                              </td>
+
+                              <!-- Cantidad -->
+                              <td class="px-6 py-4 whitespace-nowrap text-sm">
+                                   <div class="text-gray-900 font-semibold">{{ movement.quantity }}</div>
+                                   <div class="text-gray-500 text-xs">{{ movement.productInfo.unit }}</div>
+                              </td>
+
+                              <!-- Costo Unit. -->
+                              <td class="px-6 py-4 whitespace-nowrap text-sm">
+                                   <div class="text-gray-900 font-medium">{{ formatCurrency(movement.unitCost) }}</div>
+                                   <div class="text-gray-500 text-xs">Total: {{ formatCurrency(movement.quantity *
+                                        movement.unitCost) }}</div>
+                              </td>
+
+                              <!-- Stock -->
+                              <td class="px-6 py-4 whitespace-nowrap text-sm">
+                                   <div class="flex items-center space-x-2">
+                                        <span class="text-gray-500">{{ movement.previousStock }}</span>
+                                        <svg class="w-3 h-3 text-gray-400" fill="none" stroke="currentColor"
+                                             viewBox="0 0 24 24">
+                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                  d="M9 5l7 7-7 7"></path>
+                                        </svg>
+                                        <span class="text-gray-900 font-semibold">{{ movement.newStock }}</span>
+                                   </div>
+                              </td>
+
+                              <!-- Referencia -->
+                              <td class="px-6 py-4 text-sm">
+                                   <div class="text-gray-900">{{ movement.referenceDocument || 'N/A' }}</div>
+                                   <div *ngIf="movement.observations" class="text-gray-500 text-xs truncate max-w-32">{{
+                                        movement.observations }}</div>
+                              </td>
+
+                              <!-- Usuario -->
+                              <td class="px-6 py-4 whitespace-nowrap text-sm">
+                                   <div class="text-gray-900">{{ movement.userInfo.fullName }}</div>
+                                   <div class="text-gray-500 text-xs">{{ movement.userInfo.userCode }}</div>
+                              </td>
+
+                              <!-- Acciones -->
+                              <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                   <div class="flex gap-2 justify-end">
+                                        <!-- Ver Detalles -->
+                                        <button (click)="viewMovementDetails(movement)"
+                                             class="group inline-flex items-center px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white text-sm font-medium rounded-lg shadow-sm hover:shadow-md transition-all duration-200 transform hover:scale-105">
+                                             <svg class="w-4 h-4 mr-2 group-hover:rotate-12 transition-transform duration-200"
+                                                  fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                       d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                       d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                             </svg>
+                                             <span>Ver Detalles</span>
+                                        </button>
+
+                                        <!-- Generar PDF Individual -->
+                                        <button (click)="generateMovementDetailReport(movement)"
+                                             class="group inline-flex items-center px-4 py-2 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white text-sm font-medium rounded-lg shadow-sm hover:shadow-md transition-all duration-200 transform hover:scale-105">
+                                             <svg class="w-4 h-4 mr-2 group-hover:scale-110 transition-transform duration-200"
+                                                  fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                       d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                                                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                       d="M9 12h6m-6 4h6m-6-8h6" />
+                                             </svg>
+                                             <span>PDF</span>
+                                        </button>
+                                   </div>
+                              </td>
+                         </tr>
+                    </tbody>
+               </table>
+          </div>
+
+          <!-- Empty State -->
+          <div *ngIf="!loading && !error && paginatedMovements.length === 0" class="p-8 text-center">
+               <div class="flex flex-col items-center">
+                    <svg class="w-12 h-12 text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M9 5H7a2 2 0 00-2 2v6a2 2 0 002 2h6a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4">
+                         </path>
+                    </svg>
+                    <p class="text-gray-600 mb-2">No hay movimientos que mostrar</p>
+                    <p class="text-sm text-gray-500">Los movimientos aparecerán aquí cuando se registren.</p>
+               </div>
+          </div>
+
+          <!-- Paginación -->
+          <div *ngIf="totalPages > 1" class="bg-white px-4 py-3 border-t border-gray-200 sm:px-6 rounded-b-xl">
+               <div class="flex items-center justify-between">
+                    <div class="flex flex-1 justify-between sm:hidden">
+                         <button (click)="onPageChange(currentPage - 1)" [disabled]="currentPage === 1"
+                              class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">
+                              Anterior
+                         </button>
+                         <button (click)="onPageChange(currentPage + 1)" [disabled]="currentPage === totalPages"
+                              class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">
+                              Siguiente
+                         </button>
+                    </div>
+                    <div class="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
+                         <div>
+                              <p class="text-sm text-gray-700">
+                                   Mostrando
+                                   <span class="font-medium">{{ ((currentPage - 1) * itemsPerPage) + 1 }}</span>
+                                   a
+                                   <span class="font-medium">{{ Math.min(currentPage * itemsPerPage,
+                                        totalMovementsCount) }}</span>
+                                   de
+                                   <span class="font-medium">{{ totalMovementsCount }}</span>
+                                   resultados
+                              </p>
+                         </div>
+                         <div>
+                              <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px"
+                                   aria-label="Pagination">
+                                   <button (click)="onPageChange(currentPage - 1)" [disabled]="currentPage === 1"
+                                        class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">
+                                        <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+                                             <path fill-rule="evenodd"
+                                                  d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"
+                                                  clip-rule="evenodd" />
+                                        </svg>
+                                   </button>
+
+                                   <button *ngFor="let page of getPageNumbers()" (click)="onPageChange(page)"
+                                        [class]="page === currentPage ?
+                                             'z-10 bg-blue-50 border-blue-500 text-blue-600 relative inline-flex items-center px-4 py-2 border text-sm font-medium' :
+                                             'bg-white border-gray-300 text-gray-500 hover:bg-gray-50 relative inline-flex items-center px-4 py-2 border text-sm font-medium'">
+                                        {{ page }}
+                                   </button>
+
+                                   <button (click)="onPageChange(currentPage + 1)"
+                                        [disabled]="currentPage === totalPages"
+                                        class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">
+                                        <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+                                             <path fill-rule="evenodd"
+                                                  d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                                                  clip-rule="evenodd" />
+                                        </svg>
+                                   </button>
+                              </nav>
+                         </div>
+                    </div>
+               </div>
+          </div>
+     </div>
+</div>
+<!-- =====================================================
+     MODAL DE DETALLES - DISEÑO MODERNO ESTILO TAILWIND 4
+     Basado en las imágenes de referencia proporcionadas
+     ===================================================== -->
+<div *ngIf="showDetailsModal" class="fixed inset-0 z-[9999] overflow-hidden" (click)="closeDetailsModal()" [@fadeIn]>
+     <!-- Overlay oscuro -->
+     <div class="absolute inset-0 bg-gray-900/50 "></div>
+
+     <!-- Panel deslizante desde la derecha -->
+     <div class="absolute inset-y-0 right-0 max-w-xl w-full flex shadow-2xl">
+          <div class="w-full bg-white" (click)="$event.stopPropagation()" [@slideIn]>
+
+               <!-- ==================== HEADER DEL MODAL ==================== -->
+               <div class="bg-gray-800 px-6 py-4">
+                    <div class="flex items-center justify-between">
+                         <!-- Avatar e Información del Usuario -->
+                         <div class="flex items-center space-x-3">
+                              <div
+                                   class="w-11 h-11 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full flex items-center justify-center text-white font-bold text-base shadow-lg">
+                                   {{ (selectedMovement?.userInfo?.firstName?.charAt(0) || '') +
+                                   (selectedMovement?.userInfo?.lastName?.charAt(0) || '') }}
+                              </div>
+                              <div>
+                                   <h3 class="text-base font-bold text-white">
+                                        {{ selectedMovement?.userInfo?.fullName || 'Usuario' }}
+                                   </h3>
+                                   <p class="text-xs text-gray-400">{{ selectedMovement?.userInfo?.email || 'Email no
+                                        disponible' }}</p>
+                              </div>
+                         </div>
+                         <!-- Botón Cerrar -->
+                         <button (click)="closeDetailsModal()"
+                              class="p-1.5 hover:bg-gray-700 rounded-lg transition-colors">
+                              <svg class="w-5 h-5 text-gray-400 hover:text-white" fill="none" stroke="currentColor"
+                                   viewBox="0 0 24 24">
+                                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M6 18L18 6M6 6l12 12" />
+                              </svg>
+                         </button>
+                    </div>
+               </div>
+
+               <!-- ==================== CONTENIDO SCROLLABLE ==================== -->
+               <div class="overflow-y-auto h-[calc(100vh-96px)] bg-gray-50" *ngIf="selectedMovement">
+
+                    <!-- ============ SECCIÓN: INFORMACIÓN PERSONAL ============ -->
+                    <div class="bg-white border-b border-gray-200">
+                         <div class="px-6 py-4">
+                              <h4 class="text-sm font-semibold text-gray-700 uppercase tracking-wide mb-4">Información
+                                   Personal</h4>
+
+                              <div class="grid grid-cols-2 gap-x-6 gap-y-4">
+                                   <!-- Código de Usuario -->
+                                   <div>
+                                        <label class="text-xs font-medium text-gray-500 block mb-1">Código de
+                                             Usuario</label>
+                                        <p class="text-sm font-semibold text-gray-900">{{
+                                             selectedMovement.userInfo.userCode }}</p>
+                                   </div>
+
+                                   <!-- Estado -->
+                                   <div>
+                                        <label class="text-xs font-medium text-gray-500 block mb-1">Estado</label>
+                                        <span [class]="getMovementTypeBadgeClass(selectedMovement.movementType)"
+                                             class="inline-block px-3 py-1 text-xs font-semibold rounded">
+                                             {{ getMovementTypeLabel(selectedMovement.movementType) }}
+                                        </span>
+                                   </div>
+
+                                   <!-- Nombre Completo -->
+                                   <div>
+                                        <label class="text-xs font-medium text-gray-500 block mb-1">Nombre
+                                             Completo</label>
+                                        <p class="text-sm font-semibold text-gray-900">{{
+                                             selectedMovement.userInfo.fullName }}</p>
+                                   </div>
+
+                                   <!-- Tipo de Documento -->
+                                   <div>
+                                        <label class="text-xs font-medium text-gray-500 block mb-1">Tipo de
+                                             Documento</label>
+                                        <p class="text-sm font-semibold text-gray-900">DNI</p>
+                                   </div>
+
+                                   <!-- Número de Documento -->
+                                   <div>
+                                        <label class="text-xs font-medium text-gray-500 block mb-1">Número de
+                                             Documento</label>
+                                        <p class="text-sm font-semibold text-gray-900">{{
+                                             selectedMovement.referenceDocument || 'No especificado' }}</p>
+                                   </div>
+
+                                   <!-- Email -->
+                                   <div>
+                                        <label class="text-xs font-medium text-gray-500 block mb-1">Email</label>
+                                        <p class="text-sm font-semibold text-blue-600">{{
+                                             selectedMovement.userInfo.email }}</p>
+                                   </div>
+
+                                   <!-- Teléfono -->
+                                   <div>
+                                        <label class="text-xs font-medium text-gray-500 block mb-1">Teléfono</label>
+                                        <p class="text-sm font-semibold text-gray-900">{{
+                                             selectedMovement.userInfo.phone || 'No disponible' }}</p>
+                                   </div>
+
+
+
+                                   <!-- Dirección (col-span-2) -->
+                                   <div class="col-span-2">
+                                        <label class="text-xs font-medium text-gray-500 block mb-1">Dirección</label>
+                                        <p class="text-sm font-semibold text-gray-900">Bellavista de conta</p>
+                                   </div>
+                              </div>
+                         </div>
+                    </div>
+
+                    <!-- ============ SECCIÓN: INFORMACIÓN DEL MOVIMIENTO ============ -->
+                    <div class="bg-white border-b border-gray-200 mt-4">
+                         <div class="px-6 py-4">
+                              <h4 class="text-sm font-semibold text-gray-700 uppercase tracking-wide mb-4">Información
+                                   del Movimiento</h4>
+
+                              <div class="grid grid-cols-2 gap-x-6 gap-y-4">
+
+                                   <!-- Estado del Movimiento -->
+                                   <div>
+                                        <label class="text-xs font-medium text-gray-500 block mb-1">Estado</label>
+                                        <span [class]="getMovementReasonBadgeClass(selectedMovement.movementReason)"
+                                             class="inline-block px-3 py-1 text-xs font-semibold rounded">
+                                             {{ getMovementReasonLabel(selectedMovement.movementReason) }}
+                                        </span>
+                                   </div>
+
+                                   <!-- Fecha y Hora -->
+                                   <div class="col-span-2">
+                                        <label class="text-xs font-medium text-gray-500 block mb-1">Fecha y Hora</label>
+                                        <p class="text-sm font-semibold text-gray-900">{{ selectedMovement.formattedDate
+                                             }}</p>
+                                   </div>
+                              </div>
+                         </div>
+                    </div>
+
+                    <!-- ============ SECCIÓN: INFORMACIÓN DEL PRODUCTO ============ -->
+                    <div class="bg-white border-b border-gray-200 mt-4">
+                         <div class="px-6 py-4">
+                              <h4 class="text-sm font-semibold text-gray-700 uppercase tracking-wide mb-4">Información
+                                   del Producto</h4>
+
+                              <div class="grid grid-cols-2 gap-x-6 gap-y-4">
+                                   <!-- Código del Producto -->
+                                   <div>
+                                        <label class="text-xs font-medium text-gray-500 block mb-1">Código</label>
+                                        <p class="text-sm font-semibold text-gray-900">{{
+                                             selectedMovement.productInfo.productCode }}</p>
+                                   </div>
+
+                                   <!-- Estado del Producto -->
+                                   <div>
+                                        <label class="text-xs font-medium text-gray-500 block mb-1">Estado</label>
+                                        <span
+                                             class="inline-block px-3 py-1 bg-green-100 text-green-700 text-xs font-semibold rounded">
+                                             Activo
+                                        </span>
+                                   </div>
+
+                                   <!-- Nombre del Producto (col-span-2) -->
+                                   <div class="col-span-2">
+                                        <label class="text-xs font-medium text-gray-500 block mb-1">Nombre</label>
+                                        <p class="text-sm font-semibold text-gray-900">{{
+                                             selectedMovement.productInfo.productName }}</p>
+                                   </div>
+
+                                   <!-- Categoría -->
+                                   <div>
+                                        <label class="text-xs font-medium text-gray-500 block mb-1">Categoría</label>
+                                        <p class="text-sm font-semibold text-gray-900">{{
+                                             selectedMovement.productInfo.categoryName }}</p>
+                                   </div>
+
+                                   <!-- Unidad de Medida -->
+                                   <div>
+                                        <label class="text-xs font-medium text-gray-500 block mb-1">Unidad de
+                                             Medida</label>
+                                        <p class="text-sm font-semibold text-gray-900">{{
+                                             selectedMovement.productInfo.unitOfMeasure }}</p>
+                                   </div>
+                              </div>
+                         </div>
+                    </div>
+
+                    <!-- ============ SECCIÓN: CANTIDADES Y VALORES ============ -->
+                    <div class="bg-white border-b border-gray-200 mt-4">
+                         <div class="px-6 py-4">
+                              <h4 class="text-sm font-semibold text-gray-700 uppercase tracking-wide mb-4">Cantidades y
+                                   Valores</h4>
+
+                              <div class="grid grid-cols-2 gap-x-6 gap-y-4">
+                                   <!-- Cantidad -->
+                                   <div>
+                                        <label class="text-xs font-medium text-gray-500 block mb-1">Cantidad</label>
+                                        <p class="text-sm font-semibold text-gray-900">{{ selectedMovement.quantity }}
+                                        </p>
+                                   </div>
+
+                                   <!-- Costo Unitario -->
+                                   <div>
+                                        <label class="text-xs font-medium text-gray-500 block mb-1">Costo
+                                             Unitario</label>
+                                        <p class="text-sm font-semibold text-gray-900">{{ selectedMovement.formattedCost
+                                             }}</p>
+                                   </div>
+
+                                   <!-- Stock Anterior -->
+                                   <div>
+                                        <label class="text-xs font-medium text-gray-500 block mb-1">Stock
+                                             Anterior</label>
+                                        <p class="text-sm font-semibold text-amber-700">{{
+                                             selectedMovement.previousStock }}</p>
+                                   </div>
+
+                                   <!-- Stock Nuevo -->
+                                   <div>
+                                        <label class="text-xs font-medium text-gray-500 block mb-1">Stock Nuevo</label>
+                                        <p class="text-sm font-semibold text-blue-700">{{ selectedMovement.newStock }}
+                                        </p>
+                                   </div>
+
+                                   <!-- Valor Total (destacado) -->
+                                   <div
+                                        class="col-span-2 bg-gradient-to-r from-green-50 to-emerald-50 rounded-lg p-4 mt-2">
+                                        <label
+                                             class="text-xs font-medium text-gray-600 uppercase block text-center mb-2">Valor
+                                             Total del Movimiento</label>
+                                        <p class="text-center text-3xl font-bold text-green-600">{{
+                                             selectedMovement.formattedValue }}</p>
+                                   </div>
+                              </div>
+                         </div>
+                    </div>
+
+                    <!-- ============ SECCIÓN: OBSERVACIONES ============ -->
+                    <div class="bg-white mt-4 mb-6">
+                         <div class="px-6 py-4">
+                              <h4 class="text-sm font-semibold text-gray-700 uppercase tracking-wide mb-3">Observaciones
+                              </h4>
+                              <div class="bg-amber-50 border border-amber-200 rounded-lg p-4">
+                                   <p class="text-sm text-gray-700 leading-relaxed">
+                                        {{ selectedMovement.observations || 'Sin observaciones adicionales' }}
+                                   </p>
+                              </div>
+                         </div>
+                    </div>
+
+               </div>
+          </div>
+     </div>
+</div>
+
+<!-- =====================================================
+     MODAL DE REGISTRAR SALIDA - DISEÑO LIMPIO
+     ===================================================== -->
+<div *ngIf="showOutputModal" class="fixed inset-0 z-[9999] overflow-hidden" (click)="closeOutputModal()" [@fadeIn]>
+     <!-- Overlay oscuro -->
+     <div class="absolute inset-0 bg-gray-900/50 backdrop-blur-sm"></div>
+
+     <!-- Panel deslizante desde la derecha -->
+     <div class="absolute inset-y-0 right-0 max-w-lg w-full flex shadow-2xl">
+          <div class="w-full bg-white" (click)="$event.stopPropagation()" [@slideIn]>
+
+               <!-- ==================== HEADER DEL MODAL ==================== -->
+               <div class="bg-red-600 px-6 py-4">
+                    <div class="flex items-center justify-between">
+                         <div class="flex items-center space-x-3">
+                              <div class="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center">
+                                   <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor"
+                                        viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                             d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                                   </svg>
+                              </div>
+                              <div>
+                                   <h3 class="text-lg font-bold text-white">Registrar Salida</h3>
+                                   <p class="text-xs text-red-100">Consumo de inventario</p>
+                              </div>
+                         </div>
+                         <!-- Botón Cerrar -->
+                         <button (click)="closeOutputModal()"
+                              class="p-1.5 hover:bg-red-700 rounded-lg transition-colors">
+                              <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M6 18L18 6M6 6l12 12" />
+                              </svg>
+                         </button>
+                    </div>
+               </div>
+
+               <!-- ==================== CONTENIDO DEL FORMULARIO ==================== -->
+               <div class="h-[calc(100vh-144px)] overflow-y-auto bg-gray-50 p-6">
+
+                    <!-- BÚSQUEDA DE PRODUCTO -->
+                    <div class="bg-white rounded-lg border border-gray-200 p-5 mb-4">
+                         <label class="text-sm font-semibold text-gray-700 block mb-3">Buscar Producto *</label>
+                         <div class="relative">
+                              <input type="text" [(ngModel)]="outputForm.productSearch" (input)="searchProducts()"
+                                   placeholder="Escribe el nombre o código del producto..."
+                                   class="w-full px-4 py-2.5 pl-10 bg-white border border-gray-200 rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all">
+                              <svg class="absolute left-3 top-3 w-5 h-5 text-gray-400" fill="none" stroke="currentColor"
+                                   viewBox="0 0 24 24">
+                                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                              </svg>
+                         </div>
+
+                         <!-- Lista de Productos (Dropdown) -->
+                         <div *ngIf="filteredProducts.length > 0 && outputForm.productSearch"
+                              class="mt-2 max-h-60 overflow-y-auto border border-gray-200 rounded-lg bg-white shadow-lg">
+                              <div *ngFor="let product of filteredProducts" (click)="selectProduct(product)"
+                                   class="px-4 py-3 hover:bg-gray-50 cursor-pointer border-b border-gray-100 last:border-b-0 transition-colors">
+                                   <div class="flex items-center justify-between">
+                                        <div>
+                                             <p class="text-sm font-semibold text-gray-900">{{ product.productName }}
+                                             </p>
+                                             <p class="text-xs text-gray-500">Código: {{ product.productCode }}</p>
+                                        </div>
+                                        <span class="text-xs font-medium px-2 py-1 bg-blue-100 text-blue-700 rounded">
+                                             Stock: {{ product.currentStock }}
+                                        </span>
+                                   </div>
+                              </div>
+                         </div>
+
+                         <!-- Producto Seleccionado -->
+                         <div *ngIf="outputForm.selectedProduct"
+                              class="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                              <div class="flex items-center justify-between">
+                                   <div>
+                                        <p class="text-sm font-bold text-gray-900">{{
+                                             outputForm.selectedProduct.productName }}</p>
+                                        <p class="text-xs text-gray-600">{{ outputForm.selectedProduct.productCode }}
+                                        </p>
+                                   </div>
+                                   <button (click)="clearProductSelection()" class="text-red-500 hover:text-red-700">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                  d="M6 18L18 6M6 6l12 12" />
+                                        </svg>
+                                   </button>
+                              </div>
+                              <div class="mt-3 grid grid-cols-2 gap-4">
+                                   <div>
+                                        <label class="text-xs text-gray-600 block">Stock Actual</label>
+                                        <p class="text-lg font-bold text-blue-600">{{
+                                             outputForm.selectedProduct.currentStock }}</p>
+                                   </div>
+                                   <div>
+                                        <label class="text-xs text-gray-600 block">Unidad</label>
+                                        <p class="text-sm font-medium text-gray-900">{{
+                                             outputForm.selectedProduct.unitOfMeasure }}</p>
+                                   </div>
+                              </div>
+                         </div>
+                    </div>
+
+                    <!-- CANTIDAD -->
+                    <div class="bg-white rounded-lg border border-gray-200 p-5 mb-4">
+                         <label class="text-sm font-semibold text-gray-700 block mb-3">Cantidad *</label>
+                         <input type="number" [(ngModel)]="outputForm.quantity" (ngModelChange)="validateQuantity()"
+                              min="1" [max]="outputForm.selectedProduct?.currentStock || 0"
+                              placeholder="Ingresa la cantidad"
+                              class="w-full px-4 py-2.5 bg-white border rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all"
+                              [class.border-red-500]="quantityError" [class.border-gray-200]="!quantityError">
+                         <p *ngIf="quantityError" class="mt-2 text-xs text-red-600 flex items-center">
+                              <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                   <path fill-rule="evenodd"
+                                        d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+                                        clip-rule="evenodd" />
+                              </svg>
+                              {{ quantityError }}
+                         </p>
+                    </div>
+
+                    <!-- COSTO UNITARIO -->
+                    <div class="bg-white rounded-lg border border-gray-200 p-5 mb-4">
+                         <label class="text-sm font-semibold text-gray-700 block mb-3">Costo Unitario (S/) *</label>
+                         <input type="number" [(ngModel)]="outputForm.unitCost" (ngModelChange)="calculateTotal()"
+                              min="0.01" step="0.01" placeholder="0.00"
+                              class="w-full px-4 py-2.5 bg-white border border-gray-200 rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all">
+                    </div>
+
+                    <!-- RAZÓN DEL MOVIMIENTO -->
+                    <div class="bg-white rounded-lg border border-gray-200 p-5 mb-4">
+                         <label class="text-sm font-semibold text-gray-700 block mb-3">Razón del Movimiento *</label>
+                         <select [(ngModel)]="outputForm.movementReason"
+                              class="w-full px-4 py-2.5 bg-white border border-gray-200 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all">
+                              <option value="USO_INTERNO">Uso Interno</option>
+                              <option value="VENTA">Venta</option>
+                              <option value="AJUSTE">Ajuste de Inventario</option>
+                              <option value="DESPERDICIO">Desperdicio/Merma</option>
+                              <option value="DONACION">Donación</option>
+                         </select>
+                    </div>
+
+                    <!-- DOCUMENTO DE REFERENCIA -->
+                    <div class="bg-white rounded-lg border border-gray-200 p-5 mb-4">
+                         <label class="text-sm font-semibold text-gray-700 block mb-3">Documento de Referencia</label>
+                         <input type="text" [(ngModel)]="outputForm.referenceDocument" placeholder="Ej: DOC-2025-001"
+                              class="w-full px-4 py-2.5 bg-white border border-gray-200 rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all">
+                    </div>
+
+                    <!-- OBSERVACIONES -->
+                    <div class="bg-white rounded-lg border border-gray-200 p-5 mb-4">
+                         <label class="text-sm font-semibold text-gray-700 block mb-3">Observaciones</label>
+                         <textarea [(ngModel)]="outputForm.observations" rows="3"
+                              placeholder="Agrega notas adicionales..."
+                              class="w-full px-4 py-2.5 bg-white border border-gray-200 rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all resize-none"></textarea>
+                    </div>
+
+                    <!-- RESUMEN DEL MOVIMIENTO -->
+                    <div class="bg-gradient-to-br from-red-50 to-orange-50 border-2 border-red-200 rounded-lg p-5">
+                         <h4 class="text-sm font-bold text-red-700 uppercase mb-3 flex items-center">
+                              <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                              </svg>
+                              Resumen del Movimiento
+                         </h4>
+                         <div class="space-y-2">
+                              <div class="flex justify-between text-sm">
+                                   <span class="text-gray-700">Stock Anterior:</span>
+                                   <span class="font-bold text-gray-900">{{ outputForm.selectedProduct?.currentStock ||
+                                        0 }}</span>
+                              </div>
+                              <div class="flex justify-between text-sm">
+                                   <span class="text-gray-700">Cantidad a Retirar:</span>
+                                   <span class="font-bold text-red-600">-{{ outputForm.quantity || 0 }}</span>
+                              </div>
+                              <div class="border-t border-red-300 pt-2 flex justify-between text-sm">
+                                   <span class="text-gray-700 font-semibold">Stock Nuevo:</span>
+                                   <span class="font-bold text-blue-600">{{ calculateNewStock() }}</span>
+                              </div>
+                              <div class="border-t border-red-300 pt-2 flex justify-between">
+                                   <span class="text-gray-700 font-semibold">Valor Total:</span>
+                                   <span class="text-xl font-bold text-red-600">S/ {{ outputForm.totalValue || '0.00'
+                                        }}</span>
+                              </div>
+                         </div>
+                    </div>
+
+               </div>
+
+               <!-- ==================== FOOTER CON BOTONES ==================== -->
+               <div class="bg-white border-t border-gray-200 px-6 py-4 flex justify-end space-x-3">
+                    <button (click)="closeOutputModal()"
+                         class="px-5 py-2.5 border border-gray-300 text-gray-700 font-medium rounded-lg hover:bg-gray-50 transition-colors">
+                         Cancelar
+                    </button>
+                    <button (click)="submitOutput()" [disabled]="!isOutputFormValid() || isSubmitting"
+                         class="px-5 py-2.5 bg-gradient-to-r from-red-500 to-red-600 text-white font-semibold rounded-lg hover:from-red-600 hover:to-red-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-lg hover:shadow-xl">
+                         <span *ngIf="!isSubmitting">Registrar Salida</span>
+                         <span *ngIf="isSubmitting" class="flex items-center">
+                              <svg class="animate-spin h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24">
+                                   <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
+                                        stroke-width="4"></circle>
+                                   <path class="opacity-75" fill="currentColor"
+                                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                                   </path>
+                              </svg>
+                              Procesando...
+                         </span>
+                    </button>
+               </div>
+
+          </div>
+     </div>
+</div>

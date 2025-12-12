@@ -1,0 +1,226 @@
+<!-- Modal de Vista del Programa - Lateral Derecho -->
+<div *ngIf="isOpen" class="fixed inset-0 z-[8000] " (keydown.escape)="onClose()" (keyup.escape)="onClose()"
+     tabindex="0">
+
+     <!-- Background overlay - CLIC PARA CERRAR -->
+     <div class="absolute inset-0 bg-gray-900/50" (click)="onClose()"></div>
+
+     <!-- Modal Panel -->
+     <div class="absolute right-0 top-0 h-full w-full max-w-3xl bg-slate-900 shadow-xl transform transition-transform duration-300 ease-out flex flex-col"
+          [class.translate-x-full]="!isOpen" [class.translate-x-0]="isOpen" (click)="$event.stopPropagation()">
+
+          <!-- Header -->
+          <div class="flex items-center justify-between px-6 py-4 bg-slate-900 border-b border-slate-800 flex-shrink-0">
+               <div class="flex items-center space-x-3">
+                    <div
+                         class="w-12 h-12 rounded-full flex items-center justify-center text-slate-600 font-semibold bg-slate-100">
+                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                   d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                   d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z">
+                              </path>
+                         </svg>
+                    </div>
+                    <div>
+                         <h2 class="text-xl font-semibold text-slate-100">Detalles del Programa</h2>
+                         <p class="text-sm text-slate-400">Información completa del programa de distribución</p>
+                    </div>
+               </div>
+               <button (click)="onClose()"
+                    class="p-2 hover:bg-slate-800 rounded-lg transition-colors text-slate-400 hover:text-slate-200">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
+                         </path>
+                    </svg>
+               </button>
+          </div>
+
+          <!-- Contenido del Modal -->
+          <div class="flex-1 overflow-y-auto bg-white min-h-0">
+               <!-- Loading State -->
+               <div *ngIf="!program" class="flex items-center justify-center py-12">
+                    <div class="text-center">
+                         <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+                         <p class="mt-4 text-slate-600">Cargando información...</p>
+                    </div>
+               </div>
+
+               <!-- Contenido -->
+               <div *ngIf="program" class="p-8 space-y-8">
+                    <!-- Información de la Organización -->
+                    <div class="bg-slate-50 rounded-lg p-6">
+                         <h3 class="text-lg font-semibold text-slate-900 mb-4">Organización</h3>
+                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                              <div>
+                                   <p class="text-sm font-medium text-slate-700">Código</p>
+                                   <p class="text-slate-900">{{organizationData?.organizationCode || 'No disponible'}}</p>
+                              </div>
+                              <div>
+                                   <p class="text-sm font-medium text-slate-700">Nombre</p>
+                                   <p class="text-slate-900">{{organizationData?.organizationName || 'No disponible'}}</p>
+                              </div>
+                         </div>
+                    </div>
+
+                    <!-- Sección 1: Datos del Programa -->
+                    <div class="bg-white rounded-lg border border-slate-200">
+                         <div class="px-6 py-4 border-b border-slate-200">
+                              <h3 class="text-lg font-semibold text-slate-900">Datos del Programa</h3>
+                         </div>
+
+                         <div class="p-6 space-y-6">
+                              <!-- Fecha del Programa -->
+                              <div>
+                                   <label class="block text-sm font-medium text-slate-700 mb-2">
+                                        Fecha del Programa
+                                   </label>
+                                   <p class="w-full px-4 py-3 bg-white rounded-lg text-slate-900 border border-slate-200">
+                                        {{program.programDate | date:'dd/MM/yyyy'}}
+                                   </p>
+                              </div>
+
+                              <!-- Horario -->
+                              <div>
+                                   <label class="block text-sm font-medium text-slate-700 mb-2">
+                                        Horario
+                                   </label>
+                                   <p class="w-full px-4 py-3 bg-white rounded-lg text-slate-900 border border-slate-200">
+                                        {{getScheduleName()}}
+                                   </p>
+                              </div>
+                         </div>
+                    </div>
+
+                    <!-- Sección 2: Ruta y Ubicación -->
+                    <div class="bg-white rounded-lg border border-slate-200">
+                         <div class="px-6 py-4 border-b border-slate-200">
+                              <h3 class="text-lg font-semibold text-slate-900">Ruta y Ubicación</h3>
+                         </div>
+
+                         <div class="p-6 space-y-6">
+                              <!-- Ruta -->
+                              <div>
+                                   <label class="block text-sm font-medium text-slate-700 mb-2">
+                                        Ruta
+                                   </label>
+                                   <p class="w-full px-4 py-3 bg-white rounded-lg text-slate-900 border border-slate-200">
+                                        {{getRouteName()}}
+                                   </p>
+                              </div>
+
+                              <!-- Zona -->
+                              <div>
+                                   <label class="block text-sm font-medium text-slate-700 mb-2">
+                                        Zona
+                                   </label>
+                                   <p class="w-full px-4 py-3 bg-white rounded-lg text-slate-900 border border-slate-200">
+                                        {{getZoneName()}}
+                                   </p>
+                              </div>
+
+                              <!-- Calle -->
+                              <div>
+                                   <label class="block text-sm font-medium text-slate-700 mb-2">
+                                        Calle
+                                   </label>
+                                   <p class="w-full px-4 py-3 bg-white rounded-lg text-slate-900 border border-slate-200">
+                                        {{getStreetName()}}
+                                   </p>
+                              </div>
+                         </div>
+                    </div>
+
+                    <!-- Sección 3: Horario Planificado -->
+                    <div class="bg-white rounded-lg border border-slate-200">
+                         <div class="px-6 py-4 border-b border-slate-200">
+                              <h3 class="text-lg font-semibold text-slate-900">Horario Planificado</h3>
+                         </div>
+
+                         <div class="p-6 space-y-6">
+                              <!-- Hora de Inicio Planificada -->
+                              <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                   <div>
+                                        <label class="block text-sm font-medium text-slate-700 mb-2">
+                                             Hora de Inicio Planificada
+                                        </label>
+                                        <p class="w-full px-4 py-3 bg-white rounded-lg text-slate-900 border border-slate-200">
+                                             {{program.plannedStartTime}}
+                                        </p>
+                                   </div>
+
+                                   <!-- Hora de Fin Planificada -->
+                                   <div>
+                                        <label class="block text-sm font-medium text-slate-700 mb-2">
+                                             Hora de Fin Planificada
+                                        </label>
+                                        <p class="w-full px-4 py-3 bg-white rounded-lg text-slate-900 border border-slate-200">
+                                             {{program.plannedEndTime}}
+                                        </p>
+                                   </div>
+                              </div>
+                         </div>
+                    </div>
+
+                    <!-- Sección 4: Horario Real (Opcional) -->
+                    <div class="bg-white rounded-lg border border-slate-200">
+                         <div class="px-6 py-4 border-b border-slate-200">
+                              <h3 class="text-lg font-semibold text-slate-900">Horario Real</h3>
+                              <p class="text-sm text-slate-500 mt-1">Opcional - Ingrese las horas reales de ejecución</p>
+                         </div>
+
+                         <div class="p-6 space-y-6">
+                              <!-- Hora de Inicio Real -->
+                              <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                   <div>
+                                        <label class="block text-sm font-medium text-slate-700 mb-2">
+                                             Hora de Inicio Real
+                                        </label>
+                                        <p class="w-full px-4 py-3 bg-white rounded-lg text-slate-900 border border-slate-200">
+                                             {{program.actualStartTime || 'No registrado'}}
+                                        </p>
+                                   </div>
+
+                                   <!-- Hora de Fin Real -->
+                                   <div>
+                                        <label class="block text-sm font-medium text-slate-700 mb-2">
+                                             Hora de Fin Real
+                                        </label>
+                                        <p class="w-full px-4 py-3 bg-white rounded-lg text-slate-900 border border-slate-200">
+                                             {{program.actualEndTime || 'No registrado'}}
+                                        </p>
+                                   </div>
+                              </div>
+                         </div>
+                    </div>
+
+                    <!-- Sección 5: Observaciones -->
+                    <div class="bg-white rounded-lg border border-slate-200">
+                         <div class="px-6 py-4 border-b border-slate-200">
+                              <h3 class="text-lg font-semibold text-slate-900">Observaciones</h3>
+                         </div>
+
+                         <div class="p-6 space-y-6">
+                              <!-- Observaciones -->
+                              <div>
+                                   <label class="block text-sm font-medium text-slate-700 mb-2">
+                                        Observaciones
+                                   </label>
+                                   <p class="w-full px-4 py-3 bg-white rounded-lg text-slate-900 border border-slate-200 whitespace-pre-wrap">
+                                        {{program.observations || 'No hay observaciones'}}
+                                   </p>
+                              </div>
+                         </div>
+                    </div>
+
+                    <!-- Botón de cierre -->
+                    <div class="flex justify-end pt-6 border-t border-slate-200">
+                         <button (click)="onClose()"
+                              class="px-6 py-3 text-slate-700 bg-white border border-slate-300 rounded-lg hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-slate-500/20 transition-colors">
+                              Cerrar
+                         </button>
+                    </div>
+               </div>
+          </div> <!-- Cierre del contenido -->
+     </div> <!-- Cierre del modal panel -->
+</div> <!-- Cierre del modal principal -->
